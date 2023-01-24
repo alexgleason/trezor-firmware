@@ -8,12 +8,9 @@ use super::{
     geometry::{Offset, Point, Rect},
 };
 #[cfg(feature = "dma2d")]
-use crate::trezorhal::{
-    buffers::{get_buffer_16bpp, get_buffer_4bpp, get_buffer_text},
-    dma2d::{
-        dma2d_setup_4bpp_over_16bpp, dma2d_setup_4bpp_over_4bpp, dma2d_start_blend,
-        dma2d_wait_for_transfer,
-    },
+use crate::trezorhal::dma2d::{
+    dma2d_setup_4bpp_over_16bpp, dma2d_setup_4bpp_over_4bpp, dma2d_start_blend,
+    dma2d_wait_for_transfer,
 };
 use crate::{
     error::Error,
@@ -28,7 +25,7 @@ use crate::{
 };
 use core::slice;
 
-use crate::trezorhal::buffers::{free_buffer_16bpp, free_buffer_4bpp, free_buffer_text};
+use crate::trezorhal::buffers;
 #[cfg(any(feature = "model_tt", feature = "model_tr"))]
 pub use loader::{loader, loader_indeterminate, LOADER_MAX, LOADER_MIN};
 
@@ -541,13 +538,13 @@ pub fn text_over_image(
     offset_text: Offset,
     text_color: Color,
 ) {
-    let text_buffer = unsafe { get_buffer_text(0, true) };
-    let img1 = unsafe { get_buffer_16bpp(0, true) };
-    let img2 = unsafe { get_buffer_16bpp(1, true) };
-    let empty_img = unsafe { get_buffer_16bpp(2, true) };
-    let t1 = unsafe { get_buffer_4bpp(0, true) };
-    let t2 = unsafe { get_buffer_4bpp(1, true) };
-    let empty_t = unsafe { get_buffer_4bpp(2, true) };
+    let mut text_buffer = buffers::BufferText::get();
+    let mut img1 = buffers::BufferLine16bpp::get_cleared();
+    let mut img2 = buffers::BufferLine16bpp::get_cleared();
+    let mut empty_img = buffers::BufferLine16bpp::get_cleared();
+    let mut t1 = buffers::BufferLine4bpp::get_cleared();
+    let mut t2 = buffers::BufferLine4bpp::get_cleared();
+    let mut empty_t = buffers::BufferLine4bpp::get_cleared();
 
     let (toif_size, toif_data) = toif_info_ensure(image_data, ToifFormat::FullColorLE);
 
@@ -590,7 +587,7 @@ pub fn text_over_image(
         Point::new(text_right, text_bottom),
     );
 
-    display::text_into_buffer(text, font.into(), text_buffer, 0);
+    display::text_into_buffer(text, font.into(), &mut text_buffer, 0);
 
     set_window(clamped);
 
@@ -647,13 +644,6 @@ pub fn text_over_image(
     }
 
     dma2d_wait_for_transfer();
-
-    free_buffer_text(text_buffer);
-    free_buffer_16bpp(img1);
-    free_buffer_16bpp(img2);
-    free_buffer_16bpp(empty_img);
-    free_buffer_4bpp(t1);
-    free_buffer_4bpp(t2);
 }
 
 /// Renders text over image background
@@ -674,12 +664,12 @@ pub fn icon_over_icon(
     fg: (&[u8], Offset, Color),
     bg_color: Color,
 ) {
-    let bg1 = unsafe { get_buffer_16bpp(0, true) };
-    let bg2 = unsafe { get_buffer_16bpp(1, true) };
-    let empty1 = unsafe { get_buffer_16bpp(2, true) };
-    let fg1 = unsafe { get_buffer_4bpp(0, true) };
-    let fg2 = unsafe { get_buffer_4bpp(1, true) };
-    let empty2 = unsafe { get_buffer_4bpp(2, true) };
+    let mut bg1 = buffers::BufferLine16bpp::get_cleared();
+    let mut bg2 = buffers::BufferLine16bpp::get_cleared();
+    let mut empty1 = buffers::BufferLine16bpp::get_cleared();
+    let mut fg1 = buffers::BufferLine4bpp::get_cleared();
+    let mut fg2 = buffers::BufferLine4bpp::get_cleared();
+    let mut empty2 = buffers::BufferLine4bpp::get_cleared();
 
     let (data_bg, offset_bg, color_icon_bg) = bg;
     let (data_fg, offset_fg, color_icon_fg) = fg;
@@ -769,13 +759,6 @@ pub fn icon_over_icon(
     }
 
     dma2d_wait_for_transfer();
-
-    free_buffer_16bpp(bg1);
-    free_buffer_16bpp(bg2);
-    free_buffer_16bpp(empty1);
-    free_buffer_4bpp(fg1);
-    free_buffer_4bpp(fg2);
-    free_buffer_4bpp(empty2);
 }
 
 #[cfg(not(feature = "dma2d"))]

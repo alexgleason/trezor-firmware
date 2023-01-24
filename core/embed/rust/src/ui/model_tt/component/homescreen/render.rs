@@ -1,14 +1,13 @@
+use core::mem;
+
 #[cfg(feature = "dma2d")]
-use crate::trezorhal::{
-    buffers::{get_buffer_16bpp, get_buffer_4bpp, get_buffer_text, BufferText},
-    dma2d::{dma2d_setup_4bpp_over_16bpp, dma2d_start_blend, dma2d_wait_for_transfer},
+use crate::trezorhal::dma2d::{
+    dma2d_setup_4bpp_over_16bpp, dma2d_start_blend, dma2d_wait_for_transfer,
 };
 use crate::{
     trezorhal::{
         buffers::{
-            free_buffer_16bpp, free_buffer_4bpp, free_buffer_blurring, free_buffer_jpeg,
-            free_buffer_jpeg_work, free_buffer_text, get_buffer_blurring, get_buffer_jpeg,
-            get_buffer_jpeg_work, BufferBlurring, BufferJpeg, BufferLine16bpp, BufferLine4bpp,
+            BufferBlurring, BufferJpeg, BufferJpegWork, BufferLine16bpp, BufferLine4bpp, BufferText,
         },
         display,
         display::{bar_radius_buffer, ToifFormat},
@@ -327,7 +326,7 @@ fn update_accs_sub(data: &[u16], idx: usize, acc_r: &mut u16, acc_g: &mut u16, a
 }
 
 struct BlurringContext {
-    mem: &'static mut BufferBlurring, // this should never leave this struct
+    mem: BufferBlurring,
     pub totals: [[u16; HOMESCREEN_IMAGE_SIZE as usize]; COLORS],
     line_num: i16,
     add_idx: usize,
@@ -336,9 +335,8 @@ struct BlurringContext {
 
 impl BlurringContext {
     pub fn new() -> Self {
-        let mem = unsafe { get_buffer_blurring(0, true) };
         Self {
-            mem,
+            mem: BufferBlurring::get_cleared(),
             totals: [[0; HOMESCREEN_IMAGE_SIZE as usize]; COLORS],
             line_num: 0,
             add_idx: 0,
@@ -426,12 +424,6 @@ impl BlurringContext {
     }
 }
 
-impl Drop for BlurringContext {
-    fn drop(&mut self) {
-        free_buffer_blurring(self.mem)
-    }
-}
-
 #[inline(always)]
 fn get_data(buffer: &mut BufferJpeg, line_num: i16, mcu_height: i16) -> &mut [u16] {
     let data_start = ((line_num % mcu_height) * WIDTH) as usize;
@@ -442,22 +434,22 @@ fn get_data(buffer: &mut BufferJpeg, line_num: i16, mcu_height: i16) -> &mut [u1
 pub fn homescreen_blurred(data: &[u8], texts: &[HomescreenText]) {
     let mut icon_data = [0_u8; (HOMESCREEN_MAX_ICON_SIZE * HOMESCREEN_MAX_ICON_SIZE / 2) as usize];
 
-    let text_buffer = unsafe { get_buffer_text(0, true) };
+    let mut text_buffer = BufferText::get_cleared();
 
     let mut next_text_idx = 1;
     let mut text_info =
-        homescreen_position_text(unwrap!(texts.get(0)), text_buffer, &mut icon_data);
+        homescreen_position_text(unwrap!(texts.get(0)), &mut text_buffer, &mut icon_data);
 
-    let jpeg_pool_buffer = unsafe { get_buffer_jpeg_work(0, true) };
+    let mut jpeg_pool_buffer = BufferJpegWork::get_cleared();
     let jpeg_pool = jpeg_pool_buffer.buffer.as_mut_slice();
-    let jpeg_buffer = unsafe { get_buffer_jpeg(0, true) };
-    let fg_buffer_0 = unsafe { get_buffer_4bpp(0, true) };
-    let fg_buffer_1 = unsafe { get_buffer_4bpp(1, true) };
-    let img_buffer_0 = unsafe { get_buffer_16bpp(0, true) };
-    let img_buffer_1 = unsafe { get_buffer_16bpp(1, true) };
+    let mut jpeg_buffer = BufferJpeg::get_cleared();
+    let mut fg_buffer_0 = BufferLine4bpp::get_cleared();
+    let mut fg_buffer_1 = BufferLine4bpp::get_cleared();
+    let mut img_buffer_0 = BufferLine16bpp::get_cleared();
+    let mut img_buffer_1 = BufferLine16bpp::get_cleared();
 
     let mut jpeg_input = BufferInput(data);
-    let mut jpeg_output = BufferOutput::new(jpeg_buffer, WIDTH, 16);
+    let mut jpeg_output = BufferOutput::new(&mut jpeg_buffer, WIDTH, 16);
     let mut mcu_height = 8;
     let mut jd: Option<JDEC> = JDEC::new(&mut jpeg_input, jpeg_pool).ok();
 
@@ -502,9 +494,9 @@ pub fn homescreen_blurred(data: &[u8], texts: &[HomescreenText]) {
         let done = if y % 2 == 0 {
             homescreen_line_blurred(
                 &icon_data,
-                text_buffer,
-                fg_buffer_0,
-                img_buffer_0,
+                &mut text_buffer,
+                &mut fg_buffer_0,
+                &mut img_buffer_0,
                 text_info,
                 &blurring,
                 y,
@@ -512,9 +504,9 @@ pub fn homescreen_blurred(data: &[u8], texts: &[HomescreenText]) {
         } else {
             homescreen_line_blurred(
                 &icon_data,
-                text_buffer,
-                fg_buffer_1,
-                img_buffer_1,
+                &mut text_buffer,
+                &mut fg_buffer_1,
+                &mut img_buffer_1,
                 text_info,
                 &blurring,
                 y,
@@ -522,8 +514,13 @@ pub fn homescreen_blurred(data: &[u8], texts: &[HomescreenText]) {
         };
 
         if done {
-            (text_info, next_text_idx) =
-                homescreen_next_text(texts, text_buffer, &mut icon_data, text_info, next_text_idx);
+            (text_info, next_text_idx) = homescreen_next_text(
+                texts,
+                &mut text_buffer,
+                &mut icon_data,
+                text_info,
+                next_text_idx,
+            );
         }
 
         blurring.vertical_avg();
@@ -551,14 +548,6 @@ pub fn homescreen_blurred(data: &[u8], texts: &[HomescreenText]) {
         }
     }
     dma2d_wait_for_transfer();
-
-    free_buffer_jpeg_work(jpeg_pool_buffer);
-    free_buffer_jpeg(jpeg_buffer);
-    free_buffer_text(text_buffer);
-    free_buffer_4bpp(fg_buffer_0);
-    free_buffer_4bpp(fg_buffer_1);
-    free_buffer_16bpp(img_buffer_0);
-    free_buffer_16bpp(img_buffer_1);
 }
 
 pub fn homescreen(
@@ -569,7 +558,7 @@ pub fn homescreen(
 ) {
     let mut icon_data = [0_u8; (HOMESCREEN_MAX_ICON_SIZE * HOMESCREEN_MAX_ICON_SIZE / 2) as usize];
 
-    let text_buffer = unsafe { get_buffer_text(0, true) };
+    let mut text_buffer = BufferText::get_cleared();
 
     let mut next_text_idx = 0;
     let mut text_info = if let Some(notification) = notification {
@@ -579,7 +568,7 @@ pub fn homescreen(
             WIDTH - NOTIFICATION_BORDER * 2,
             NOTIFICATION_HEIGHT,
             2,
-            text_buffer,
+            &mut text_buffer,
         );
         let area = Rect::new(
             Point::new(0, NOTIFICATION_BORDER),
@@ -593,18 +582,18 @@ pub fn homescreen(
         }
     } else {
         next_text_idx += 1;
-        homescreen_position_text(unwrap!(texts.get(0)), text_buffer, &mut icon_data)
+        homescreen_position_text(unwrap!(texts.get(0)), &mut text_buffer, &mut icon_data)
     };
 
-    let jpeg_pool_buffer = unsafe { get_buffer_jpeg_work(0, true) };
+    let mut jpeg_pool_buffer = BufferJpegWork::get_cleared();
     let jpeg_pool = jpeg_pool_buffer.buffer.as_mut_slice();
-    let jpeg_buffer = unsafe { get_buffer_jpeg(0, true) };
-    let mut fg_buffer_0 = unsafe { get_buffer_4bpp(0, true) };
-    let mut fg_buffer_1 = unsafe { get_buffer_4bpp(1, true) };
-    let img_buffer_0 = unsafe { get_buffer_16bpp(0, true) };
-    let img_buffer_1 = unsafe { get_buffer_16bpp(1, true) };
+    let mut jpeg_buffer = BufferJpeg::get_cleared();
+    let mut fg_buffer_0 = BufferLine4bpp::get_cleared();
+    let mut fg_buffer_1 = BufferLine4bpp::get_cleared();
+    let mut img_buffer_0 = BufferLine16bpp::get_cleared();
+    let mut img_buffer_1 = BufferLine16bpp::get_cleared();
     let mut jpeg_input = BufferInput(data);
-    let mut jpeg_output = BufferOutput::new(jpeg_buffer, WIDTH, 16);
+    let mut jpeg_output = BufferOutput::new(&mut jpeg_buffer, WIDTH, 16);
     let mut mcu_height = 8;
     let mut jd: Option<JDEC> = JDEC::new(&mut jpeg_input, jpeg_pool).ok();
 
@@ -626,20 +615,20 @@ pub fn homescreen(
         let done = if y % 2 == 0 {
             homescreen_line(
                 &icon_data,
-                text_buffer,
+                &mut text_buffer,
                 text_info,
-                fg_buffer_0,
-                img_buffer_0,
+                &mut fg_buffer_0,
+                &mut img_buffer_0,
                 get_data(jpeg_output.buffer(), y, mcu_height),
                 y,
             )
         } else {
             homescreen_line(
                 &icon_data,
-                text_buffer,
+                &mut text_buffer,
                 text_info,
-                fg_buffer_1,
-                img_buffer_1,
+                &mut fg_buffer_1,
+                &mut img_buffer_1,
                 get_data(jpeg_output.buffer(), y, mcu_height),
                 y,
             )
@@ -657,8 +646,8 @@ pub fn homescreen(
 
                 dma2d_wait_for_transfer();
 
-                free_buffer_4bpp(fg_buffer_0);
-                free_buffer_4bpp(fg_buffer_1);
+                mem::drop(fg_buffer_0);
+                mem::drop(fg_buffer_1);
 
                 icon_text_center(
                     text_info.text_area.center(),
@@ -669,8 +658,8 @@ pub fn homescreen(
                     Offset::new(1, -2),
                 );
 
-                fg_buffer_0 = unsafe { get_buffer_4bpp(0, true) };
-                fg_buffer_1 = unsafe { get_buffer_4bpp(1, true) };
+                fg_buffer_0 = BufferLine4bpp::get_cleared();
+                fg_buffer_1 = BufferLine4bpp::get_cleared();
 
                 set_window(
                     screen()
@@ -684,17 +673,14 @@ pub fn homescreen(
                 return;
             }
 
-            (text_info, next_text_idx) =
-                homescreen_next_text(texts, text_buffer, &mut icon_data, text_info, next_text_idx);
+            (text_info, next_text_idx) = homescreen_next_text(
+                texts,
+                &mut text_buffer,
+                &mut icon_data,
+                text_info,
+                next_text_idx,
+            );
         }
     }
     dma2d_wait_for_transfer();
-
-    free_buffer_jpeg_work(jpeg_pool_buffer);
-    free_buffer_jpeg(jpeg_buffer);
-    free_buffer_text(text_buffer);
-    free_buffer_4bpp(fg_buffer_0);
-    free_buffer_4bpp(fg_buffer_1);
-    free_buffer_16bpp(img_buffer_0);
-    free_buffer_16bpp(img_buffer_1);
 }

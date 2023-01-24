@@ -34,10 +34,7 @@ Trezor modifications:
 /----------------------------------------------------------------------------*/
 
 use crate::{
-    trezorhal::{
-        buffers::{free_buffer_jpeg_work, get_buffer_jpeg_work, BufferJpeg},
-        display::pixeldata,
-    },
+    trezorhal::{buffers::{BufferJpegWork, BufferJpeg}, display::pixeldata},
     ui::{
         constant,
         display::set_window,
@@ -1399,7 +1396,7 @@ impl<'i, 'p> JDEC<'i, 'p> {
 }
 
 pub fn jpeg(data: &[u8], pos: Point, scale: u8) {
-    let buffer = unsafe { get_buffer_jpeg_work(0, true) };
+    let mut buffer = BufferJpegWork::get_cleared();
     let pool = buffer.buffer.as_mut_slice();
     let mut out = PixelDataOutput(pos);
     let mut inp = BufferInput(data);
@@ -1407,11 +1404,10 @@ pub fn jpeg(data: &[u8], pos: Point, scale: u8) {
         let _ = jd.set_scale(scale);
         let _ = jd.decomp(&mut out);
     }
-    free_buffer_jpeg_work(buffer);
 }
 
 pub fn jpeg_info(data: &[u8]) -> Option<(Offset, i16)> {
-    let buffer = unsafe { get_buffer_jpeg_work(0, true) };
+    let mut buffer = BufferJpegWork::get_cleared();
     let pool = buffer.buffer.as_mut_slice();
     let mut inp = BufferInput(data);
     let result = if let Ok(jd) = JDEC::new(&mut inp, pool) {
@@ -1423,12 +1419,11 @@ pub fn jpeg_info(data: &[u8]) -> Option<(Offset, i16)> {
     } else {
         None
     };
-    free_buffer_jpeg_work(buffer);
     result
 }
 
 pub fn jpeg_test(data: &[u8]) -> bool {
-    let buffer = unsafe { get_buffer_jpeg_work(0, true) };
+    let mut buffer = BufferJpegWork::get_cleared();
     let pool = buffer.buffer.as_mut_slice();
     let mut inp = BufferInput(data);
     let result = if let Ok(mut jd) = JDEC::new(&mut inp, pool) {
@@ -1445,7 +1440,6 @@ pub fn jpeg_test(data: &[u8]) -> bool {
     } else {
         false
     };
-    free_buffer_jpeg_work(buffer);
     result
 }
 
