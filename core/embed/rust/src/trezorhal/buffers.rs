@@ -1,8 +1,8 @@
 use super::ffi;
 
 pub use ffi::{
-    buffer_blurring_t as BlurringBuffer, buffer_text_t as BufferText,
-    line_buffer_16bpp_t as LineBuffer16Bpp, line_buffer_4bpp_t as LineBuffer4Bpp,
+    buffer_blurring_t as BufferBlurring, buffer_line_16bpp_t as BufferLine16bpp,
+    buffer_line_4bpp_t as BufferLine4bpp, buffer_text_t as BufferText,
 };
 #[cfg(feature = "jpeg")]
 pub use ffi::{buffer_jpeg_t as BufferJpeg, buffer_jpeg_work_t as BufferJpegWork};
@@ -11,12 +11,19 @@ pub use ffi::{buffer_jpeg_t as BufferJpeg, buffer_jpeg_work_t as BufferJpegWork}
 ///
 /// # Safety
 ///
-/// This function is unsafe because the caller has to guarantee
-/// that he doesn't use buffer on same index multiple times
-pub unsafe fn get_buffer_16bpp(idx: u16, clear: bool) -> &'static mut LineBuffer16Bpp {
+/// This function is unsafe because the caller has to guarantee that he:
+/// 1) frees the buffer after use
+/// 2) doesn't use the buffer after it was freed
+pub unsafe fn get_buffer_16bpp(idx: u16, clear: bool) -> &'static mut BufferLine16bpp {
     unsafe {
-        let ptr = ffi::buffers_get_line_buffer_16bpp(idx, clear);
+        let ptr = ffi::buffers_get_line_16bpp(idx, clear);
         unwrap!(ptr.as_mut())
+    }
+}
+
+pub fn free_buffer_16bpp(buffer: &mut BufferLine16bpp) {
+    unsafe {
+        ffi::buffers_free_line_16bpp(buffer);
     }
 }
 
@@ -24,12 +31,19 @@ pub unsafe fn get_buffer_16bpp(idx: u16, clear: bool) -> &'static mut LineBuffer
 ///
 /// # Safety
 ///
-/// This function is unsafe because the caller has to guarantee
-/// that he doesn't use buffer on same index multiple times
-pub unsafe fn get_buffer_4bpp(idx: u16, clear: bool) -> &'static mut LineBuffer4Bpp {
+/// This function is unsafe because the caller has to guarantee that he:
+/// 1) frees the buffer after use
+/// 2) doesn't use the buffer after it was freed
+pub unsafe fn get_buffer_4bpp(idx: u16, clear: bool) -> &'static mut BufferLine4bpp {
     unsafe {
-        let ptr = ffi::buffers_get_line_buffer_4bpp(idx, clear);
+        let ptr = ffi::buffers_get_line_4bpp(idx, clear);
         unwrap!(ptr.as_mut())
+    }
+}
+
+pub fn free_buffer_4bpp(buffer: &mut BufferLine4bpp) {
+    unsafe {
+        ffi::buffers_free_line_4bpp(buffer);
     }
 }
 
@@ -37,12 +51,19 @@ pub unsafe fn get_buffer_4bpp(idx: u16, clear: bool) -> &'static mut LineBuffer4
 ///
 /// # Safety
 ///
-/// This function is unsafe because the caller has to guarantee
-/// that he doesn't use buffer on same index multiple times
-pub unsafe fn get_text_buffer(idx: u16, clear: bool) -> &'static mut BufferText {
+/// This function is unsafe because the caller has to guarantee that he:
+/// 1) frees the buffer after use
+/// 2) doesn't use the buffer after it was freed
+pub unsafe fn get_buffer_text(idx: u16, clear: bool) -> &'static mut BufferText {
     unsafe {
-        let ptr = ffi::buffers_get_text_buffer(idx, clear);
+        let ptr = ffi::buffers_get_text(idx, clear);
         unwrap!(ptr.as_mut())
+    }
+}
+
+pub fn free_buffer_text(buffer: &mut BufferText) {
+    unsafe {
+        ffi::buffers_free_text(buffer);
     }
 }
 
@@ -50,13 +71,20 @@ pub unsafe fn get_text_buffer(idx: u16, clear: bool) -> &'static mut BufferText 
 ///
 /// # Safety
 ///
-/// This function is unsafe because the caller has to guarantee
-/// that he doesn't use buffer on same index multiple times
+/// This function is unsafe because the caller has to guarantee that he:
+/// 1) frees the buffer after use
+/// 2) doesn't use the buffer after it was freed
 #[cfg(feature = "jpeg")]
-pub unsafe fn get_jpeg_buffer(idx: u16, clear: bool) -> &'static mut BufferJpeg {
+pub unsafe fn get_buffer_jpeg(idx: u16, clear: bool) -> &'static mut BufferJpeg {
     unsafe {
-        let ptr = ffi::buffers_get_jpeg_buffer(idx, clear);
+        let ptr = ffi::buffers_get_jpeg(idx, clear);
         unwrap!(ptr.as_mut())
+    }
+}
+
+pub fn free_buffer_jpeg(buffer: &mut BufferJpeg) {
+    unsafe {
+        ffi::buffers_free_jpeg(buffer);
     }
 }
 
@@ -64,13 +92,20 @@ pub unsafe fn get_jpeg_buffer(idx: u16, clear: bool) -> &'static mut BufferJpeg 
 ///
 /// # Safety
 ///
-/// This function is unsafe because the caller has to guarantee
-/// that he doesn't use buffer on same index multiple times
+/// This function is unsafe because the caller has to guarantee that he:
+/// 1) frees the buffer after use
+/// 2) doesn't use the buffer after it was freed
 #[cfg(feature = "jpeg")]
-pub unsafe fn get_jpeg_work_buffer(idx: u16, clear: bool) -> &'static mut BufferJpegWork {
+pub unsafe fn get_buffer_jpeg_work(idx: u16, clear: bool) -> &'static mut BufferJpegWork {
     unsafe {
-        let ptr = ffi::buffers_get_jpeg_work_buffer(idx, clear);
+        let ptr = ffi::buffers_get_jpeg_work(idx, clear);
         unwrap!(ptr.as_mut())
+    }
+}
+
+pub fn free_buffer_jpeg_work(buffer: &mut BufferJpegWork) {
+    unsafe {
+        ffi::buffers_free_jpeg_work(buffer);
     }
 }
 
@@ -78,11 +113,18 @@ pub unsafe fn get_jpeg_work_buffer(idx: u16, clear: bool) -> &'static mut Buffer
 ///
 /// # Safety
 ///
-/// This function is unsafe because the caller has to guarantee
-/// that he doesn't use buffer on same index multiple times
-pub unsafe fn get_blurring_buffer(idx: u16, clear: bool) -> &'static mut BlurringBuffer {
+/// This function is unsafe because the caller has to guarantee that he:
+/// 1) frees the buffer after use
+/// 2) doesn't use the buffer after it was freed
+pub unsafe fn get_buffer_blurring(idx: u16, clear: bool) -> &'static mut BufferBlurring {
     unsafe {
-        let ptr = ffi::buffers_get_blurring_buffer(idx, clear);
+        let ptr = ffi::buffers_get_blurring(idx, clear);
         unwrap!(ptr.as_mut())
+    }
+}
+
+pub fn free_buffer_blurring(buffer: &mut BufferBlurring) {
+    unsafe {
+        ffi::buffers_free_blurring(buffer);
     }
 }

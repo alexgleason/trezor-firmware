@@ -8,6 +8,7 @@ use crate::{
 };
 use core::slice::from_raw_parts;
 
+use crate::trezorhal::buffers::{free_buffer_16bpp, free_buffer_4bpp};
 #[cfg(feature = "dma2d")]
 use crate::trezorhal::{
     buffers::{get_buffer_16bpp, get_buffer_4bpp},
@@ -369,10 +370,17 @@ pub fn loader_rust(
         }
 
         dma2d_wait_for_transfer();
-        dma2d_start_blend(&icon_buffer.buffer, &loader_buffer.buffer, clamped.width());
+        unsafe {
+            dma2d_start_blend(&icon_buffer.buffer, &loader_buffer.buffer, clamped.width());
+        }
     }
 
     dma2d_wait_for_transfer();
+    free_buffer_16bpp(b1);
+    free_buffer_16bpp(b2);
+    free_buffer_4bpp(ib1);
+    free_buffer_4bpp(ib2);
+    free_buffer_4bpp(empty_line);
 }
 
 pub fn loader(

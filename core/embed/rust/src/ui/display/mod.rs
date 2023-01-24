@@ -9,7 +9,7 @@ use super::{
 };
 #[cfg(feature = "dma2d")]
 use crate::trezorhal::{
-    buffers::{get_buffer_16bpp, get_buffer_4bpp, get_text_buffer},
+    buffers::{get_buffer_16bpp, get_buffer_4bpp, get_buffer_text},
     dma2d::{
         dma2d_setup_4bpp_over_16bpp, dma2d_setup_4bpp_over_4bpp, dma2d_start_blend,
         dma2d_wait_for_transfer,
@@ -28,6 +28,7 @@ use crate::{
 };
 use core::slice;
 
+use crate::trezorhal::buffers::{free_buffer_16bpp, free_buffer_4bpp, free_buffer_text};
 #[cfg(any(feature = "model_tt", feature = "model_tr"))]
 pub use loader::{loader, loader_indeterminate, LOADER_MAX, LOADER_MIN};
 
@@ -540,7 +541,7 @@ pub fn text_over_image(
     offset_text: Offset,
     text_color: Color,
 ) {
-    let text_buffer = unsafe { get_text_buffer(0, true) };
+    let text_buffer = unsafe { get_buffer_text(0, true) };
     let img1 = unsafe { get_buffer_16bpp(0, true) };
     let img2 = unsafe { get_buffer_16bpp(1, true) };
     let empty_img = unsafe { get_buffer_16bpp(2, true) };
@@ -642,10 +643,17 @@ pub fn text_over_image(
         }
 
         dma2d_wait_for_transfer();
-        dma2d_start_blend(&t_buffer.buffer, &img_buffer.buffer, clamped.width());
+        unsafe { dma2d_start_blend(&t_buffer.buffer, &img_buffer.buffer, clamped.width()) };
     }
 
     dma2d_wait_for_transfer();
+
+    free_buffer_text(text_buffer);
+    free_buffer_16bpp(img1);
+    free_buffer_16bpp(img2);
+    free_buffer_16bpp(empty_img);
+    free_buffer_4bpp(t1);
+    free_buffer_4bpp(t2);
 }
 
 /// Renders text over image background
@@ -757,10 +765,17 @@ pub fn icon_over_icon(
         }
 
         dma2d_wait_for_transfer();
-        dma2d_start_blend(&fg_buffer.buffer, &bg_buffer.buffer, clamped.width());
+        unsafe { dma2d_start_blend(&fg_buffer.buffer, &bg_buffer.buffer, clamped.width()) };
     }
 
     dma2d_wait_for_transfer();
+
+    free_buffer_16bpp(bg1);
+    free_buffer_16bpp(bg2);
+    free_buffer_16bpp(empty1);
+    free_buffer_4bpp(fg1);
+    free_buffer_4bpp(fg2);
+    free_buffer_4bpp(empty2);
 }
 
 #[cfg(not(feature = "dma2d"))]
