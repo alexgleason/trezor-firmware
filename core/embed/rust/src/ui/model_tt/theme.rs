@@ -2,11 +2,11 @@ use crate::{
     time::Duration,
     ui::{
         component::{
-            text::{formatted::FormattedFonts, LineBreaking, PageBreaking, TextStyle},
+            text::{LineBreaking, TextStyle},
             FixedHeightBar,
         },
         display::{Color, Font},
-        geometry::Insets,
+        geometry::{Insets, Offset},
     },
 };
 
@@ -383,8 +383,7 @@ pub const TEXT_NORMAL: TextStyle = TextStyle::new(Font::NORMAL, FG, BG, GREY_LIG
 pub const TEXT_DEMIBOLD: TextStyle = TextStyle::new(Font::DEMIBOLD, FG, BG, GREY_LIGHT, GREY_LIGHT);
 pub const TEXT_BOLD: TextStyle = TextStyle::new(Font::BOLD, FG, BG, GREY_LIGHT, GREY_LIGHT);
 pub const TEXT_MONO: TextStyle = TextStyle::new(Font::MONO, FG, BG, GREY_LIGHT, GREY_LIGHT)
-    .with_line_breaking(LineBreaking::BreakWordsNoHyphen)
-    .with_page_breaking(PageBreaking::Cut);
+    .with_line_breaking(LineBreaking::BreakWordsNoHyphen);
 
 /// Convert Python-side numeric id to a `TextStyle`.
 pub fn textstyle_number(num: i32) -> &'static TextStyle {
@@ -406,19 +405,17 @@ pub const TEXT_CHECKLIST_SELECTED: TextStyle =
 pub const TEXT_CHECKLIST_DONE: TextStyle =
     TextStyle::new(Font::NORMAL, GREEN_DARK, BG, GREY_LIGHT, GREY_LIGHT);
 
-pub const FORMATTED: FormattedFonts = FormattedFonts {
-    normal: Font::NORMAL,
-    demibold: Font::DEMIBOLD,
-    bold: Font::BOLD,
-    mono: Font::MONO,
-};
-
 pub const CONTENT_BORDER: i16 = 5;
 pub const KEYBOARD_SPACING: i16 = 8;
 pub const BUTTON_HEIGHT: i16 = 38;
 pub const BUTTON_SPACING: i16 = 6;
 pub const CHECKLIST_SPACING: i16 = 10;
 pub const RECOVERY_SPACING: i16 = 18;
+
+// checklist settings
+pub const CHECKLIST_CHECK_WIDTH: i16 = 16;
+pub const CHECKLIST_DONE_OFFSET: Offset = Offset::new(-2, 6);
+pub const CHECKLIST_CURRENT_OFFSET: Offset = Offset::new(2, 3);
 
 /// Standard button height in pixels.
 pub const fn button_rows(count: usize) -> i16 {

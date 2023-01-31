@@ -8,7 +8,7 @@ if __debug__:
 
     import trezorui2
 
-    from trezor import log, loop, wire
+    from trezor import log, loop, utils, wire
     from trezor.ui import display
     from trezor.enums import MessageType
     from trezor.messages import (
@@ -38,9 +38,11 @@ if __debug__:
     confirm_chan = loop.chan()
     swipe_chan = loop.chan()
     input_chan = loop.chan()
+    model_r_btn_chan = loop.chan()
     confirm_signal = confirm_chan.take
     swipe_signal = swipe_chan.take
     input_signal = input_chan.take
+    model_r_btn_signal = model_r_btn_chan.take
 
     debuglink_decision_chan = loop.chan()
 
@@ -77,13 +79,17 @@ if __debug__:
         swipe = msg.swipe  # local_cache_attribute
 
         if button is not None:
+            # TODO: paginate before sending the message
             if button == DebugButton.NO:
                 await confirm_chan.put(Result(trezorui2.CANCELLED))
             elif button == DebugButton.YES:
                 await confirm_chan.put(Result(trezorui2.CONFIRMED))
             elif button == DebugButton.INFO:
                 await confirm_chan.put(Result(trezorui2.INFO))
+        if msg.physical_button is not None:
+            await model_r_btn_chan.put(msg.physical_button)
         if swipe is not None:
+            # TODO: why not directly passing msg.swipe into swipe_chan?
             if swipe == DebugSwipeDirection.UP:
                 await swipe_chan.put(SWIPE_UP)
             elif swipe == DebugSwipeDirection.DOWN:
@@ -139,7 +145,7 @@ if __debug__:
         x = msg.x  # local_cache_attribute
         y = msg.y  # local_cache_attribute
 
-        if x is not None and y is not None:
+        if x is not None and y is not None and utils.MODEL in ("T",):
             evt_down = io.TOUCH_START, x, y
             evt_up = io.TOUCH_END, x, y
             loop.synthetic_events.append((io.TOUCH, evt_down))

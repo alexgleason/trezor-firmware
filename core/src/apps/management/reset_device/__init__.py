@@ -46,7 +46,7 @@ async def reset_device(ctx: Context, msg: ResetDevice) -> Success:
         prompt = "Create a new wallet with Super Shamir?"
     else:
         prompt = "Do you want to create a new wallet?"
-    await confirm_reset_device(ctx, prompt)
+    await confirm_reset_device(ctx, prompt, show_tutorial=bool(msg.show_tutorial))
 
     # Rendering empty loader so users do not feel a freezing screen
     render_empty_loader("PROCESSING", "")

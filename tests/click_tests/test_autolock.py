@@ -46,18 +46,18 @@ def set_autolock_delay(device_handler: "BackgroundDeviceHandler", delay_ms: int)
     device_handler.run(device.apply_settings, auto_lock_delay_ms=delay_ms)
 
     layout = debug.wait_layout()
-    assert layout.text == "< PinKeyboard >"
+    assert "PinKeyboard" in layout.str_content
     debug.input("1234")
 
     layout = debug.wait_layout()
     assert (
         f"auto-lock your device after {delay_ms // 1000} seconds"
-        in layout.get_content()
+        in layout.text_content()
     )
     debug.click(buttons.OK)
 
     layout = debug.wait_layout()
-    assert layout.text.startswith("< Homescreen")
+    assert layout.str_content.startswith("< Homescreen")
     assert device_handler.result() == "Settings applied"
 
 
@@ -83,13 +83,15 @@ def test_autolock_interrupts_signing(device_handler: "BackgroundDeviceHandler"):
     device_handler.run(btc.sign_tx, "Bitcoin", [inp1], [out1], prev_txes=TX_CACHE)
 
     layout = debug.wait_layout()
-    assert "1MJ2tj2ThBE62zXbBYA5ZaN3fdve5CPAz1" in layout.get_content().replace(" ", "")
+    assert "1MJ2tj2ThBE62zXbBYA5ZaN3fdve5CPAz1" in layout.text_content().replace(
+        " ", ""
+    )
 
     debug.click(buttons.OK, wait=True)
     debug.click(buttons.OK, wait=True)
 
     layout = debug.click(buttons.OK, wait=True)
-    assert "Total amount: 0.0039 BTC" in layout.get_content()
+    assert "Total amount: 0.0039 BTC" in layout.text_content()
 
     # wait for autolock to kick in
     time.sleep(10.1)
@@ -107,7 +109,7 @@ def test_autolock_passphrase_keyboard(device_handler: "BackgroundDeviceHandler")
 
     # enter passphrase - slowly
     layout = debug.wait_layout()
-    assert layout.text == "< PassphraseKeyboard >"
+    assert "PassphraseKeyboard" in layout.str_content
 
     CENTER_BUTTON = buttons.grid35(1, 2)
     # total sleep time: 11 * 1.1 = 12.1 seconds
@@ -150,30 +152,30 @@ def test_dryrun_locks_at_number_of_words(device_handler: "BackgroundDeviceHandle
     set_autolock_delay(device_handler, 10_000)
     debug = device_handler.debuglink()
 
-    device_handler.run(device.recover, dry_run=True)
+    device_handler.run(device.recover, dry_run=True, show_tutorial=False)
 
     # unlock
     layout = debug.wait_layout()
-    assert "Do you really want to check the recovery seed?" in layout.get_content()
+    assert "Do you really want to check the recovery seed?" in layout.text_content()
     layout = debug.click(buttons.OK, wait=True)
-    assert layout.text == "< PinKeyboard >"
+    assert "PinKeyboard" in layout.str_content
     layout = debug.input(PIN4, wait=True)
-    assert "Select number of words " in layout.get_content()
+    assert "select the number of words " in layout.text_content()
 
     # wait for autolock to trigger
     time.sleep(10.1)
     layout = debug.wait_layout()
-    assert layout.text.startswith("< Lockscreen")
+    assert layout.str_content.startswith("< Lockscreen")
     with pytest.raises(exceptions.Cancelled):
         device_handler.result()
 
     # unlock
     layout = debug.click(buttons.OK, wait=True)
-    assert layout.text == "< PinKeyboard >"
+    assert "PinKeyboard" in layout.str_content
     layout = debug.input(PIN4, wait=True)
 
     # we are back at homescreen
-    assert "Select number of words" in layout.get_content()
+    assert "select the number of words" in layout.text_content()
 
 
 @pytest.mark.setup_client(pin=PIN4)
@@ -181,13 +183,13 @@ def test_dryrun_locks_at_word_entry(device_handler: "BackgroundDeviceHandler"):
     set_autolock_delay(device_handler, 10_000)
     debug = device_handler.debuglink()
 
-    device_handler.run(device.recover, dry_run=True)
+    device_handler.run(device.recover, dry_run=True, show_tutorial=False)
 
     # unlock
     layout = debug.wait_layout()
-    assert "Do you really want to check the recovery seed?" in layout.get_content()
+    assert "Do you really want to check the recovery seed?" in layout.text_content()
     layout = debug.click(buttons.OK, wait=True)
-    assert layout.text == "< PinKeyboard >"
+    assert "PinKeyboard" in layout.str_content
     layout = debug.input(PIN4, wait=True)
 
     # select 20 words
@@ -195,10 +197,10 @@ def test_dryrun_locks_at_word_entry(device_handler: "BackgroundDeviceHandler"):
 
     layout = debug.click(buttons.OK, wait=True)
     # make sure keyboard locks
-    assert layout.text == "< MnemonicKeyboard >"
+    assert "MnemonicKeyboard" in layout.str_content
     time.sleep(10.1)
     layout = debug.wait_layout()
-    assert layout.text.startswith("< Lockscreen")
+    assert layout.str_content.startswith("< Lockscreen")
     with pytest.raises(exceptions.Cancelled):
         device_handler.result()
 
@@ -208,13 +210,13 @@ def test_dryrun_enter_word_slowly(device_handler: "BackgroundDeviceHandler"):
     set_autolock_delay(device_handler, 10_000)
     debug = device_handler.debuglink()
 
-    device_handler.run(device.recover, dry_run=True)
+    device_handler.run(device.recover, dry_run=True, show_tutorial=False)
 
     # unlock
     layout = debug.wait_layout()
-    assert "Do you really want to check the recovery seed?" in layout.get_content()
+    assert "Do you really want to check the recovery seed?" in layout.text_content()
     layout = debug.click(buttons.OK, wait=True)
-    assert layout.text == "< PinKeyboard >"
+    assert "PinKeyboard" in layout.str_content
     layout = debug.input(PIN4, wait=True)
 
     # select 20 words
@@ -222,11 +224,11 @@ def test_dryrun_enter_word_slowly(device_handler: "BackgroundDeviceHandler"):
 
     layout = debug.click(buttons.OK, wait=True)
     # type the word OCEAN slowly
-    assert layout.text == "< MnemonicKeyboard >"
+    assert "MnemonicKeyboard" in layout.str_content
     for coords in buttons.type_word("ocea", is_slip39=True):
         time.sleep(9)
         debug.click(coords)
     layout = debug.click(buttons.CONFIRM_WORD, wait=True)
     # should not have locked, even though we took 9 seconds to type each letter
-    assert layout.text == "< MnemonicKeyboard >"
+    assert "MnemonicKeyboard" in layout.str_content
     device_handler.kill_task()

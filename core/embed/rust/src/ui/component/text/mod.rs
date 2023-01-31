@@ -1,4 +1,4 @@
-pub mod formatted;
+pub mod common;
 mod iter;
 pub mod layout;
 pub mod paragraphs;

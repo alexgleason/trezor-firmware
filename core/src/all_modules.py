@@ -97,6 +97,8 @@ trezor.enums.Capability
 import trezor.enums.Capability
 trezor.enums.DebugButton
 import trezor.enums.DebugButton
+trezor.enums.DebugPhysicalButton
+import trezor.enums.DebugPhysicalButton
 trezor.enums.DebugSwipeDirection
 import trezor.enums.DebugSwipeDirection
 trezor.enums.DecredStakingSpendType
@@ -151,18 +153,32 @@ trezor.ui.layouts.fido
 import trezor.ui.layouts.fido
 trezor.ui.layouts.homescreen
 import trezor.ui.layouts.homescreen
+trezor.ui.layouts.progress
+import trezor.ui.layouts.progress
 trezor.ui.layouts.recovery
 import trezor.ui.layouts.recovery
 trezor.ui.layouts.reset
 import trezor.ui.layouts.reset
 trezor.ui.layouts.tr
 import trezor.ui.layouts.tr
+trezor.ui.layouts.tr.fido
+import trezor.ui.layouts.tr.fido
+trezor.ui.layouts.tr.homescreen
+import trezor.ui.layouts.tr.homescreen
+trezor.ui.layouts.tr.progress
+import trezor.ui.layouts.tr.progress
+trezor.ui.layouts.tr.recovery
+import trezor.ui.layouts.tr.recovery
+trezor.ui.layouts.tr.reset
+import trezor.ui.layouts.tr.reset
 trezor.ui.layouts.tt_v2
 import trezor.ui.layouts.tt_v2
 trezor.ui.layouts.tt_v2.fido
 import trezor.ui.layouts.tt_v2.fido
 trezor.ui.layouts.tt_v2.homescreen
 import trezor.ui.layouts.tt_v2.homescreen
+trezor.ui.layouts.tt_v2.progress
+import trezor.ui.layouts.tt_v2.progress
 trezor.ui.layouts.tt_v2.recovery
 import trezor.ui.layouts.tt_v2.recovery
 trezor.ui.layouts.tt_v2.reset
@@ -289,6 +305,8 @@ apps.debug.load_device
 import apps.debug.load_device
 apps.homescreen
 import apps.homescreen
+apps.management
+import apps.management
 apps.management.apply_flags
 import apps.management.apply_flags
 apps.management.apply_settings

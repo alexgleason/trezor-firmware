@@ -307,7 +307,7 @@ def test_upgrade_shamir_recovery(gen: str, tag: Optional[str]):
         emu.client.watch_layout(True)
         debug = device_handler.debuglink()
 
-        device_handler.run(device.recover, pin_protection=False)
+        device_handler.run(device.recover, pin_protection=False, show_tutorial=False)
 
         # Flow is different for old UI and new UI
         legacy_ui = emu.client.version < (2, 5, 4)
@@ -317,7 +317,7 @@ def test_upgrade_shamir_recovery(gen: str, tag: Optional[str]):
         layout = recovery.enter_share(
             debug, MNEMONIC_SLIP39_BASIC_20_3of6[0], legacy_ui=legacy_ui
         )
-        assert "2 more shares" in layout.text
+        assert "2 more shares" in layout.str_content
 
         device_id = emu.client.features.device_id
         storage = emu.get_storage()
@@ -331,11 +331,11 @@ def test_upgrade_shamir_recovery(gen: str, tag: Optional[str]):
 
         # second share
         layout = recovery.enter_share(debug, MNEMONIC_SLIP39_BASIC_20_3of6[2])
-        assert "1 more share" in layout.text
+        assert "1 more share" in layout.text_content()
 
         # last one
         layout = recovery.enter_share(debug, MNEMONIC_SLIP39_BASIC_20_3of6[1])
-        assert "You have successfully" in layout.text
+        assert "You have finished recovering your wallet" in layout.text_content()
 
         # Check the result
         state = debug.state()
