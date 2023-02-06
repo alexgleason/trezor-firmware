@@ -53,7 +53,7 @@ def test_reset_slip39_advanced_2of2groups_2of2shares(
     )
 
     # confirm new wallet
-    reset.confirm_wait(debug, "Create new wallet")
+    reset.confirm_new_wallet(debug)
 
     # confirm back up
     reset.confirm_read(debug, "Success")
@@ -81,8 +81,8 @@ def test_reset_slip39_advanced_2of2groups_2of2shares(
         # set share threshold
         reset.set_selection(debug, buttons.RESET_MINUS, 0)
 
-    # confirm backup warning
-    reset.confirm_read(debug, "Caution")
+    # confirm backup warning (hold-to-confirm on TR)
+    reset.confirm_read(debug, "Caution", hold=True)
 
     all_words: list[str] = []
     for _ in range(2):
@@ -139,7 +139,7 @@ def test_reset_slip39_advanced_16of16groups_16of16shares(
     )
 
     # confirm new wallet
-    reset.confirm_wait(debug, "Create new wallet")
+    reset.confirm_new_wallet(debug)
 
     # confirm back up
     reset.confirm_read(debug, "Success")
@@ -167,8 +167,8 @@ def test_reset_slip39_advanced_16of16groups_16of16shares(
         # set share threshold
         reset.set_selection(debug, buttons.RESET_PLUS, 11)
 
-    # confirm backup warning
-    reset.confirm_read(debug, "Caution")
+    # confirm backup warning (hold-to-confirm on TR)
+    reset.confirm_read(debug, "Caution", hold=True)
 
     all_words: list[str] = []
     for _ in range(16):

@@ -33,6 +33,10 @@ impl Title {
         self
     }
 
+    pub fn get_text(&self) -> &str {
+        self.title.as_ref()
+    }
+
     /// Display title/header at the top left of the given area.
     /// Returning the painted height of the whole header.
     pub fn paint_header_left(title: StrBuffer, area: Rect) -> i16 {

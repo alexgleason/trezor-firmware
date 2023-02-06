@@ -72,43 +72,55 @@ impl<const N: usize> ShareWords<N> {
         2 + word_screens + 1
     }
 
+    fn get_first_text(&self) -> String<50> {
+        build_string!(
+            50,
+            "Write all ",
+            inttostr!(self.share_words.len() as u8),
+            "\nwords in order on\nrecovery seed card."
+        )
+    }
+
     /// Display the first page with user information.
     fn paint_entry_page(&mut self) {
         text_multiline(
             self.area.split_top(15).1,
-            &build_string!(
-                50,
-                "Write all ",
-                inttostr!(self.share_words.len() as u8),
-                "\nwords in order on\nrecovery seed card."
-            ),
+            &self.get_first_text(),
             Font::BOLD,
             theme::FG,
             theme::BG,
         );
     }
 
+    fn get_second_text(&self) -> String<50> {
+        build_string!(50, "Do NOT make\ndigital copies!")
+    }
+
     /// Display the second page with user information.
     fn paint_second_page(&mut self) {
         text_multiline(
             self.area.split_top(15).1,
-            "Do NOT make\ndigital copies!",
+            &self.get_second_text(),
             Font::MONO,
             theme::FG,
             theme::BG,
         );
     }
 
+    fn get_final_text(&self) -> String<50> {
+        build_string!(
+            50,
+            "I wrote down all\n",
+            inttostr!(self.share_words.len() as u8),
+            " words in order."
+        )
+    }
+
     /// Display the final page with user confirmation.
     fn paint_final_page(&mut self) {
         text_multiline(
             self.area.split_top(12).1,
-            &build_string!(
-                50,
-                "I wrote down all\n",
-                inttostr!(self.share_words.len() as u8),
-                " words in order."
-            ),
+            &self.get_final_text(),
             Font::MONO,
             theme::FG,
             theme::BG,
@@ -192,11 +204,17 @@ impl<const N: usize> crate::trace::Trace for ShareWords<N> {
         t.open("ShareWords");
         t.content_flag();
         if self.is_entry_page() {
-            t.string("entry page");
+            let content = build_string!(
+                70,
+                self.title.inner().get_text(),
+                "\n",
+                &self.get_first_text()
+            );
+            t.string(&content);
         } else if self.is_second_page() {
-            t.string("second page");
+            t.string(&self.get_second_text());
         } else if self.is_final_page() {
-            t.string("final page");
+            t.string(&self.get_final_text());
         } else {
             for i in 0..WORDS_PER_PAGE {
                 let index = self.word_index() + i;

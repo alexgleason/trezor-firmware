@@ -150,6 +150,14 @@ class LayoutButtons(LayoutBase):
         assert len(action_ids) == 3
         return tuple(self.kw_pair_compulsory(action) for action in action_ids)
 
+    def get_middle_select(self) -> Optional[str]:
+        """What is the choice being selected right now."""
+        middle_action = self.actions()[1]
+        if "Select(" in middle_action:
+            return middle_action.split("Select(")[1].split(")")[0]
+        else:
+            return None
+
     def can_go_next(self) -> bool:
         """Checking if there is a next page."""
         return self.get_next_button() is not None
@@ -174,7 +182,7 @@ class LayoutButtons(LayoutBase):
 
         return None
 
-    def select_word_button_texts(self) -> List[str]:
+    def tt_select_word_button_texts(self) -> List[str]:
         """Get text of all buttons in the layout.
 
         Example button: "< Button text :  LADYBUG >"
@@ -482,8 +490,8 @@ class DebugLink:
                 f.write(screen_content)
                 f.write("\n" + 80 * "/" + "\n")
 
-    # Type overloads make sure that when we supply `wait=True` into `click()`,
-    # it will always return `LayoutContent` and we do not need to assert `is not None`.
+    # Type overloads below make sure that when we supply `wait=True` into functions,
+    # they will always return `LayoutContent` and we do not need to assert `is not None`.
 
     @overload
     def click(self, click: Tuple[int, int]) -> None:
@@ -520,14 +528,44 @@ class DebugLink:
     def swipe_left(self) -> None:
         self.input(swipe=messages.DebugSwipeDirection.LEFT)
 
+    @overload
     def press_left(self) -> None:
-        self.input(physical_button=messages.DebugPhysicalButton.LEFT_BTN)
+        ...
 
+    @overload
+    def press_left(self, wait: Literal[True]) -> LayoutContent:
+        ...
+
+    def press_left(self, wait: bool = False) -> Optional[LayoutContent]:
+        return self.input(
+            physical_button=messages.DebugPhysicalButton.LEFT_BTN, wait=wait
+        )
+
+    @overload
     def press_middle(self) -> None:
-        self.input(physical_button=messages.DebugPhysicalButton.MIDDLE_BTN)
+        ...
 
+    @overload
+    def press_middle(self, wait: Literal[True]) -> LayoutContent:
+        ...
+
+    def press_middle(self, wait: bool = False) -> Optional[LayoutContent]:
+        return self.input(
+            physical_button=messages.DebugPhysicalButton.MIDDLE_BTN, wait=wait
+        )
+
+    @overload
     def press_right(self) -> None:
-        self.input(physical_button=messages.DebugPhysicalButton.RIGHT_BTN)
+        ...
+
+    @overload
+    def press_right(self, wait: Literal[True]) -> LayoutContent:
+        ...
+
+    def press_right(self, wait: bool = False) -> Optional[LayoutContent]:
+        return self.input(
+            physical_button=messages.DebugPhysicalButton.RIGHT_BTN, wait=wait
+        )
 
     def stop(self) -> None:
         self._call(messages.DebugLinkStop(), nowait=True)

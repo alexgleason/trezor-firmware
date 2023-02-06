@@ -51,7 +51,7 @@ def test_reset_slip39_basic_1of1(device_handler: "BackgroundDeviceHandler"):
         )
 
         # confirm new wallet
-        reset.confirm_wait(debug, "Create new wallet")
+        reset.confirm_new_wallet(debug)
 
         # confirm back up
         reset.confirm_read(debug, "Success")
@@ -73,8 +73,8 @@ def test_reset_slip39_basic_1of1(device_handler: "BackgroundDeviceHandler"):
         # confirm checklist
         reset.confirm_read(debug, "Checklist")
 
-        # confirm backup warning
-        reset.confirm_read(debug, "Caution")
+        # confirm backup warning (hold-to-confirm on TR)
+        reset.confirm_read(debug, "Caution", hold=True)
 
         # read words
         words = reset.read_words(debug)
@@ -125,7 +125,7 @@ def test_reset_slip39_basic_16of16(device_handler: "BackgroundDeviceHandler"):
         )
 
         # confirm new wallet
-        reset.confirm_wait(debug, "Create new wallet")
+        reset.confirm_new_wallet(debug)
 
         # confirm back up
         reset.confirm_read(debug, "Success")
@@ -147,8 +147,8 @@ def test_reset_slip39_basic_16of16(device_handler: "BackgroundDeviceHandler"):
         # confirm checklist
         reset.confirm_read(debug, "Checklist")
 
-        # confirm backup warning
-        reset.confirm_read(debug, "Caution")
+        # confirm backup warning (hold-to-confirm on TR)
+        reset.confirm_read(debug, "Caution", hold=True)
 
         all_words: list[str] = []
         for _ in range(16):

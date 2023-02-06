@@ -320,6 +320,36 @@ core click test:
     expire_in: 1 week
     when: always
 
+# Click tests.
+# See [docs/tests/click-tests](../tests/click-tests.md) for more info.
+core click R test:
+  stage: test
+  <<: *gitlab_caching
+  needs:
+    - core unix frozen R debug build
+  variables:
+    TREZOR_PROFILING: 1
+  script:
+    - nix-shell --run "poetry run make -C core test_emu_click_ui | ts -s"
+  after_script:
+    - mv core/src/.coverage core/.coverage.test_click
+    - mv tests/ui_tests/reports/test/ test_ui_report
+    - nix-shell --run "poetry run python ci/prepare_ui_artifacts.py | ts -s"
+    - diff -u tests/ui_tests/fixtures.json tests/ui_tests/fixtures.suggestion.json
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - ci/ui_test_records/
+      - test_ui_report
+      - tests/ui_tests/screens/
+      - tests/ui_tests/fixtures.suggestion.json
+      - tests/trezor.log
+      - tests/junit.xml
+    reports:
+      junit: tests/junit.xml
+    expire_in: 1 week
+    when: always
+
 core click asan test:
   stage: test
   <<: *gitlab_caching

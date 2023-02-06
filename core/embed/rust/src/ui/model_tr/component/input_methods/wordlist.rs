@@ -280,14 +280,24 @@ impl crate::trace::Trace for WordlistEntry {
     }
 
     fn trace(&self, t: &mut dyn crate::trace::Tracer) {
-        t.open("Bip39Entry");
+        match self.wordlist_type {
+            WordlistType::Bip39 => t.open("Bip39Entry"),
+            WordlistType::Slip39 => t.open("Slip39Entry"),
+        }
         t.kw_pair("textbox", &self.textbox.content());
 
         self.report_btn_actions(t);
 
-        t.open("letter_choices");
-        for ch in &self.letter_choices {
-            t.string(&util::char_to_string::<1>(*ch));
+        if self.offer_words {
+            t.open("word_choices");
+            for word in self.words_list.iter() {
+                t.string(word);
+            }
+        } else {
+            t.open("letter_choices");
+            for ch in &self.letter_choices {
+                t.string(&util::char_to_string::<1>(*ch));
+            }
         }
         t.close();
 

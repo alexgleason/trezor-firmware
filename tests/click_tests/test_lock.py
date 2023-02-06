@@ -32,6 +32,10 @@ PIN4 = "1234"
 def test_hold_to_lock(device_handler: "BackgroundDeviceHandler"):
     debug = device_handler.debuglink()
 
+    # TODO: support locking by HTC
+    if debug.model == "R":
+        pytest.skip("Locking not yet supported")
+
     def hold(duration: int, wait: bool = True) -> None:
         debug.input(x=13, y=37, hold_ms=duration, wait=wait)
         time.sleep(duration / 1000 + 0.5)
