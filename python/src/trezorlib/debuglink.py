@@ -159,6 +159,10 @@ class LayoutButtons(LayoutBase):
         else:
             return None
 
+    def get_middle_action(self) -> str:
+        """What action is currently connected with a middle button."""
+        return self.actions()[1]
+
     def can_go_next(self) -> bool:
         """Checking if there is a next page."""
         return self.get_next_button() is not None
