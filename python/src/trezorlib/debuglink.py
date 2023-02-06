@@ -17,6 +17,7 @@
 import logging
 import re
 import textwrap
+import time
 from copy import deepcopy
 from datetime import datetime
 from enum import IntEnum
@@ -566,6 +567,18 @@ class DebugLink:
         return self.input(
             physical_button=messages.DebugPhysicalButton.RIGHT_BTN, wait=wait
         )
+
+    def press_right_htc(
+        self, hold_ms: int, extra_ms: int = 200
+    ) -> Optional[LayoutContent]:
+        hold_ms = hold_ms + extra_ms  # safety margin
+        result = self.input(
+            physical_button=messages.DebugPhysicalButton.RIGHT_BTN,
+            hold_ms=hold_ms,
+        )
+        # sleeping little longer for UI to update
+        time.sleep(hold_ms / 1000 + 0.1)
+        return result
 
     def stop(self) -> None:
         self._call(messages.DebugLinkStop(), nowait=True)

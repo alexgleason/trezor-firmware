@@ -10,7 +10,7 @@ if __debug__:
 
     from trezor import log, loop, utils, wire
     from trezor.ui import display
-    from trezor.enums import MessageType
+    from trezor.enums import MessageType, DebugPhysicalButton
     from trezor.messages import (
         DebugLinkLayout,
         Success,
@@ -79,7 +79,7 @@ if __debug__:
         swipe = msg.swipe  # local_cache_attribute
 
         if button is not None:
-            # TODO: paginate before sending the message
+            # TODO: paginate before sending the message?
             if button == DebugButton.NO:
                 await confirm_chan.put(Result(trezorui2.CANCELLED))
             elif button == DebugButton.YES:
@@ -123,6 +123,12 @@ if __debug__:
         await loop.sleep(duration_ms)
         loop.synthetic_events.append((io.TOUCH, (io.TOUCH_END, x, y)))
 
+    async def button_hold(btn: int, duration_ms: int) -> None:
+        from trezor import io
+
+        await loop.sleep(duration_ms)
+        loop.synthetic_events.append((io.BUTTON, (io.BUTTON_RELEASED, btn)))
+
     async def dispatch_DebugLinkWatchLayout(
         ctx: wire.Context, msg: DebugLinkWatchLayout
     ) -> Success:
@@ -142,6 +148,7 @@ if __debug__:
 
         if debuglink_decision_chan.putters:
             log.warning(__name__, "DebugLinkDecision queue is not empty")
+
         x = msg.x  # local_cache_attribute
         y = msg.y  # local_cache_attribute
 
@@ -153,6 +160,19 @@ if __debug__:
                 loop.schedule(touch_hold(x, y, msg.hold_ms))
             else:
                 loop.synthetic_events.append((io.TOUCH, evt_up))
+        elif (
+            msg.physical_button is not None
+            and msg.hold_ms is not None
+            and utils.MODEL in ("R",)
+        ):
+            if msg.physical_button == DebugPhysicalButton.LEFT_BTN:
+                btn = io.BUTTON_LEFT
+            elif msg.physical_button == DebugPhysicalButton.RIGHT_BTN:
+                btn = io.BUTTON_RIGHT
+            else:
+                raise wire.ProcessError("Unknown physical button")
+            loop.synthetic_events.append((io.BUTTON, (io.BUTTON_PRESSED, btn)))
+            loop.schedule(button_hold(btn, msg.hold_ms))
         else:
             debuglink_decision_chan.publish(msg)
 
