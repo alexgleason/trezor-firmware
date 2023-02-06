@@ -90,7 +90,7 @@ def read_words(debug: "DebugLink", backup_type: messages.BackupType) -> list[str
         elif backup_type == messages.BackupType.Slip39_Basic:
             assert layout.title().startswith("RECOVERY SHARE #")
         else:
-            assert layout.text_content().startswith("RECOVERY SEED")
+            assert layout.title() == "RECOVERY SEED"
     elif debug.model == "R":
         if backup_type == messages.BackupType.Slip39_Advanced:
             assert "SHARE" in layout.text_content()

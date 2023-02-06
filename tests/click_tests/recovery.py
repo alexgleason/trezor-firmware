@@ -14,10 +14,6 @@ def enter_word(
         for coords in buttons.type_word(typed_word, is_slip39=is_slip39):
             debug.click(coords)
 
-        # For BIP39 - double-click on CONFIRM WORD is needed in case the word
-        # is not already typed as a whole
-        if not is_slip39 and typed_word != word:
-            debug.click(buttons.CONFIRM_WORD)
         return debug.click(buttons.CONFIRM_WORD, wait=True)
     elif debug.model == "R":
         letter_index = 0
@@ -88,10 +84,10 @@ def select_number_of_words(
         coords = buttons.grid34(index % 3, index // 3)
         layout = debug.click(coords, wait=True)
 
-        if legacy_ui:
+        if num_of_words in (20, 33):
             assert "Enter any share" in layout.str_content
         else:
-            assert "Enter any share" in layout.text_content()
+            assert "enter your recovery seed" in layout.text_content()
     elif debug.model == "R":
         if wait_r:
             layout = debug.wait_layout()
@@ -161,19 +157,31 @@ def enter_shares(debug: "DebugLink", shares: list[str]) -> None:
 
 
 def enter_seed(debug: "DebugLink", seed_words: list[str]) -> None:
-    layout = debug.read_layout()
-    assert "enter" in layout.text_content()
+    if debug.model == "T":
+        layout = debug.read_layout()
+        assert "enter" in layout.text_content()
 
-    layout = debug.press_right(wait=True)
-    assert layout.title() == "WORD ENTERING"
+        layout = debug.click(buttons.OK, wait=True)
+        assert "MnemonicKeyboard" in layout.str_content
 
-    layout = debug.press_right(wait=True)
-    assert "Bip39Entry" in layout.str_content
+        for word in seed_words:
+            layout = enter_word(debug, word, is_slip39=False)
 
-    for word in seed_words:
-        layout = enter_word(debug, word, is_slip39=False)
+        assert "You have finished recovering your wallet" in layout.text_content()
+    elif debug.model == "R":
+        layout = debug.read_layout()
+        assert "enter" in layout.text_content()
 
-    assert "You have finished recovering your wallet" in layout.text_content()
+        layout = debug.press_right(wait=True)
+        assert layout.title() == "WORD ENTERING"
+
+        layout = debug.press_right(wait=True)
+        assert "Bip39Entry" in layout.str_content
+
+        for word in seed_words:
+            layout = enter_word(debug, word, is_slip39=False)
+
+        assert "You have finished recovering your wallet" in layout.text_content()
 
 
 def finalize(debug: "DebugLink") -> None:
