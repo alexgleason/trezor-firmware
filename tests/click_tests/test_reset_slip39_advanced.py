@@ -22,14 +22,12 @@ import pytest
 from trezorlib import device, messages
 
 from .. import buttons
-from ..common import generate_entropy
+from ..common import EXTERNAL_ENTROPY, generate_entropy
 from . import reset
 
 if TYPE_CHECKING:
     from ..device_handler import BackgroundDeviceHandler
 
-
-EXTERNAL_ENTROPY = b"zlutoucky kun upel divoke ody" * 2
 
 with_mock_urandom = mock.patch("os.urandom", mock.Mock(return_value=EXTERNAL_ENTROPY))
 
@@ -88,7 +86,7 @@ def test_reset_slip39_advanced_2of2groups_2of2shares(
     for _ in range(2):
         for _ in range(2):
             # read words
-            words = reset.read_words(debug, True)
+            words = reset.read_words(debug, messages.BackupType.Slip39_Advanced)
 
             # confirm words
             reset.confirm_words(debug, words)
@@ -174,7 +172,7 @@ def test_reset_slip39_advanced_16of16groups_16of16shares(
     for _ in range(16):
         for _ in range(16):
             # read words
-            words = reset.read_words(debug, True)
+            words = reset.read_words(debug, messages.BackupType.Slip39_Advanced)
 
             # confirm words
             reset.confirm_words(debug, words)

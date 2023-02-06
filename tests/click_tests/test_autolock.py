@@ -45,7 +45,7 @@ CENTER_BUTTON = buttons.grid35(1, 2)
 def set_autolock_delay(device_handler: "BackgroundDeviceHandler", delay_ms: int):
     debug = device_handler.debuglink()
 
-    device_handler.run(device.apply_settings, auto_lock_delay_ms=delay_ms)
+    device_handler.run(device.apply_settings, auto_lock_delay_ms=delay_ms)  # type: ignore
 
     layout = debug.wait_layout()
 
@@ -91,7 +91,7 @@ def test_autolock_interrupts_signing(device_handler: "BackgroundDeviceHandler"):
         script_type=messages.OutputScriptType.PAYTOADDRESS,
     )
 
-    device_handler.run(btc.sign_tx, "Bitcoin", [inp1], [out1], prev_txes=TX_CACHE)
+    device_handler.run(btc.sign_tx, "Bitcoin", [inp1], [out1], prev_txes=TX_CACHE)  # type: ignore
 
     layout = debug.wait_layout()
     assert "1MJ2tj2ThBE62zXbBYA5ZaN3fdve5CPAz1" in layout.text_content().replace(
@@ -125,7 +125,7 @@ def test_autolock_passphrase_keyboard(device_handler: "BackgroundDeviceHandler")
         pytest.skip("Somehow the device locks itself and then triggers Cancelled")
 
     # get address
-    device_handler.run(common.get_test_address)
+    device_handler.run(common.get_test_address)  # type: ignore
 
     # enter passphrase - slowly
     layout = debug.wait_layout()
@@ -165,7 +165,7 @@ def test_autolock_interrupts_passphrase(device_handler: "BackgroundDeviceHandler
     debug = device_handler.debuglink()
 
     # get address
-    device_handler.run(common.get_test_address)
+    device_handler.run(common.get_test_address)  # type: ignore
 
     # enter passphrase - slowly
     layout = debug.wait_layout()
@@ -218,7 +218,7 @@ def test_dryrun_locks_at_number_of_words(device_handler: "BackgroundDeviceHandle
     if debug.model == "R":
         pytest.skip("TR does not want to be unlocked below")
 
-    device_handler.run(device.recover, dry_run=True, show_tutorial=False)
+    device_handler.run(device.recover, dry_run=True, show_tutorial=False)  # type: ignore
 
     layout = unlock_dry_run(debug)
     assert "select the number of words " in layout.text_content()
@@ -239,6 +239,7 @@ def test_dryrun_locks_at_number_of_words(device_handler: "BackgroundDeviceHandle
         layout = debug.press_right(wait=True)
         assert "PinEntry" in layout.str_content
     layout = debug.input(PIN4, wait=True)
+    assert layout is not None
 
     # we are back at homescreen
     assert "select the number of words" in layout.text_content()
@@ -249,7 +250,7 @@ def test_dryrun_locks_at_word_entry(device_handler: "BackgroundDeviceHandler"):
     set_autolock_delay(device_handler, 10_000)
     debug = device_handler.debuglink()
 
-    device_handler.run(device.recover, dry_run=True, show_tutorial=False)
+    device_handler.run(device.recover, dry_run=True, show_tutorial=False)  # type: ignore
 
     unlock_dry_run(debug)
 
@@ -282,7 +283,7 @@ def test_dryrun_enter_word_slowly(device_handler: "BackgroundDeviceHandler"):
     if debug.model == "R":
         pytest.skip("Somehow the device locks itself during button clicks")
 
-    device_handler.run(device.recover, dry_run=True, show_tutorial=False)
+    device_handler.run(device.recover, dry_run=True, show_tutorial=False)  # type: ignore
 
     unlock_dry_run(debug)
 

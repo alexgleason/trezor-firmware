@@ -111,7 +111,10 @@ def select_number_of_words(
             debug.press_right(wait=True)
         layout = debug.press_middle(wait=True)
 
-        assert "Enter any share" in layout.text_content()
+        if num_of_words in (20, 33):
+            assert "Enter any share" in layout.text_content()
+        else:
+            assert "enter your recovery seed" in layout.text_content()
 
 
 def enter_share(
@@ -153,6 +156,22 @@ def enter_shares(debug: "DebugLink", shares: list[str]) -> None:
         layout = enter_share(debug, share)
         remaining -= 1
         expected_text = f"{remaining} more share"
+
+    assert "You have finished recovering your wallet" in layout.text_content()
+
+
+def enter_seed(debug: "DebugLink", seed_words: list[str]) -> None:
+    layout = debug.read_layout()
+    assert "enter" in layout.text_content()
+
+    layout = debug.press_right(wait=True)
+    assert layout.title() == "WORD ENTERING"
+
+    layout = debug.press_right(wait=True)
+    assert "Bip39Entry" in layout.str_content
+
+    for word in seed_words:
+        layout = enter_word(debug, word, is_slip39=False)
 
     assert "You have finished recovering your wallet" in layout.text_content()
 

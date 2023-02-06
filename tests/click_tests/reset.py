@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from shamir_mnemonic import shamir
+from shamir_mnemonic import shamir  # type: ignore
 
 from trezorlib import messages
 
@@ -80,25 +80,30 @@ def set_selection(debug: "DebugLink", button: tuple[int, int], diff: int) -> Non
         debug.press_middle(wait=True)
 
 
-def read_words(debug: "DebugLink", is_advanced: bool = False) -> list[str]:
+def read_words(debug: "DebugLink", backup_type: messages.BackupType) -> list[str]:
     words: list[str] = []
     layout = debug.read_layout()
 
     if debug.model == "T":
-        if is_advanced:
+        if backup_type == messages.BackupType.Slip39_Advanced:
             assert layout.title().startswith("GROUP")
-        else:
+        elif backup_type == messages.BackupType.Slip39_Basic:
             assert layout.title().startswith("RECOVERY SHARE #")
-    elif debug.model == "R":
-        if is_advanced:
-            assert "SHARE" in layout.text_content()
         else:
+            assert layout.text_content().startswith("RECOVERY SEED")
+    elif debug.model == "R":
+        if backup_type == messages.BackupType.Slip39_Advanced:
+            assert "SHARE" in layout.text_content()
+        elif backup_type == messages.BackupType.Slip39_Basic:
             assert layout.text_content().startswith("SHARE #")
+        else:
+            assert layout.text_content().startswith("RECOVERY SEED")
 
     # Swiping through all the page and loading the words
     for _ in range(layout.page_count() - 1):
         words.extend(layout.seed_words())
         layout = debug.input(swipe=messages.DebugSwipeDirection.UP, wait=True)
+        assert layout is not None
     if debug.model == "T":
         words.extend(layout.seed_words())
 

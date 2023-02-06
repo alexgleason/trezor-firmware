@@ -640,11 +640,16 @@
 "TR_test_autolock.py::test_dryrun_locks_at_number_of_words": "8cb17e3662219a10f58905aa68a8adc67f1c13b351f498c3afdd27ad44ea7c4d",
 "TR_test_autolock.py::test_dryrun_locks_at_word_entry": "dfb768d06ec36e67a41c6b41d905935e38acf4be80025b4bd60eed51212575ad",
 "TR_test_lock.py::test_hold_to_lock": "c85baae92ca40a4ddace17d7c6b9af2fc480bbb19f7771972edb645e0aa88407",
-"TR_test_recovery.py::test_recovery": "4755596193092df852d595936ccd4f4d2f7d08884e01d8f53fd45a116d72e93f",
+"TR_test_recovery.py::test_recovery_bip39": "2a469b594874ab7eed455af737f6b8b6cc86c0d423235de7a22b51e2ead49908",
+"TR_test_recovery.py::test_recovery_slip39_basic": "4755596193092df852d595936ccd4f4d2f7d08884e01d8f53fd45a116d72e93f",
+"TR_test_reset_bip39.py::test_reset_bip39": "83f86a7c009c2356df9de9eee0bdb7bff69e59912fa3eb32f94abe809a06f55a",
 "TR_test_reset_slip39_advanced.py::test_reset_slip39_advanced_16of16groups_16of16shares": "3647cbc5c4684c817781cbfa8b5ad9ef75aefa1cb62e67949402c5825685627d",
 "TR_test_reset_slip39_advanced.py::test_reset_slip39_advanced_2of2groups_2of2shares": "d740beea66f22498e9f70dacbfd43a1068944445b272de8054085e777a0af321",
 "TR_test_reset_slip39_basic.py::test_reset_slip39_basic_16of16": "7a2e4bd7be51c5d70286b5586f77139cfdba2ddc72fe2b22900bd4847a20aec1",
-"TR_test_reset_slip39_basic.py::test_reset_slip39_basic_1of1": "20078c6afa616179400d71ff68972ae844e46787acb81b7aa5ca2a32c750c1d4"
+"TR_test_reset_slip39_basic.py::test_reset_slip39_basic_1of1": "20078c6afa616179400d71ff68972ae844e46787acb81b7aa5ca2a32c750c1d4",
+"TR_test_tutorial.py::test_tutorial_again_and_skip": "7b0caad9bd4750dc802eba2760a53181a3f522cb43247403d3f1ff9a98ab541f",
+"TR_test_tutorial.py::test_tutorial_finish": "e34115306ea2aa6b434058bcec3633f6a203b10711e506c15746b2d0b85549f5",
+"TR_test_tutorial.py::test_tutorial_skip": "34c742275211488158b24ddc82406b19be8ff5e68e1aa2cbd7d2b8f011ce2052"
 },
 "device_tests": {
 "TR_binance-test_get_address.py::test_binance_get_address[m-44h-714h-0h-0-0-bnb1hgm0p7khfk85zpz-68e2cb5a": "eb20a5699b02f3040c8d653b3a6df76e212f3b483ef94d63bf4961c2a841cc3e",

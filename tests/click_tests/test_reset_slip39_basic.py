@@ -22,14 +22,11 @@ import pytest
 from trezorlib import device, messages
 
 from .. import buttons
-from ..common import generate_entropy
+from ..common import EXTERNAL_ENTROPY, generate_entropy
 from . import reset
 
 if TYPE_CHECKING:
     from ..device_handler import BackgroundDeviceHandler
-
-
-EXTERNAL_ENTROPY = b"zlutoucky kun upel divoke ody" * 2
 
 
 @pytest.mark.skip_t1
@@ -77,7 +74,7 @@ def test_reset_slip39_basic_1of1(device_handler: "BackgroundDeviceHandler"):
         reset.confirm_read(debug, "Caution", hold=True)
 
         # read words
-        words = reset.read_words(debug)
+        words = reset.read_words(debug, messages.BackupType.Slip39_Basic)
 
         # confirm words
         reset.confirm_words(debug, words)
@@ -153,7 +150,7 @@ def test_reset_slip39_basic_16of16(device_handler: "BackgroundDeviceHandler"):
         all_words: list[str] = []
         for _ in range(16):
             # read words
-            words = reset.read_words(debug)
+            words = reset.read_words(debug, messages.BackupType.Slip39_Basic)
 
             # confirm words
             reset.confirm_words(debug, words)
