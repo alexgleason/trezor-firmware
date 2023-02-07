@@ -2,7 +2,7 @@ use crate::{
     time::Duration,
     ui::{
         component::{
-            text::{formatted::FormattedFonts, LineBreaking, PageBreaking, TextStyle},
+            text::{formatted::FormattedFonts, LineBreaking, TextStyle},
             FixedHeightBar,
         },
         display::{Color, Font},
