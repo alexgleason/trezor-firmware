@@ -73,6 +73,8 @@ def get_diff() -> tuple[dict[str, str], dict[str, str], dict[str, tuple[str, str
             for master_test, master_hash in same:
                 if current_tests.get(master_test) == master_hash:
                     continue
+                if master_test not in current_tests:
+                    continue
                 diff_here[testname(master_test)] = (
                     master_tests[master_test],
                     current_tests[master_test],
@@ -224,24 +226,32 @@ def create_reports() -> None:
 
     for test_name, test_hash in removed_tests.items():
         with tmpdir() as temp_dir:
-            download.fetch_recorded(test_hash, temp_dir)
+            try:
+                download.fetch_recorded(test_hash, temp_dir)
+            except RuntimeError:
+                print("Could not download recorded files for", test_name)
+                continue
             removed(temp_dir, test_name)
 
     for test_name, test_hash in added_tests.items():
         path = SCREENS_DIR / test_name / "actual"
         if not path.exists():
-            raise RuntimeError("Folder does not exist, has it been recorded?", path)
+            print("Folder does not exist, has it been recorded?", path)
+            continue
         added(path, test_name)
 
     for test_name, (master_hash, current_hash) in diff_tests.items():
         with tmpdir() as master_screens:
-            download.fetch_recorded(master_hash, master_screens)
+            try:
+                download.fetch_recorded(master_hash, master_screens)
+            except RuntimeError:
+                print("Could not download recorded files for", test_name)
+                continue
 
             current_screens = SCREENS_DIR / test_name / "actual"
             if not current_screens.exists():
-                raise RuntimeError(
-                    "Folder does not exist, did the test run?", current_screens
-                )
+                print("Folder does not exist, did the test run?", current_screens)
+                continue
             diff(
                 master_screens,
                 current_screens,
