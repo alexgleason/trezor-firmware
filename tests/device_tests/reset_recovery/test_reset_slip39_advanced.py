@@ -22,7 +22,7 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import TrezorFailure
 from trezorlib.messages import BackupType
 
-from ...common import EXTERNAL_ENTROPY, MOCK_OS_URANDOM, generate_entropy
+from ...common import EXTERNAL_ENTROPY, WITH_MOCK_URANDOM, generate_entropy
 from ...input_flows import InputFlowSlip39AdvancedResetRecovery
 
 pytestmark = [pytest.mark.skip_t1]
@@ -34,7 +34,7 @@ def test_reset_device_slip39_advanced(client: Client):
     strength = 128
     member_threshold = 3
 
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         IF = InputFlowSlip39AdvancedResetRecovery(client, False)
         client.set_input_flow(IF.get())
 

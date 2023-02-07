@@ -21,7 +21,7 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import TrezorFailure
 from trezorlib.tools import parse_path
 
-from ..common import MNEMONIC12, MOCK_OS_URANDOM, get_test_address
+from ..common import MNEMONIC12, WITH_MOCK_URANDOM, get_test_address
 from ..tx_cache import TxCache
 from .bitcoin.signtx import (
     request_finished,
@@ -215,7 +215,7 @@ def test_wipe_device(client: Client):
 def test_reset_device(client: Client):
     assert client.features.pin_protection is False
     assert client.features.passphrase_protection is False
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         client.set_expected_responses(
             [messages.ButtonRequest]
             + [messages.EntropyRequest]

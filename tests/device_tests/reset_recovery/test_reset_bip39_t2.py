@@ -21,7 +21,7 @@ from trezorlib import device, messages
 from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import TrezorFailure
 
-from ...common import EXTERNAL_ENTROPY, MNEMONIC12, MOCK_OS_URANDOM, generate_entropy
+from ...common import EXTERNAL_ENTROPY, MNEMONIC12, WITH_MOCK_URANDOM, generate_entropy
 from ...input_flows import (
     InputFlowBip39ResetBackup,
     InputFlowBip39ResetFailedCheck,
@@ -32,7 +32,7 @@ pytestmark = [pytest.mark.skip_t1]
 
 
 def reset_device(client: Client, strength: int):
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         IF = InputFlowBip39ResetBackup(client)
         client.set_input_flow(IF.get())
 
@@ -83,7 +83,7 @@ def test_reset_device_192(client: Client):
 def test_reset_device_pin(client: Client):
     strength = 256  # 24 words
 
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         IF = InputFlowBip39ResetPIN(client)
         client.set_input_flow(IF.get())
 
@@ -119,7 +119,7 @@ def test_reset_device_pin(client: Client):
 def test_reset_failed_check(client: Client):
     strength = 256  # 24 words
 
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         IF = InputFlowBip39ResetFailedCheck(client)
         client.set_input_flow(IF.get())
 
@@ -182,11 +182,6 @@ def test_failed_pin(client: Client):
     ret = client.call_raw(messages.ButtonAck())
 
     # PIN mismatch
-    assert isinstance(ret, messages.ButtonRequest)
-    client.debug.press_yes()
-    ret = client.call_raw(messages.ButtonAck())
-
-    # Try again
     assert isinstance(ret, messages.ButtonRequest)
     client.debug.press_yes()
     ret = client.call_raw(messages.ButtonAck())

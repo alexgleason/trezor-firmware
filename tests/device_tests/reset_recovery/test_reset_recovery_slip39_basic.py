@@ -15,7 +15,6 @@
 # If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
 import itertools
-from unittest import mock
 
 import pytest
 
@@ -24,7 +23,7 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.messages import BackupType
 from trezorlib.tools import parse_path
 
-from ...common import MOCK_OS_URANDOM
+from ...common import WITH_MOCK_URANDOM
 from ...input_flows import (
     InputFlowSlip39BasicRecovery,
     InputFlowSlip39BasicResetRecovery,
@@ -33,7 +32,7 @@ from ...input_flows import (
 
 @pytest.mark.skip_t1
 @pytest.mark.setup_client(uninitialized=True)
-@mock.patch("os.urandom", MOCK_OS_URANDOM)
+@WITH_MOCK_URANDOM
 def test_reset_recovery(client: Client):
     mnemonics = reset(client)
     address_before = btc.get_address(client, "Bitcoin", parse_path("m/44h/0h/0h/0/0"))

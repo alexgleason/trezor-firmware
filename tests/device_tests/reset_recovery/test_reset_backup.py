@@ -22,7 +22,7 @@ from trezorlib import device
 from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.messages import BackupType
 
-from ...common import MOCK_OS_URANDOM
+from ...common import WITH_MOCK_URANDOM
 from ...input_flows import (
     InputFlowBip39Backup,
     InputFlowResetSkipBackup,
@@ -75,7 +75,7 @@ VECTORS = [
 @pytest.mark.parametrize("backup_type, backup_flow", VECTORS)
 @pytest.mark.setup_client(uninitialized=True)
 def test_skip_backup_msg(client: Client, backup_type, backup_flow):
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         device.reset(
             client,
             skip_backup=True,
@@ -109,7 +109,7 @@ def test_skip_backup_msg(client: Client, backup_type, backup_flow):
 @pytest.mark.parametrize("backup_type, backup_flow", VECTORS)
 @pytest.mark.setup_client(uninitialized=True)
 def test_skip_backup_manual(client: Client, backup_type, backup_flow):
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         IF = InputFlowResetSkipBackup(client)
         client.set_input_flow(IF.get())
         device.reset(

@@ -21,7 +21,7 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.messages import BackupType
 from trezorlib.tools import parse_path
 
-from ...common import MOCK_OS_URANDOM
+from ...common import WITH_MOCK_URANDOM
 from ...input_flows import InputFlowBip39RecoveryNoPIN, InputFlowBip39ResetBackup
 
 
@@ -38,7 +38,7 @@ def test_reset_recovery(client: Client):
 
 
 def reset(client: Client, strength: int = 128, skip_backup: bool = False) -> str:
-    with MOCK_OS_URANDOM, client:
+    with WITH_MOCK_URANDOM, client:
         IF = InputFlowBip39ResetBackup(client)
         client.set_input_flow(IF.get())
 
