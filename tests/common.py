@@ -310,20 +310,16 @@ def read_and_confirm_mnemonic_tt(
     br = yield
     assert br.pages is not None
 
-    # TODO: make the below better
-    for i in range(br.pages - 1):
+    for i in range(br.pages):
         if i == 0:
             layout = debug.wait_layout()
         else:
             layout = debug.read_layout()
         words = layout.seed_words()
         mnemonic.extend(words)
-        debug.swipe_up(wait=True)
-
-    # Last confirmation page is special
-    layout = debug.read_layout()
-    words = layout.seed_words()
-    mnemonic.extend(words)
+        # Not swiping on the last page
+        if i < br.pages - 1:
+            debug.swipe_up(wait=True)
 
     debug.press_yes()
 
