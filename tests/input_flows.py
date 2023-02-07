@@ -436,7 +436,7 @@ class InputFlowEIP712ShowMore(InputFlowBase):
 
         # confirm domain properties
         for _ in range(4):
-            yield
+            yield from swipe_if_necessary(self.debug)  # EIP712 DOMAIN
             self.debug.press_yes()
 
         yield  # confirm message
