@@ -15,21 +15,17 @@
 # If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
 from typing import TYPE_CHECKING
-from unittest import mock
 
 import pytest
 
 from trezorlib import device, messages
 
 from .. import buttons
-from ..common import EXTERNAL_ENTROPY, generate_entropy
+from ..common import EXTERNAL_ENTROPY, WITH_MOCK_URANDOM, generate_entropy
 from . import reset
 
 if TYPE_CHECKING:
     from ..device_handler import BackgroundDeviceHandler
-
-
-with_mock_urandom = mock.patch("os.urandom", mock.Mock(return_value=EXTERNAL_ENTROPY))
 
 
 @pytest.mark.skip_t1
@@ -49,7 +45,7 @@ def test_reset_slip39_advanced_16of16groups_16of16shares(
     _slip39_advanced_reset(device_handler, 16, 16, 16, 16)
 
 
-@with_mock_urandom
+@WITH_MOCK_URANDOM
 def _slip39_advanced_reset(
     device_handler: "BackgroundDeviceHandler",
     group_count: int,

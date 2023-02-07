@@ -14,8 +14,6 @@
 # You should have received a copy of the License along with this library.
 # If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
-from unittest import mock
-
 import pytest
 from mnemonic import Mnemonic
 
@@ -23,7 +21,7 @@ from trezorlib import device, messages
 from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import TrezorFailure
 
-from ...common import MNEMONIC12, generate_entropy
+from ...common import EXTERNAL_ENTROPY, MNEMONIC12, MOCK_OS_URANDOM, generate_entropy
 from ...input_flows import (
     InputFlowBip39ResetBackup,
     InputFlowBip39ResetFailedCheck,
@@ -32,12 +30,9 @@ from ...input_flows import (
 
 pytestmark = [pytest.mark.skip_t1]
 
-EXTERNAL_ENTROPY = b"zlutoucky kun upel divoke ody" * 2
-
 
 def reset_device(client: Client, strength: int):
-    os_urandom = mock.Mock(return_value=EXTERNAL_ENTROPY)
-    with mock.patch("os.urandom", os_urandom), client:
+    with MOCK_OS_URANDOM, client:
         IF = InputFlowBip39ResetBackup(client)
         client.set_input_flow(IF.get())
 
@@ -88,8 +83,7 @@ def test_reset_device_192(client: Client):
 def test_reset_device_pin(client: Client):
     strength = 256  # 24 words
 
-    os_urandom = mock.Mock(return_value=EXTERNAL_ENTROPY)
-    with mock.patch("os.urandom", os_urandom), client:
+    with MOCK_OS_URANDOM, client:
         IF = InputFlowBip39ResetPIN(client)
         client.set_input_flow(IF.get())
 
@@ -125,8 +119,7 @@ def test_reset_device_pin(client: Client):
 def test_reset_failed_check(client: Client):
     strength = 256  # 24 words
 
-    os_urandom = mock.Mock(return_value=EXTERNAL_ENTROPY)
-    with mock.patch("os.urandom", os_urandom), client:
+    with MOCK_OS_URANDOM, client:
         IF = InputFlowBip39ResetFailedCheck(client)
         client.set_input_flow(IF.get())
 
@@ -161,7 +154,6 @@ def test_reset_failed_check(client: Client):
 
 @pytest.mark.setup_client(uninitialized=True)
 def test_failed_pin(client: Client):
-    # external_entropy = b'zlutoucky kun upel divoke ody' * 2
     strength = 128
     ret = client.call_raw(
         messages.ResetDevice(
@@ -187,6 +179,16 @@ def test_failed_pin(client: Client):
     # Enter PIN for second time
     assert isinstance(ret, messages.ButtonRequest)
     client.debug.input("456")
+    ret = client.call_raw(messages.ButtonAck())
+
+    # PIN mismatch
+    assert isinstance(ret, messages.ButtonRequest)
+    client.debug.press_yes()
+    ret = client.call_raw(messages.ButtonAck())
+
+    # Try again
+    assert isinstance(ret, messages.ButtonRequest)
+    client.debug.press_yes()
     ret = client.call_raw(messages.ButtonAck())
 
     assert isinstance(ret, messages.ButtonRequest)

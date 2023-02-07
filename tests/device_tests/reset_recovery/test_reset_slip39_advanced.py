@@ -14,8 +14,6 @@
 # You should have received a copy of the License along with this library.
 # If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
-from unittest import mock
-
 import pytest
 from shamir_mnemonic import shamir
 
@@ -24,12 +22,10 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import TrezorFailure
 from trezorlib.messages import BackupType
 
-from ...common import generate_entropy
+from ...common import EXTERNAL_ENTROPY, MOCK_OS_URANDOM, generate_entropy
 from ...input_flows import InputFlowSlip39AdvancedResetRecovery
 
 pytestmark = [pytest.mark.skip_t1]
-
-EXTERNAL_ENTROPY = b"zlutoucky kun upel divoke ody" * 2
 
 
 # TODO: test with different options
@@ -38,8 +34,7 @@ def test_reset_device_slip39_advanced(client: Client):
     strength = 128
     member_threshold = 3
 
-    os_urandom = mock.Mock(return_value=EXTERNAL_ENTROPY)
-    with mock.patch("os.urandom", os_urandom), client:
+    with MOCK_OS_URANDOM, client:
         IF = InputFlowSlip39AdvancedResetRecovery(client, False)
         client.set_input_flow(IF.get())
 

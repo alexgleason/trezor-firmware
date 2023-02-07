@@ -18,6 +18,7 @@ import json
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator, Optional
+from unittest import mock
 
 import pytest
 
@@ -59,6 +60,10 @@ TEST_ADDRESS_N = tools.parse_path("m/44h/1h/0h/0/0")
 COMMON_FIXTURES_DIR = (
     Path(__file__).resolve().parent.parent / "common" / "tests" / "fixtures"
 )
+
+# So that all the random things are consistent
+MOCK_OS_URANDOM = mock.Mock(return_value=EXTERNAL_ENTROPY)
+WITH_MOCK_URANDOM = mock.patch("os.urandom", MOCK_OS_URANDOM)
 
 
 def parametrize_using_common_fixtures(*paths: str) -> "MarkDecorator":

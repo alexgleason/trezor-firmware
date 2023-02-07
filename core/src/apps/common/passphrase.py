@@ -59,12 +59,19 @@ async def _request_on_host(ctx: Context) -> str:
     # non-empty passphrase
     if passphrase:
         from trezor.ui.layouts import confirm_action, confirm_blob
+        from trezor import utils
+
+        description = "Access hidden wallet?\n\nNext screen will show the passphrase!"
+
+        # Getting rid of newlines for TR, to fit one smaller screen:
+        if utils.MODEL in ("R",):
+            description = description.replace("\n\n", " ")
 
         await confirm_action(
             ctx,
             "passphrase_host1",
             "Hidden wallet",
-            description="Access hidden wallet?\n\nNext screen will show the passphrase!",
+            description=description,
         )
 
         await confirm_blob(
@@ -72,7 +79,7 @@ async def _request_on_host(ctx: Context) -> str:
             "passphrase_host2",
             "Hidden wallet",
             passphrase,
-            text_r("Use this passphrase?\n"),
+            "Use this passphrase?\n",
         )
 
     return passphrase

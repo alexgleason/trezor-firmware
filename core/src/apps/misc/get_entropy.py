@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING
 
-from apps.management import text_r
-
 if TYPE_CHECKING:
     from trezor.wire import Context
     from trezor.messages import GetEntropy, Entropy

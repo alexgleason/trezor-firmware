@@ -452,9 +452,8 @@ impl crate::trace::Trace for ButtonContainer {
                 ButtonContent::Text(text) => {
                     unwrap!(btn_text.push_str(text.as_ref()));
                 }
-                ButtonContent::Icon(icon) => {
-                    unwrap!(btn_text.push_str("Icon:"));
-                    unwrap!(btn_text.push_str(icon.toif.name));
+                ButtonContent::Icon(_cursor) => {
+                    unwrap!(btn_text.push_str("Icon"));
                 }
             }
         } else if let ButtonType::HoldToConfirm(htc) = &self.button_type {

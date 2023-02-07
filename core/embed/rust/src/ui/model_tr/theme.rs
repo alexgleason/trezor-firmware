@@ -1,6 +1,6 @@
 use crate::ui::{
     component::{text::TextStyle, LineBreaking},
-    display::{toif::NamedToif, Color, Font},
+    display::{Color, Font},
     geometry::Offset,
 };
 
@@ -42,44 +42,26 @@ pub fn textstyle_number_bold_or_mono(num: i32) -> &'static TextStyle {
 }
 
 // Icons with their names for debugging purposes
-pub const ICON_ARM_LEFT: NamedToif =
-    NamedToif(include_res!("model_tr/res/arm_left.toif"), "arm_left"); // 6*10
-pub const ICON_ARM_RIGHT: NamedToif =
-    NamedToif(include_res!("model_tr/res/arm_right.toif"), "arm_right"); // 6*10
-pub const ICON_ARROW_LEFT: NamedToif =
-    NamedToif(include_res!("model_tr/res/arrow_left.toif"), "arrow_left"); // 6*10
-pub const ICON_ARROW_RIGHT: NamedToif =
-    NamedToif(include_res!("model_tr/res/arrow_right.toif"), "arrow_right"); // 6*10
-pub const ICON_ARROW_RIGHT_FAT: NamedToif = NamedToif(
-    include_res!("model_tr/res/arrow_right_fat.toif"),
-    "arrow_right_fat",
-); // 4*8
-pub const ICON_ARROW_UP: NamedToif =
-    NamedToif(include_res!("model_tr/res/arrow_up.toif"), "arrow_up"); // 10*6
-pub const ICON_ARROW_DOWN: NamedToif =
-    NamedToif(include_res!("model_tr/res/arrow_down.toif"), "arrow_down"); // 10*6
-pub const ICON_ARROW_BACK_UP: NamedToif = NamedToif(
-    include_res!("model_tr/res/arrow_back_up.toif"),
-    "arrow_back_up",
-); // 8*8
-pub const ICON_BIN: NamedToif = NamedToif(include_res!("model_tr/res/bin.toif"), "bin"); // 10*10
-pub const ICON_CANCEL: NamedToif = NamedToif(
-    include_res!("model_tr/res/cancel_no_outline.toif"),
-    "cancel",
-); // 8*8
-pub const ICON_DELETE: NamedToif = NamedToif(include_res!("model_tr/res/delete.toif"), "delete"); // 10*7
-pub const ICON_EYE: NamedToif = NamedToif(include_res!("model_tr/res/eye_round.toif"), "eye"); // 12*7
-pub const ICON_LOCK: NamedToif = NamedToif(include_res!("model_tr/res/lock.toif"), "lock"); // 10*10
-pub const ICON_NEXT_PAGE: NamedToif =
-    NamedToif(include_res!("model_tr/res/next_page.toif"), "next_page"); // 10*8
-pub const ICON_PREV_PAGE: NamedToif =
-    NamedToif(include_res!("model_tr/res/prev_page.toif"), "prev_page"); // 8*10
-pub const ICON_SPACE: NamedToif = NamedToif(include_res!("model_tr/res/space.toif"), "space"); // 12*3
-pub const ICON_SUCCESS: NamedToif = NamedToif(include_res!("model_tr/res/success.toif"), "success");
-pub const ICON_TICK: NamedToif = NamedToif(include_res!("model_tr/res/tick.toif"), "tick"); // 8*6
-pub const ICON_TICK_FAT: NamedToif =
-    NamedToif(include_res!("model_tr/res/tick_fat.toif"), "tick_fat"); // 8*6
-pub const ICON_WARNING: NamedToif = NamedToif(include_res!("model_tr/res/warning.toif"), "warning"); // 12*12
+pub const ICON_ARM_LEFT: &[u8] = include_res!("model_tr/res/arm_left.toif"); // 6*10
+pub const ICON_ARM_RIGHT: &[u8] = include_res!("model_tr/res/arm_right.toif"); // 6*10
+pub const ICON_ARROW_LEFT: &[u8] = include_res!("model_tr/res/arrow_left.toif"); // 6*10
+pub const ICON_ARROW_RIGHT: &[u8] = include_res!("model_tr/res/arrow_right.toif"); // 6*10
+pub const ICON_ARROW_RIGHT_FAT: &[u8] = include_res!("model_tr/res/arrow_right_fat.toif"); // 4*8
+pub const ICON_ARROW_UP: &[u8] = include_res!("model_tr/res/arrow_up.toif"); // 10*6
+pub const ICON_ARROW_DOWN: &[u8] = include_res!("model_tr/res/arrow_down.toif"); // 10*6
+pub const ICON_ARROW_BACK_UP: &[u8] = include_res!("model_tr/res/arrow_back_up.toif"); // 8*8
+pub const ICON_BIN: &[u8] = include_res!("model_tr/res/bin.toif"); // 10*10
+pub const ICON_CANCEL: &[u8] = include_res!("model_tr/res/cancel_no_outline.toif"); // 8*8
+pub const ICON_DELETE: &[u8] = include_res!("model_tr/res/delete.toif"); // 10*7
+pub const ICON_EYE: &[u8] = include_res!("model_tr/res/eye_round.toif"); // 12*7
+pub const ICON_LOCK: &[u8] = include_res!("model_tr/res/lock.toif"); // 10*10
+pub const ICON_NEXT_PAGE: &[u8] = include_res!("model_tr/res/next_page.toif"); // 10*8
+pub const ICON_PREV_PAGE: &[u8] = include_res!("model_tr/res/prev_page.toif"); // 8*10
+pub const ICON_SPACE: &[u8] = include_res!("model_tr/res/space.toif"); // 12*3
+pub const ICON_SUCCESS: &[u8] = include_res!("model_tr/res/success.toif");
+pub const ICON_TICK: &[u8] = include_res!("model_tr/res/tick.toif"); // 8*6
+pub const ICON_TICK_FAT: &[u8] = include_res!("model_tr/res/tick_fat.toif"); // 8*6
+pub const ICON_WARNING: &[u8] = include_res!("model_tr/res/warning.toif"); // 12*12
 
 // checklist settings
 pub const CHECKLIST_SPACING: i16 = 5;

@@ -3,7 +3,7 @@ use crate::{
     micropython::buffer::StrBuffer,
     ui::{
         display,
-        display::{toif::NamedToif, Color, Font, Icon},
+        display::{Color, Font, Icon},
         geometry::{Alignment, Dimensions, Offset, Point, Rect, BOTTOM_LEFT},
     },
 };
@@ -82,13 +82,13 @@ pub struct TextStyle {
     /// Foreground color used for drawing the ellipsis.
     pub ellipsis_color: Color,
 
-    // NOTE: storing `NamedToif` instead of `Icon` so that these
+    // NOTE: storing `&'static [u8]` instead of `Icon` so that these
     // can be used in `const` contexts.
     // `Icon` is always created dynamically on demand when displayed.
     /// Optional icon shown as ellipsis.
-    pub ellipsis_icon: Option<NamedToif>,
+    pub ellipsis_icon: Option<&'static [u8]>,
     /// Optional icon to signal content continues from previous page.
-    pub prev_page_ellipsis_icon: Option<NamedToif>,
+    pub prev_page_ellipsis_icon: Option<&'static [u8]>,
 
     /// Specifies which line-breaking strategy to use.
     pub line_breaking: LineBreaking,
@@ -132,13 +132,13 @@ impl TextStyle {
     }
 
     /// Adding optional icon shown instead of "..." ellipsis.
-    pub const fn with_ellipsis_icon(mut self, icon: NamedToif) -> Self {
+    pub const fn with_ellipsis_icon(mut self, icon: &'static [u8]) -> Self {
         self.ellipsis_icon = Some(icon);
         self
     }
 
     /// Adding optional icon signalling content continues from previous page.
-    pub const fn with_prev_page_icon(mut self, icon: NamedToif) -> Self {
+    pub const fn with_prev_page_icon(mut self, icon: &'static [u8]) -> Self {
         self.prev_page_ellipsis_icon = Some(icon);
         self
     }

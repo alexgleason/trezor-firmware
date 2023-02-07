@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING
 
-from . import text_r
-
 if TYPE_CHECKING:
     from typing import Awaitable
     from trezor.wire import Context

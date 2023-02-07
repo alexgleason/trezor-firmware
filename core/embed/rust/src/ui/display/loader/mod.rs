@@ -2,7 +2,7 @@ mod circular;
 mod rectangular;
 mod starry;
 
-use crate::ui::display::{toif::NamedToif, Color, Icon};
+use crate::ui::display::{Color, Icon};
 use core::slice::from_raw_parts;
 
 #[cfg(feature = "model_tt")]
@@ -55,7 +55,7 @@ pub extern "C" fn loader_uncompress_r(
 
     let i = if icon_data != 0 {
         let data_slice = unsafe { from_raw_parts(icon_data as _, icon_data_size as _) };
-        let icon = Icon::new(NamedToif(data_slice, "icon"));
+        let icon = Icon::new(data_slice);
         Some((icon, ic_color))
     } else {
         None

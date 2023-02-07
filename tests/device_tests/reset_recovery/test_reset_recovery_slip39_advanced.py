@@ -14,8 +14,6 @@
 # You should have received a copy of the License along with this library.
 # If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
-from unittest import mock
-
 import pytest
 
 from trezorlib import btc, device, messages
@@ -23,7 +21,7 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.messages import BackupType
 from trezorlib.tools import parse_path
 
-from ...common import EXTERNAL_ENTROPY
+from ...common import MOCK_OS_URANDOM
 from ...input_flows import (
     InputFlowSlip39AdvancedRecovery,
     InputFlowSlip39AdvancedResetRecovery,
@@ -60,8 +58,7 @@ def test_reset_recovery(client: Client):
 
 
 def reset(client: Client, strength: int = 128) -> list[str]:
-    os_urandom = mock.Mock(return_value=EXTERNAL_ENTROPY)
-    with mock.patch("os.urandom", os_urandom), client:
+    with MOCK_OS_URANDOM, client:
         IF = InputFlowSlip39AdvancedResetRecovery(client, False)
         client.set_input_flow(IF.get())
 

@@ -24,13 +24,11 @@ from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.messages import BackupType
 from trezorlib.tools import parse_path
 
+from ...common import MOCK_OS_URANDOM
 from ...input_flows import (
     InputFlowSlip39BasicRecovery,
     InputFlowSlip39BasicResetRecovery,
 )
-
-EXTERNAL_ENTROPY = b"zlutoucky kun upel divoke ody" * 2
-MOCK_OS_URANDOM = mock.Mock(return_value=EXTERNAL_ENTROPY)
 
 
 @pytest.mark.skip_t1

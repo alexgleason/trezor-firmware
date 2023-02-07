@@ -111,11 +111,6 @@ impl ButtonDetails {
         } else {
             "None".into()
         };
-        let icon_text: String<20> = if let Some(icon) = &self.icon {
-            icon.toif.name.into()
-        } else {
-            "None".into()
-        };
         let force_width: String<20> = if let Some(force_width) = self.force_width {
             inttostr!(force_width).into()
         } else {
@@ -125,8 +120,6 @@ impl ButtonDetails {
             "ButtonDetails:: ",
             "text: ",
             text.as_ref(),
-            ", icon_text: ",
-            icon_text.as_ref(),
             ", with_outline: ",
             booltostr!(self.with_outline),
             ", with_arms: ",
@@ -194,9 +187,7 @@ impl Icon {
     pub fn print(&self) {
         println!(
             "Icon:: ",
-            "text: ",
-            self.toif.name,
-            ", width: ",
+            "width: ",
             inttostr!(self.toif.width() as i32),
             ", height: ",
             inttostr!(self.toif.height() as i32)
@@ -208,7 +199,6 @@ impl Icon {
 impl crate::trace::Trace for Icon {
     fn trace(&self, t: &mut dyn crate::trace::Tracer) {
         t.open("Icon");
-        t.string(self.toif.name);
         t.string(&self.dimension_str());
         t.close();
     }

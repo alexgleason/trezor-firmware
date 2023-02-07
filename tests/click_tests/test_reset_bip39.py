@@ -15,24 +15,21 @@
 # If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
 from typing import TYPE_CHECKING
-from unittest import mock
 
 import pytest
 
 from trezorlib import device, messages
 
-from ..common import EXTERNAL_ENTROPY
+from ..common import WITH_MOCK_URANDOM
 from . import reset
 
 if TYPE_CHECKING:
     from ..device_handler import BackgroundDeviceHandler
 
-with_mock_urandom = mock.patch("os.urandom", mock.Mock(return_value=EXTERNAL_ENTROPY))
-
 
 @pytest.mark.skip_t1
 @pytest.mark.setup_client(uninitialized=True)
-@with_mock_urandom
+@WITH_MOCK_URANDOM
 def test_reset_bip39(device_handler: "BackgroundDeviceHandler"):
     features = device_handler.features()
     debug = device_handler.debuglink()
