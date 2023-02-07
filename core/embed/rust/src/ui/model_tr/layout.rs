@@ -590,6 +590,7 @@ extern "C" fn new_show_receive_address(n_args: usize, args: *const Obj, kwargs: 
                     let btn_layout = ButtonLayout::arrow_none_none();
                     let btn_actions = ButtonActions::prev_none_none();
                     Page::<15>::new(btn_layout, btn_actions, Font::MONO)
+                        .with_line_breaking(LineBreaking::BreakWordsNoHyphen)
                         .text_bold("Account:".into())
                         .newline()
                         .text_mono(account)
