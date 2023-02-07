@@ -130,15 +130,11 @@ class RustLayout(ui.Layout):
 
             Only `UP` and `DOWN` directions are supported.
             """
-            from trezor.ui import (
-                SWIPE_UP,
-                SWIPE_DOWN,
-            )
-            from trezor.enums import DebugPhysicalButton
+            from trezor.enums import DebugPhysicalButton, DebugSwipeDirection
 
-            if direction == SWIPE_UP:
+            if direction == DebugSwipeDirection.UP:
                 btn_to_press = DebugPhysicalButton.RIGHT_BTN
-            elif direction == SWIPE_DOWN:
+            elif direction == DebugSwipeDirection.DOWN:
                 btn_to_press = DebugPhysicalButton.LEFT_BTN
             else:
                 raise Exception(f"Unsupported direction: {direction}")
