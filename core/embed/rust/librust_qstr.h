@@ -134,4 +134,5 @@ static void _librust_qstrs(void) {
   MP_QSTR_derivation_path;
   MP_QSTR_address_qr;
   MP_QSTR_recovery;
+  MP_QSTR_special_screen;
 }

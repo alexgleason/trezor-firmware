@@ -47,7 +47,7 @@ use super::{
         FlowMsg, FlowPages, Frame, Homescreen, HomescreenMsg, Lockscreen, NoBtnDialog,
         NoBtnDialogMsg, NumberInput, NumberInputMsg, Page, PassphraseEntry, PassphraseEntryMsg,
         PinEntry, PinEntryMsg, Progress, ShareWords, ShowMore, SimpleChoice, SimpleChoiceMsg,
-        WordlistEntry, WordlistEntryMsg, WordlistType,
+        SpecialScreen, WordlistEntry, WordlistEntryMsg, WordlistType,
     },
     constant, theme,
 };
@@ -183,6 +183,12 @@ where
 }
 
 impl ComponentMsgObj for Progress {
+    fn msg_try_into_obj(&self, _msg: Self::Msg) -> Result<Obj, Error> {
+        unreachable!()
+    }
+}
+
+impl ComponentMsgObj for SpecialScreen {
     fn msg_try_into_obj(&self, _msg: Self::Msg) -> Result<Obj, Error> {
         unreachable!()
     }
@@ -1202,6 +1208,14 @@ extern "C" fn new_show_busyscreen(n_args: usize, args: *const Obj, kwargs: *mut 
     unsafe { util::try_with_args_and_kwargs(n_args, args, kwargs, block) }
 }
 
+extern "C" fn special_screen(n_args: usize, args: *const Obj, kwargs: *mut Map) -> Obj {
+    let block = move |_args: &[Obj], kwargs: &Map| {
+        let obj = LayoutObj::new(SpecialScreen::new())?;
+        Ok(obj.into())
+    };
+    unsafe { util::try_with_args_and_kwargs(n_args, args, kwargs, block) }
+}
+
 #[no_mangle]
 pub static mp_module_trezorui2: Module = obj_module! {
     Qstr::MP_QSTR___name__ => Qstr::MP_QSTR_trezorui2.to_obj(),
@@ -1518,4 +1532,8 @@ pub static mp_module_trezorui2: Module = obj_module! {
     /// ) -> CANCELLED:
     ///     """Homescreen used for indicating coinjoin in progress."""
     Qstr::MP_QSTR_show_busyscreen => obj_fn_kw!(0, new_show_busyscreen).as_obj(),
+
+    /// def special_screen():
+    ///     """Custom design."""
+    Qstr::MP_QSTR_special_screen => obj_fn_kw!(0, special_screen).as_obj(),
 };

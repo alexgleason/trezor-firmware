@@ -18,6 +18,7 @@ mod result_popup;
 mod scrollbar;
 mod share_words;
 mod show_more;
+mod special_screen;
 mod title;
 
 use super::theme;
@@ -52,3 +53,4 @@ pub use result_popup::{ResultPopup, ResultPopupMsg};
 pub use scrollbar::ScrollBar;
 pub use share_words::ShareWords;
 pub use show_more::{CancelInfoConfirmMsg, ShowMore};
+pub use special_screen::SpecialScreen;
