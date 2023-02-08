@@ -1210,7 +1210,9 @@ extern "C" fn new_show_busyscreen(n_args: usize, args: *const Obj, kwargs: *mut 
 
 extern "C" fn special_screen(n_args: usize, args: *const Obj, kwargs: *mut Map) -> Obj {
     let block = move |_args: &[Obj], kwargs: &Map| {
-        let obj = LayoutObj::new(SpecialScreen::new())?;
+        let description: StrBuffer = kwargs.get(Qstr::MP_QSTR_description)?.try_into()?;
+
+        let obj = LayoutObj::new(SpecialScreen::new(description))?;
         Ok(obj.into())
     };
     unsafe { util::try_with_args_and_kwargs(n_args, args, kwargs, block) }
@@ -1533,7 +1535,10 @@ pub static mp_module_trezorui2: Module = obj_module! {
     ///     """Homescreen used for indicating coinjoin in progress."""
     Qstr::MP_QSTR_show_busyscreen => obj_fn_kw!(0, new_show_busyscreen).as_obj(),
 
-    /// def special_screen():
+    /// def special_screen(
+    /// *,
+    /// description: str,
+    /// ):
     ///     """Custom design."""
     Qstr::MP_QSTR_special_screen => obj_fn_kw!(0, special_screen).as_obj(),
 };

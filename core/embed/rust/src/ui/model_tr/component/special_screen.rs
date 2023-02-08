@@ -1,17 +1,30 @@
-use crate::ui::{
-    component::{Component, Event, EventCtx, Never},
-    display::{text_center, text_left, Font, Icon},
-    geometry::{self, Offset, Rect},
-    model_tr::theme,
+use crate::{
+    micropython::buffer::StrBuffer,
+    ui::{
+        component::{Component, Event, EventCtx, Never},
+        display::{text_center, Font, Icon},
+        geometry::{self, Offset, Rect},
+        model_tr::theme,
+    },
 };
 
 pub struct SpecialScreen {
     area: Rect,
+    text: StrBuffer,
 }
 
 impl SpecialScreen {
-    pub fn new() -> Self {
-        Self { area: Rect::zero() }
+    pub fn new(description: StrBuffer) -> Self {
+        let text = if description.is_empty() {
+            "Trezor Secret".into()
+        } else {
+            description
+        };
+
+        Self {
+            area: Rect::zero(),
+            text,
+        }
     }
 }
 
@@ -38,7 +51,7 @@ impl Component for SpecialScreen {
 
         text_center(
             self.area.bottom_center() + Offset::new(0, -2),
-            "Trezor Secret",
+            self.text.as_ref(),
             Font::DEMIBOLD,
             theme::FG,
             theme::BG,

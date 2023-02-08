@@ -209,19 +209,13 @@ async def handle_EndSession(ctx: wire.Context, msg: EndSession) -> Success:
 
 
 async def handle_Ping(ctx: wire.Context, msg: Ping) -> Success:
+    from trezor.ui.layouts import special_screen
+
     if msg.message == "custom":
-        from trezor.ui.layouts import special_screen
-
-        await special_screen(ctx)
-
-        return Success(message=msg.message)
+        await special_screen(ctx, description="")
     else:
-        if msg.button_protection:
-            from trezor.ui.layouts import confirm_action
-            from trezor.enums import ButtonRequestType as B
-
-            await confirm_action(ctx, "ping", "Confirm", "ping", br_code=B.ProtectCall)
-        return Success(message=msg.message)
+        await special_screen(ctx, description=msg.message)
+    return Success(message=msg.message)
 
 
 async def handle_DoPreauthorized(

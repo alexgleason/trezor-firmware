@@ -1234,6 +1234,6 @@ async def confirm_set_new_pin(
     )
 
 
-async def special_screen(ctx: GenericContext) -> None:
-    layout = RustLayout(trezorui2.special_screen())
+async def special_screen(ctx: GenericContext, description: str) -> None:
+    layout = RustLayout(trezorui2.special_screen(description=description))
     await ctx.wait(layout)
