@@ -872,7 +872,7 @@ impl crate::trace::Trace for ButtonDetails {
         let mut btn_text: String<30> = String::new();
         if let Some(text) = &self.text {
             unwrap!(btn_text.push_str(text.as_ref()));
-        } else if let Some(_) = &self.icon {
+        } else if self.icon.is_some() {
             unwrap!(btn_text.push_str("Icon"));
         }
         if let Some(duration) = &self.duration {
