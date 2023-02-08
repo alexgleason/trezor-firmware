@@ -85,12 +85,6 @@ def _token_iterator(chain_id: int) -> Iterator[tuple[bytes, str, int, str]]:
             "Dai",
         )
         yield (  # address, symbol, decimals, name
-            b"\x86\xfa\x04\x98\x57\xe0\x20\x9a\xa7\xd9\xe6\x16\xf7\xeb\x3b\x3b\x78\xec\xfd\xb0",
-            "EOS",
-            18,
-            "EOS",
-        )
-        yield (  # address, symbol, decimals, name
             b"\x85\x3d\x95\x5a\xce\xf8\x22\xdb\x05\x8e\xb8\x50\x59\x11\xed\x77\xf1\x75\xb9\x9e",
             "FRAX",
             18,

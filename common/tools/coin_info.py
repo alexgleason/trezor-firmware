@@ -371,9 +371,10 @@ def _load_builtin_ethereum_networks() -> Coins:
     chains_data = load_json("ethereum", "networks.json")
     networks: Coins = []
     for chain_data in chains_data:
+        chain_id = chain_data["chain_id"]
         chain_data.update(
-            chain_id=chain_data["chain_id"],
-            key=f"eth:{chain_data['shortcut']}",
+            chain_id=chain_id,
+            key=f"eth:{chain_data['shortcut']}:{chain_id}",
             # is_testnet is present in the JSON
         )
         networks.append(cast(Coin, chain_data))
