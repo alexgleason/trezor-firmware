@@ -300,8 +300,8 @@ def _clean_line(line: str) -> str:
     line = line.strip()
 
     # Deleting ellipsis at the beginning
-    if line.startswith(".."):
-        line = line[2:]
+    if line.startswith("..."):
+        line = line[3:]
 
     # Deleting a hyphen at the end, together with the space
     # before it, so it will be tightly connected with the next line
