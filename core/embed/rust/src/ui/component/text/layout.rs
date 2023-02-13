@@ -5,6 +5,8 @@ use crate::ui::{
     geometry::{Alignment, Dimensions, Offset, Point, Rect, BOTTOM_LEFT},
 };
 
+const ELLIPSIS: &str = "...";
+
 #[derive(Copy, Clone)]
 pub enum LineBreaking {
     /// Break line only at whitespace, if possible. If we don't find any
@@ -114,6 +116,22 @@ impl TextStyle {
     pub const fn with_prev_page_icon(mut self, icon: &'static [u8]) -> Self {
         self.prev_page_ellipsis_icon = Some(icon);
         self
+    }
+
+    pub fn ellipsis_width(&self) -> i16 {
+        if let Some(icon) = self.ellipsis_icon {
+            Icon::new(icon).toif.width()
+        } else {
+            self.text_font.text_width(ELLIPSIS)
+        }
+    }
+
+    pub fn prev_page_ellipsis_width(&self) -> i16 {
+        if let Some(icon) = self.prev_page_ellipsis_icon {
+            Icon::new(icon).toif.width()
+        } else {
+            self.text_font.text_width(ELLIPSIS)
+        }
     }
 }
 
@@ -234,15 +252,14 @@ impl TextLayout {
         if continues_from_prev_page {
             sink.prev_page_ellipsis(*cursor, self);
             // Move the cursor to the right, always the same distance
-            cursor.x += self.style.text_font.text_width(PREV_PAGE_ELLIPSIS)
+            cursor.x += self.style.prev_page_ellipsis_width();
         }
 
         while !remaining_text.is_empty() {
             let is_last_line = cursor.y + self.style.text_font.line_height() > self.bottom_y();
             let line_ending_space = if is_last_line {
-                // TODO: find out the icon width
-                let width = self.style.text_font.text_width(PREV_PAGE_ELLIPSIS);
-                Some(width)
+                // Counting with place for ellipsis at the end
+                Some(self.style.ellipsis_width())
             } else {
                 None
             };
@@ -364,8 +381,6 @@ impl LayoutFit {
     }
 }
 
-const PREV_PAGE_ELLIPSIS: &str = "..";
-
 /// Visitor for text segment operations.
 /// Defines responses for certain kind of events encountered
 /// when processing the content.
@@ -428,7 +443,7 @@ impl LayoutSink for TextRenderer {
         } else {
             display::text_left(
                 cursor,
-                "...",
+                ELLIPSIS,
                 layout.style.text_font,
                 layout.style.ellipsis_color,
                 layout.style.background_color,
@@ -448,7 +463,7 @@ impl LayoutSink for TextRenderer {
         } else {
             display::text_left(
                 cursor,
-                PREV_PAGE_ELLIPSIS,
+                ELLIPSIS,
                 layout.style.text_font,
                 layout.style.ellipsis_color,
                 layout.style.background_color,
@@ -476,11 +491,11 @@ pub mod trace {
         }
 
         fn ellipsis(&mut self, _cursor: Point, _layout: &TextLayout) {
-            self.0.string("...");
+            self.0.string(ELLIPSIS);
         }
 
         fn prev_page_ellipsis(&mut self, _cursor: Point, _layout: &TextLayout) {
-            self.0.string(PREV_PAGE_ELLIPSIS);
+            self.0.string(ELLIPSIS);
         }
 
         fn line_break(&mut self, _cursor: Point) {
