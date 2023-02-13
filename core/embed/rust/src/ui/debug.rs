@@ -22,9 +22,6 @@ use crate::{micropython::buffer::StrBuffer, time::Duration};
 // print() function. It suits the use-case of being quickly
 // able to use the print() for debugging and then delete it.
 
-/// TODO: find out how much storage these functions take
-/// and probably hide them behind debug feature
-
 impl StrBuffer {
     pub fn print(&self) {
         println!("StrBuffer:: ", self.as_ref());
@@ -197,7 +194,11 @@ impl Span {
             ", skip_next_chars: ",
             inttostr!(self.skip_next_chars as i32),
             ", insert_hyphen_before_line_break: ",
-            booltostr!(self.insert_hyphen_before_line_break)
+            if self.insert_hyphen_before_line_break {
+                "true"
+            } else {
+                "false"
+            }
         );
         print!(", advance: ");
         self.advance.print();
