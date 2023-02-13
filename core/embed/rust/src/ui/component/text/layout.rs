@@ -71,9 +71,6 @@ pub struct TextStyle {
     pub line_breaking: LineBreaking,
     /// Specifies what to do at the end of the page.
     pub page_breaking: PageBreaking,
-
-    /// Specifies how to align text on the line.
-    pub line_alignment: Alignment,
 }
 
 impl TextStyle {
@@ -92,7 +89,6 @@ impl TextStyle {
             ellipsis_color,
             line_breaking: LineBreaking::BreakAtWhitespace,
             page_breaking: PageBreaking::CutAndInsertEllipsis,
-            line_alignment: Alignment::Start,
             ellipsis_icon: None,
             prev_page_ellipsis_icon: None,
         }
@@ -403,41 +399,13 @@ pub struct TextRenderer;
 
 impl LayoutSink for TextRenderer {
     fn text(&mut self, cursor: Point, layout: &TextLayout, text: &str) {
-        // Accounting for the line-alignment - left, right or center.
-        // Assume the current line can be drawn on from the cursor
-        // to the right side of the screen.
-
-        match layout.style.line_alignment {
-            Alignment::Start => {
-                display::text_left(
-                    cursor,
-                    text,
-                    layout.style.text_font,
-                    layout.style.text_color,
-                    layout.style.background_color,
-                );
-            }
-            Alignment::Center => {
-                let center = Point::new(cursor.x + (layout.bounds.x1 - cursor.x) / 2, cursor.y);
-                display::text_center(
-                    center,
-                    text,
-                    layout.style.text_font,
-                    layout.style.text_color,
-                    layout.style.background_color,
-                );
-            }
-            Alignment::End => {
-                let right = Point::new(layout.bounds.x1, cursor.y);
-                display::text_right(
-                    right,
-                    text,
-                    layout.style.text_font,
-                    layout.style.text_color,
-                    layout.style.background_color,
-                );
-            }
-        }
+        display::text_left(
+            cursor,
+            text,
+            layout.style.text_font,
+            layout.style.text_color,
+            layout.style.background_color,
+        );
     }
 
     fn hyphen(&mut self, cursor: Point, layout: &TextLayout) {
