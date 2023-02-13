@@ -232,8 +232,9 @@ impl TextLayout {
 
         // Draw the arrow icon if we are in the middle of a string
         if continues_from_prev_page {
-            let x_offset = sink.prev_page_ellipsis(*cursor, self);
-            cursor.x += x_offset;
+            sink.prev_page_ellipsis(*cursor, self);
+            // Move the cursor to the right, always the same distance
+            cursor.x += self.style.text_font.text_width(PREV_PAGE_ELLIPSIS)
         }
 
         while !remaining_text.is_empty() {
@@ -376,11 +377,7 @@ pub trait LayoutSink {
     /// Ellipsis at the end of the page.
     fn ellipsis(&mut self, _cursor: Point, _layout: &TextLayout) {}
     /// Ellipsis at the beginning of the page.
-    fn prev_page_ellipsis(&mut self, _cursor: Point, layout: &TextLayout) -> i16 {
-        // Unifying the ellipsis width to be the width of two dot symbols
-        // (three would be too wide, at least for model R)
-        layout.style.text_font.text_width(PREV_PAGE_ELLIPSIS)
-    }
+    fn prev_page_ellipsis(&mut self, _cursor: Point, _layout: &TextLayout) {}
     /// Line break - a newline.
     fn line_break(&mut self, _cursor: Point) {}
     /// Content cannot fit on the screen.
@@ -439,7 +436,7 @@ impl LayoutSink for TextRenderer {
         }
     }
 
-    fn prev_page_ellipsis(&mut self, cursor: Point, layout: &TextLayout) -> i16 {
+    fn prev_page_ellipsis(&mut self, cursor: Point, layout: &TextLayout) {
         if let Some(toif) = layout.style.prev_page_ellipsis_icon {
             let icon = Icon::new(toif);
             icon.draw(
@@ -457,7 +454,6 @@ impl LayoutSink for TextRenderer {
                 layout.style.background_color,
             );
         }
-        layout.style.text_font.text_width(PREV_PAGE_ELLIPSIS)
     }
 }
 
@@ -483,9 +479,8 @@ pub mod trace {
             self.0.string("...");
         }
 
-        fn prev_page_ellipsis(&mut self, _cursor: Point, layout: &TextLayout) -> i16 {
+        fn prev_page_ellipsis(&mut self, _cursor: Point, _layout: &TextLayout) {
             self.0.string(PREV_PAGE_ELLIPSIS);
-            layout.style.text_font.text_width(PREV_PAGE_ELLIPSIS)
         }
 
         fn line_break(&mut self, _cursor: Point) {
