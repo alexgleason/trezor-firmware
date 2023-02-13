@@ -24,15 +24,3 @@ macro_rules! inttostr {
         heapless::String::<10>::from($int).as_str()
     }};
 }
-
-#[allow(unused_macros)] // Mostly for debugging purposes.
-/// Transforms bool into string slice. For example for printing.
-macro_rules! booltostr {
-    ($bool:expr) => {{
-        if $bool {
-            "true"
-        } else {
-            "false"
-        }
-    }};
-}
