@@ -53,6 +53,7 @@ pub const ICON_SIZE: i16 = 16;
 
 // UI icons (greyscale).
 pub const ICON_CANCEL: &[u8] = include_res!("model_tt/res/cancel.toif");
+pub const ICON_CANCEL_LARGER: &[u8] = include_res!("model_tt/res/cancel-larger.toif");
 pub const ICON_CONFIRM: &[u8] = include_res!("model_tt/res/confirm.toif");
 pub const ICON_SPACE: &[u8] = include_res!("model_tt/res/space.toif");
 pub const ICON_BACK: &[u8] = include_res!("model_tt/res/back.toif");
@@ -66,6 +67,8 @@ pub const ICON_LOCK: &[u8] = include_res!("model_tt/res/lock.toif");
 pub const ICON_LOGO: &[u8] = include_res!("model_tt/res/logo.toif");
 pub const ICON_PAGE_NEXT: &[u8] = include_res!("model_tt/res/page-next.toif");
 pub const ICON_PAGE_PREV: &[u8] = include_res!("model_tt/res/page-prev.toif");
+pub const ICON_OCTA: &[u8] = include_res!("model_tt/res/octa-bang.toif");
+pub const ICON_INFO_CIRCLE: &[u8] = include_res!("model_tt/res/info-circle.toif");
 
 // Large, three-color icons.
 pub const WARN_COLOR: Color = YELLOW;
@@ -135,7 +138,7 @@ pub const fn label_title() -> TextStyle {
     TextStyle::new(Font::BOLD, GREY_LIGHT, BG, GREY_LIGHT, GREY_LIGHT)
 }
 
-pub fn button_default() -> ButtonStyleSheet {
+pub const fn button_default() -> ButtonStyleSheet {
     ButtonStyleSheet {
         normal: &ButtonStyle {
             font: Font::BOLD,
@@ -167,7 +170,7 @@ pub fn button_default() -> ButtonStyleSheet {
     }
 }
 
-pub fn button_confirm() -> ButtonStyleSheet {
+pub const fn button_confirm() -> ButtonStyleSheet {
     ButtonStyleSheet {
         normal: &ButtonStyle {
             font: Font::BOLD,
@@ -199,7 +202,7 @@ pub fn button_confirm() -> ButtonStyleSheet {
     }
 }
 
-pub fn button_cancel() -> ButtonStyleSheet {
+pub const fn button_cancel() -> ButtonStyleSheet {
     ButtonStyleSheet {
         normal: &ButtonStyle {
             font: Font::BOLD,
@@ -231,11 +234,11 @@ pub fn button_cancel() -> ButtonStyleSheet {
     }
 }
 
-pub fn button_danger() -> ButtonStyleSheet {
+pub const fn button_danger() -> ButtonStyleSheet {
     button_cancel()
 }
 
-pub fn button_reset() -> ButtonStyleSheet {
+pub const fn button_reset() -> ButtonStyleSheet {
     ButtonStyleSheet {
         normal: &ButtonStyle {
             font: Font::BOLD,
@@ -267,7 +270,7 @@ pub fn button_reset() -> ButtonStyleSheet {
     }
 }
 
-pub fn button_info() -> ButtonStyleSheet {
+pub const fn button_info() -> ButtonStyleSheet {
     ButtonStyleSheet {
         normal: &ButtonStyle {
             font: Font::BOLD,
@@ -299,7 +302,7 @@ pub fn button_info() -> ButtonStyleSheet {
     }
 }
 
-pub fn button_pin() -> ButtonStyleSheet {
+pub const fn button_pin() -> ButtonStyleSheet {
     ButtonStyleSheet {
         normal: &ButtonStyle {
             font: Font::MONO,
@@ -331,7 +334,7 @@ pub fn button_pin() -> ButtonStyleSheet {
     }
 }
 
-pub fn button_counter() -> ButtonStyleSheet {
+pub const fn button_counter() -> ButtonStyleSheet {
     ButtonStyleSheet {
         normal: &ButtonStyle {
             font: Font::DEMIBOLD,
@@ -363,11 +366,11 @@ pub fn button_counter() -> ButtonStyleSheet {
     }
 }
 
-pub fn button_clear() -> ButtonStyleSheet {
+pub const fn button_clear() -> ButtonStyleSheet {
     button_default()
 }
 
-pub fn loader_default() -> LoaderStyleSheet {
+pub const fn loader_default() -> LoaderStyleSheet {
     LoaderStyleSheet {
         normal: &LoaderStyle {
             icon: None,
@@ -410,6 +413,7 @@ pub const TEXT_CHECKLIST_SELECTED: TextStyle =
     TextStyle::new(Font::NORMAL, FG, BG, GREY_LIGHT, GREY_LIGHT);
 pub const TEXT_CHECKLIST_DONE: TextStyle =
     TextStyle::new(Font::NORMAL, GREEN_DARK, BG, GREY_LIGHT, GREY_LIGHT);
+pub const TEXT_XPUB: TextStyle = TEXT_NORMAL.with_line_breaking(LineBreaking::BreakWordsNoHyphen);
 
 pub const FORMATTED: FormattedFonts = FormattedFonts {
     normal: Font::NORMAL,
@@ -424,6 +428,8 @@ pub const BUTTON_HEIGHT: i16 = 38;
 pub const BUTTON_SPACING: i16 = 6;
 pub const CHECKLIST_SPACING: i16 = 10;
 pub const RECOVERY_SPACING: i16 = 18;
+pub const CORNER_BUTTON_SIDE: i16 = 32;
+pub const CORNER_BUTTON_SPACING: i16 = 8;
 
 /// Standard button height in pixels.
 pub const fn button_rows(count: usize) -> i16 {
@@ -452,6 +458,10 @@ pub const fn borders() -> Insets {
 
 pub const fn borders_scroll() -> Insets {
     Insets::new(13, 5, 14, 10)
+}
+
+pub const fn borders_horizontal_scroll() -> Insets {
+    Insets::new(13, 10, 0, 10)
 }
 
 pub const fn borders_notification() -> Insets {
