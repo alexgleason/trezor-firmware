@@ -9,7 +9,7 @@ from trezor.wire import DataError
 
 from apps.common import readers
 
-from . import definitions_constants, networks, tokens
+from . import definitions_constants as consts, networks, tokens
 from .networks import UNKNOWN_NETWORK
 
 if TYPE_CHECKING:
@@ -23,12 +23,13 @@ def decode_definition(definition: bytes, expected_type: type[DefType]) -> DefTyp
     # check network definition
     r = utils.BufferReader(definition)
     expected_type_number = EthereumDefinitionType.NETWORK
+    # TODO: can't check equality of MsgDefObjs now, so we check the name
     if expected_type.MESSAGE_NAME == EthereumTokenInfo.MESSAGE_NAME:
         expected_type_number = EthereumDefinitionType.TOKEN
 
     try:
         # first check format version
-        if r.read_memoryview(5) != definitions_constants.FORMAT_VERSION:
+        if r.read_memoryview(len(consts.FORMAT_VERSION)) != consts.FORMAT_VERSION:
             raise DataError("Invalid definition format")
 
         # second check the type of the data
@@ -36,23 +37,23 @@ def decode_definition(definition: bytes, expected_type: type[DefType]) -> DefTyp
             raise DataError("Definition type mismatch")
 
         # third check data version
-        if readers.read_uint32_be(r) < definitions_constants.MIN_DATA_VERSION:
+        if readers.read_uint32_be(r) < consts.MIN_DATA_VERSION:
             raise DataError("Definition is outdated")
 
         # get payload
-        payload_length_in_bytes = readers.read_uint16_be(r)
-        payload = r.read_memoryview(payload_length_in_bytes)
+        payload_length = readers.read_uint16_be(r)
+        payload = r.read_memoryview(payload_length)
         end_of_payload = r.offset
 
         # at the end compute Merkle tree root hash using
         # provided leaf data (payload with prefix) and proof
-        no_of_proofs = r.get()
+        proof_length = r.get()
 
-        hash = sha256(b"\x00" + definition[:end_of_payload]).digest()
-        for _ in range(no_of_proofs):
-            proof = r.read_memoryview(32)
-            hash_a = min(hash, proof)
-            hash_b = max(hash, proof)
+        hash = sha256(b"\x00" + memoryview(definition)[:end_of_payload]).digest()
+        for _ in range(proof_length):
+            proof_entry = r.read_memoryview(32)
+            hash_a = min(hash, proof_entry)
+            hash_b = max(hash, proof_entry)
             hash = sha256(b"\x01" + hash_a + hash_b).digest()
 
         signed_tree_root = r.read_memoryview(64)
@@ -61,14 +62,12 @@ def decode_definition(definition: bytes, expected_type: type[DefType]) -> DefTyp
         raise DataError("Invalid Ethereum definition")
 
     # verify signature
-    if not ed25519.verify(
-        definitions_constants.DEFINITIONS_PUBLIC_KEY, signed_tree_root, hash
-    ):
+    if not ed25519.verify(consts.DEFINITIONS_PUBLIC_KEY, signed_tree_root, hash):
         error_msg = DataError("Invalid definition signature")
         if __debug__:
             # check against dev key
             if not ed25519.verify(
-                definitions_constants.DEFINITIONS_DEV_PUBLIC_KEY,
+                consts.DEFINITIONS_DEV_PUBLIC_KEY,
                 signed_tree_root,
                 hash,
             ):

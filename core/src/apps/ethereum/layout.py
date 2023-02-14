@@ -38,8 +38,8 @@ def require_confirm_tx(
         to_str = "new contract?"
     return confirm_output(
         ctx,
-        address=to_str,
-        amount=format_ethereum_amount(value, token, network),
+        to_str,
+        format_ethereum_amount(value, token, network),
         br_code=ButtonRequestType.SignTx,
     )
 

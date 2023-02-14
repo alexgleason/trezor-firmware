@@ -58,12 +58,6 @@ def by_slip44(slip44: int) -> EthereumNetworkInfo:
     return UNKNOWN_NETWORK
 
 
-def all_slip44_ids_hardened() -> Iterator[int]:
-    for n in _networks_iterator():
-        # n_slip_44 is the second element
-        yield n[1] | HARDENED
-
-
 # fmt: off
 def _networks_iterator() -> Iterator[NetworkInfoTuple]:
 % for n in sorted(supported_on("trezor2", eth), key=lambda network: (int(network.chain_id), network.name)):
