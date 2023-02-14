@@ -43,13 +43,11 @@ def decode_definition(definition: bytes, expected_type: type[DefType]) -> DefTyp
         # get payload
         payload_length = readers.read_uint16_be(r)
         payload = r.read_memoryview(payload_length)
-        end_of_payload = r.offset
 
         # at the end compute Merkle tree root hash using
         # provided leaf data (payload with prefix) and proof
+        hash = sha256(b"\x00" + memoryview(definition)[:r.offset]).digest()
         proof_length = r.get()
-
-        hash = sha256(b"\x00" + memoryview(definition)[:end_of_payload]).digest()
         for _ in range(proof_length):
             proof_entry = r.read_memoryview(32)
             hash_a = min(hash, proof_entry)
