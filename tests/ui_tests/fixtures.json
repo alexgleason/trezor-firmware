@@ -903,7 +903,7 @@
 "TT_bitcoin-test_signmessage.py::test_signmessage_pagination[normal_text]": "809c3a1ef06168b3e5e0d3f8cbdc9b5d81846b45e271d0ed2a3f13e036aca7dc",
 "TT_bitcoin-test_signmessage.py::test_signmessage_pagination[single_line_over]": "8743b36aa9dd76e5cc689b320f525f8e891659596d14e78145d6a66ba7765919",
 "TT_bitcoin-test_signmessage.py::test_signmessage_pagination[utf_nospace]": "7741d865bd97c2ce27b81cb6a641e633b42c56c26837daefbae70c023bb5dafc",
-"TT_bitcoin-test_signmessage.py::test_signmessage_pagination[utf_text]": "f693cc47c4e591d613e2ff308e7e44f4517c9e5350f3e2b9a914dac708509306",
+"TT_bitcoin-test_signmessage.py::test_signmessage_pagination[utf_text]": "d0315318ae0444130559e4665332947d39804ef338787699be059733a693d13c",
 "TT_bitcoin-test_signmessage.py::test_signmessage_pagination_trailing_newline": "42963a1b3aadba3c86f12bed989b456a0a5c20497bfbe47793a871bacb189f69",
 "TT_bitcoin-test_signmessage.py::test_signmessage_path_warning": "8940c72cba44df5a8c71fdeffb9fa5ba3518351f6ce694d5f558d4c4dfd151c2",
 "TT_bitcoin-test_signtx.py::test_attack_change_input_address": "5d6a0380c86c3c7a2743e4a6da9db9e0b49fea88f545ebd62b84bbe8e5f7dafc",
