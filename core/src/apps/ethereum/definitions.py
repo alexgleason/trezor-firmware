@@ -79,7 +79,7 @@ def decode_definition(definition: bytes, expected_type: type[DefType]) -> DefTyp
     # decode it if it's OK
     try:
         return protobuf.decode(payload, expected_type, True)
-    except ValueError as e:
+    except ValueError:
         raise DataError("Invalid Ethereum definition")
 
 

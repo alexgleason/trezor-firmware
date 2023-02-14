@@ -6,7 +6,6 @@ if TYPE_CHECKING:
     from trezor.messages import (
         EthereumSignMessage,
         EthereumMessageSignature,
-        EthereumNetworkInfo,
     )
     from trezor.wire import Context
 
