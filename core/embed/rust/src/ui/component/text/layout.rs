@@ -570,7 +570,9 @@ impl Span {
             ch == ASCII_SPACE || ch == ASCII_LF || ch == ASCII_CR
         }
 
-        let fits_completely = text_font.text_width(text) <= max_width;
+        // Checking if the trimmed text fits the line - the whitespace is not being
+        // drawn, so we don't need to account for it.
+        let fits_completely = text_font.text_width(text.trim_end()) <= max_width;
         let mut use_hyphens = !matches!(breaking, LineBreaking::BreakWordsNoHyphen);
 
         // How much space we need to left unused at the end of the line
