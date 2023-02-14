@@ -601,7 +601,7 @@ void ethereum_signing_init(const EthereumSignTx *msg, const HDNode *node,
                            const EthereumDefinitionsDecoded *defs) {
   struct signing_params params = {
       .chain_id = msg->chain_id,
-      .chain_suffix = defs->network.shortcut,
+      .chain_suffix = defs->network->symbol,
       .data_length = msg->data_length,
       .data_initial_chunk_size = msg->data_initial_chunk.size,
       .data_initial_chunk_bytes = msg->data_initial_chunk.bytes,
@@ -638,7 +638,7 @@ void ethereum_signing_init(const EthereumSignTx *msg, const HDNode *node,
     }
   }
 
-  ethereum_signing_handle_erc20(&params, &defs->token);
+  ethereum_signing_handle_erc20(&params, defs->token);
 
   if (!ethereum_signing_confirm_common(&params)) {
     fsm_sendFailure(FailureType_Failure_ActionCancelled, NULL);
@@ -713,7 +713,7 @@ void ethereum_signing_init_eip1559(const EthereumSignTxEIP1559 *msg,
 
   struct signing_params params = {
       .chain_id = msg->chain_id,
-      .chain_suffix = defs->network.shortcut,
+      .chain_suffix = defs->network->symbol,
 
       .data_length = msg->data_length,
       .data_initial_chunk_size = msg->data_initial_chunk.size,
@@ -740,7 +740,7 @@ void ethereum_signing_init_eip1559(const EthereumSignTxEIP1559 *msg,
     return;
   }
 
-  ethereum_signing_handle_erc20(&params, &defs->token);
+  ethereum_signing_handle_erc20(&params, defs->token);
 
   if (!ethereum_signing_confirm_common(&params)) {
     fsm_sendFailure(FailureType_Failure_ActionCancelled, NULL);
@@ -1051,6 +1051,19 @@ bool ethereum_parse(const char *address, uint8_t pubkeyhash[20]) {
   return true;
 }
 
+static bool check_ethereum_slip44_unhardened(
+    uint32_t slip44, const EthereumNetworkInfo *network) {
+  if (is_unknown_network(network)) {
+    // Allow Ethereum or testnet paths for unknown networks.
+    return slip44 == 60 || slip44 == 1;
+  } else if (network->slip44 != 60 && network->slip44 != 1) {
+    // Allow cross-signing with Ethereum unless it's testnet.
+    return (slip44 == network->slip44 || slip44 == 60);
+  } else {
+    return (slip44 == network->slip44);
+  }
+}
+
 bool ethereum_path_check_bip44(uint32_t address_n_count,
                                const uint32_t *address_n, bool pubkey_export,
                                const EthereumNetworkInfo *network) {
@@ -1065,15 +1078,7 @@ bool ethereum_path_check_bip44(uint32_t address_n_count,
   valid = valid && ((address_n[2] & PATH_UNHARDEN_MASK) <= PATH_MAX_ACCOUNT);
 
   uint32_t path_slip44 = address_n[1] & PATH_UNHARDEN_MASK;
-  if (network->slip44 == SLIP44_UNKNOWN) {
-    // Allow Ethereum or testnet paths for unknown networks.
-    valid = valid && (path_slip44 == 60 || path_slip44 == 1);
-  } else if (network->slip44 != 60 && network->slip44 != 1) {
-    // Allow cross-signing with Ethereum unless it's testnet.
-    valid = valid && (path_slip44 == network->slip44 || path_slip44 == 60);
-  } else {
-    valid = valid && (path_slip44 == network->slip44);
-  }
+  valid = valid && check_ethereum_slip44_unhardened(path_slip44, network);
 
   if (pubkey_export) {
     // m/44'/coin_type'/account'/*
@@ -1111,7 +1116,7 @@ bool ethereum_path_check_bip44(uint32_t address_n_count,
 
 static bool ethereum_path_check_casa45(uint32_t address_n_count,
                                        const uint32_t *address_n,
-                                       uint64_t chain) {
+                                       const EthereumNetworkInfo *network) {
   bool valid = (address_n_count == 5);
   valid = valid && (address_n[0] == (PATH_HARDENED | 45));
   valid = valid && (address_n[1] < PATH_HARDENED);
@@ -1120,35 +1125,23 @@ static bool ethereum_path_check_casa45(uint32_t address_n_count,
   valid = valid && (address_n[4] <= PATH_MAX_ADDRESS_INDEX);
 
   uint32_t path_slip44 = address_n[1];
-  if (chain == CHAIN_ID_UNKNOWN) {
-    valid = valid && (is_ethereum_slip44(path_slip44));
-  } else {
-    uint32_t chain_slip44 = ethereum_slip44_by_chain_id(chain);
-    if (chain_slip44 == SLIP44_UNKNOWN) {
-      // Allow Ethereum or testnet paths for unknown networks.
-      valid = valid && (path_slip44 == 60 || path_slip44 == 1);
-    } else if (chain_slip44 != 60 && chain_slip44 != 1) {
-      // Allow cross-signing with Ethereum unless it's testnet.
-      valid = valid && (path_slip44 == chain_slip44 || path_slip44 == 60);
-    } else {
-      valid = valid && (path_slip44 == chain_slip44);
-    }
-  }
+  valid = valid && check_ethereum_slip44_unhardened(path_slip44, network);
 
   return valid;
 }
 
 bool ethereum_path_check(uint32_t address_n_count, const uint32_t *address_n,
-                         bool pubkey_export, uint64_t chain) {
+                         bool pubkey_export,
+                         const EthereumNetworkInfo *network) {
   if (address_n_count == 0) {
     return false;
   }
   if (address_n[0] == (PATH_HARDENED | 44)) {
     return ethereum_path_check_bip44(address_n_count, address_n, pubkey_export,
-                                     chain);
+                                     network);
   }
   if (address_n[0] == (PATH_HARDENED | 45)) {
-    return ethereum_path_check_casa45(address_n_count, address_n, chain);
+    return ethereum_path_check_casa45(address_n_count, address_n, network);
   }
   return false;
 }

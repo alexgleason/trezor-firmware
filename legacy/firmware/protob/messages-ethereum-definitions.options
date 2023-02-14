@@ -1,5 +1,5 @@
 EthereumNetworkInfo.name                max_size:256
-EthereumNetworkInfo.shortcut            max_size:256
+EthereumNetworkInfo.symbol              max_size:256
 
 EthereumTokenInfo.name                  max_size:256
 EthereumTokenInfo.address               max_size:20

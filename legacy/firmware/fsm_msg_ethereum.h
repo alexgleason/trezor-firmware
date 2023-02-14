@@ -50,8 +50,8 @@ static const EthereumDefinitionsDecoded *get_definitions(
     }
   }
 
-  return get_EthereumDefinitionsDecoded(encoded_network, encoded_token,
-                                        chain_id, SLIP44_UNKNOWN, to);
+  return ethereum_get_definitions(encoded_network, encoded_token, chain_id,
+                                  SLIP44_UNKNOWN, to);
 }
 
 static const EthereumNetworkInfo *get_network_definition_only(
@@ -59,13 +59,13 @@ static const EthereumNetworkInfo *get_network_definition_only(
     const uint32_t slip44) {
   const EncodedNetwork *en = NULL;
   if (has_encoded_network) {
-    en = (const EncodedNetwork *)encoded_network;
+    en = encoded_network;
   }
 
   const EthereumDefinitionsDecoded *defs =
-      get_EthereumDefinitionsDecoded(en, NULL, CHAIN_ID_UNKNOWN, slip44, NULL);
+      ethereum_get_definitions(en, NULL, CHAIN_ID_UNKNOWN, slip44, NULL);
 
-  return defs ? &defs->network : NULL;
+  return defs ? defs->network : NULL;
 }
 
 void fsm_msgEthereumGetPublicKey(const EthereumGetPublicKey *msg) {
@@ -127,7 +127,7 @@ void fsm_msgEthereumSignTx(const EthereumSignTx *msg) {
                       msg->has_to ? msg->to : NULL);
 
   if (!defs || !fsm_ethereumCheckPath(msg->address_n_count, msg->address_n,
-                                      false, &defs->network)) {
+                                      false, defs->network)) {
     layoutHome();
     return;
   }
@@ -149,7 +149,7 @@ void fsm_msgEthereumSignTxEIP1559(const EthereumSignTxEIP1559 *msg) {
                       msg->has_to ? msg->to : NULL);
 
   if (!defs || !fsm_ethereumCheckPath(msg->address_n_count, msg->address_n,
-                                      false, &defs->network)) {
+                                      false, defs->network)) {
     layoutHome();
     return;
   }

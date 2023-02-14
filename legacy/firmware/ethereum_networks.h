@@ -22,12 +22,13 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "messages-ethereum-definitions.pb.h"
 
+extern const EthereumNetworkInfo UNKNOWN_NETWORK;
 #define SLIP44_UNKNOWN UINT32_MAX
-#define UNKNOWN_NETWORK_SHORTCUT " UNKN"
 
-const char *get_ethereum_suffix(uint64_t chain_id);
-bool is_ethereum_slip44(uint32_t slip44);
-uint32_t ethereum_slip44_by_chain_id(uint64_t chain_id);
+const EthereumNetworkInfo *ethereum_get_network_by_chain_id(uint64_t chain_id);
+const EthereumNetworkInfo *ethereum_get_network_by_slip44(uint32_t slip44);
+bool is_unknown_network(const EthereumNetworkInfo *network);
 
 #endif

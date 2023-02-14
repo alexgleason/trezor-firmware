@@ -36,7 +36,8 @@
 #include "util.h"
 
 typedef pb_byte_t proof_entry[SHA256_DIGEST_LENGTH];
-typedef struct _ParsedEncodedEthereumDefinitions {
+
+struct EncodedDefinition {
   // prefix
   pb_byte_t format_version[FORMAT_VERSION_LENGTH];
   uint8_t definition_type;
@@ -51,11 +52,11 @@ typedef struct _ParsedEncodedEthereumDefinitions {
   const proof_entry *proof;
 
   const ed25519_signature *signed_root_hash;
-} ParsedEncodedEthereumDefinitions;
+};
 
-bool _parse_encoded_EthereumDefinitions(
-    ParsedEncodedEthereumDefinitions *const result, const pb_size_t size,
-    const pb_byte_t *bytes) {
+static bool parse_encoded_definition(struct EncodedDefinition *const result,
+                                     const pb_size_t size,
+                                     const pb_byte_t *bytes) {
   // format version + definition type + data version + payload length + payload
   // (at least 1B) + proof length + signed Merkle tree root hash
   if (size < (FORMAT_VERSION_LENGTH + 1 + 4 + 2 + 1 + 1 +
@@ -99,58 +100,62 @@ bool _parse_encoded_EthereumDefinitions(
   return true;
 }
 
-bool _decode_definition(const pb_size_t size, const pb_byte_t *bytes,
-                        const EthereumDefinitionType expected_type,
-                        void *definition) {
+static bool decode_definition(const pb_size_t size, const pb_byte_t *bytes,
+                              const EthereumDefinitionType expected_type,
+                              void *definition) {
   // parse received definition
-  static ParsedEncodedEthereumDefinitions parsed_def;
-  if (!_parse_encoded_EthereumDefinitions(&parsed_def, size, bytes)) {
-    fsm_sendFailure(FailureType_Failure_DataError,
-                    _("Invalid Ethereum definition"));
-    return false;
+  static struct EncodedDefinition parsed_def;
+  const char *error_str = _("Invalid Ethereum definition");
+
+  memzero(&parsed_def, sizeof(parsed_def));
+  if (!parse_encoded_definition(&parsed_def, size, bytes)) {
+    goto err;
   }
 
   // check definition fields
   if (memcmp(FORMAT_VERSION, parsed_def.format_version,
              FORMAT_VERSION_LENGTH)) {
-    fsm_sendFailure(FailureType_Failure_DataError,
-                    _("Invalid definition format"));
-    return false;
+    error_str = _("Invalid definition format");
+    goto err;
   }
 
   if (expected_type != parsed_def.definition_type) {
-    fsm_sendFailure(FailureType_Failure_DataError,
-                    _("Definition type mismatch"));
-    return false;
+    error_str = _("Definition type mismatch");
+    goto err;
   }
 
   if (MIN_DATA_VERSION > parsed_def.data_version) {
-    fsm_sendFailure(FailureType_Failure_DataError, _("Definition is outdated"));
-    return false;
+    error_str = _("Definition is outdated");
+    goto err;
   }
 
   // compute Merkle tree root hash from proof
   uint8_t hash[SHA256_DIGEST_LENGTH] = {0};
-  uint8_t hash_prefix = '\x00';
   SHA256_CTX context = {0};
   sha256_Init(&context);
+
   // leaf hash = sha256('\x00' + leaf data)
-  sha256_Update(&context, &hash_prefix, 1);
-  sha256_Update(&context, bytes,
-                (parsed_def.payload - bytes) + parsed_def.payload_length);
+  sha256_Update(&context, (uint8_t[]){0}, 1);
+  // signed data is everything from start of `bytes` to the end of `payload`
+  const pb_byte_t *payload_end = parsed_def.payload + parsed_def.payload_length;
+  size_t signed_data_size = payload_end - bytes;
+  sha256_Update(&context, bytes, signed_data_size);
+
   sha256_Final(&context, hash);
 
-  int cmp = 0;
-  const void *min, *max;
-  hash_prefix = '\x01';
+  const uint8_t *min, *max;
   for (uint8_t i = 0; i < parsed_def.proof_length; i++) {
     sha256_Init(&context);
     // node hash = sha256('\x01' + min(hash, next_proof) + max(hash,
     // next_proof))
-    sha256_Update(&context, &hash_prefix, 1);
-    cmp = memcmp(hash, parsed_def.proof + i, SHA256_DIGEST_LENGTH);
-    min = cmp < 1 ? hash : (void *)(parsed_def.proof + i);
-    max = cmp > 0 ? hash : (void *)(parsed_def.proof + i);
+    sha256_Update(&context, (uint8_t[]){1}, 1);
+    if (memcmp(hash, parsed_def.proof[i], SHA256_DIGEST_LENGTH) <= 0) {
+      min = hash;
+      max = parsed_def.proof[i];
+    } else {
+      min = parsed_def.proof[i];
+      max = hash;
+    }
     sha256_Update(&context, min, SHA256_DIGEST_LENGTH);
     sha256_Update(&context, max, SHA256_DIGEST_LENGTH);
     sha256_Final(&context, hash);
@@ -166,9 +171,8 @@ bool _decode_definition(const pb_size_t size, const pb_byte_t *bytes,
 #endif
   ) {
     // invalid signature
-    fsm_sendFailure(FailureType_Failure_DataError,
-                    _("Invalid definition signature"));
-    return false;
+    error_str = _("Invalid definition signature");
+    goto err;
   }
 
   // decode message
@@ -178,145 +182,133 @@ bool _decode_definition(const pb_size_t size, const pb_byte_t *bytes,
   pb_istream_t stream =
       pb_istream_from_buffer(parsed_def.payload, parsed_def.payload_length);
   bool status = pb_decode(&stream, fields, definition);
-  if (!status) {
-    // invalid message
-    fsm_sendFailure(FailureType_Failure_DataError, stream.errmsg);
-    return false;
+  if (status) {
+    return true;
   }
 
-  return true;
+  // fallthrough to error handling in case of decoding failure
+  error_str = stream.errmsg;
+
+err:
+  memzero(&parsed_def, sizeof(parsed_def));
+  fsm_sendFailure(FailureType_Failure_DataError, error_str);
+  return false;
 }
 
-void _set_EthereumNetworkInfo_to_builtin(const uint64_t ref_chain_id,
-                                         const uint32_t ref_slip44,
-                                         EthereumNetworkInfo *network) {
-  if (ref_chain_id == CHAIN_ID_UNKNOWN) {
-    // we don't know chain id so we can use only slip44
-    network->slip44 =
-        is_ethereum_slip44(ref_slip44) ? ref_slip44 : SLIP44_UNKNOWN;
+static const EthereumNetworkInfo *get_network(
+    const EncodedNetwork *encoded_network, const uint64_t chain_id,
+    const uint32_t slip44) {
+  static EthereumNetworkInfo decoded_network;
+  const EthereumNetworkInfo *network = &UNKNOWN_NETWORK;
+
+  // try to get built-in definition
+  if (chain_id != CHAIN_ID_UNKNOWN) {
+    network = ethereum_get_network_by_chain_id(chain_id);
+  } else if (slip44 != SLIP44_UNKNOWN) {
+    network = ethereum_get_network_by_slip44(slip44);
   } else {
-    network->slip44 = ethereum_slip44_by_chain_id(ref_chain_id);
+    // this should not happen
+    return NULL;
   }
-  network->chain_id = ref_chain_id;
-  memzero(network->shortcut, sizeof(network->shortcut));
-  const char *sc = get_ethereum_suffix(ref_chain_id);
-  strncpy(network->shortcut, sc, sizeof(network->shortcut) - 1);
-  memzero(network->name, sizeof(network->name));
-}
-
-bool _get_EthereumNetworkInfo(const EncodedNetwork *encoded_network,
-                              const uint64_t ref_chain_id,
-                              const uint32_t ref_slip44,
-                              EthereumNetworkInfo *network) {
-  // try to get built-in definition
-  _set_EthereumNetworkInfo_to_builtin(ref_chain_id, ref_slip44, network);
-
-  // if we still do not have any network definition try to decode the received
-  // one
-  if (network->slip44 == SLIP44_UNKNOWN && encoded_network != NULL) {
-    if (_decode_definition(encoded_network->size, encoded_network->bytes,
-                           EthereumDefinitionType_NETWORK, network)) {
-      if (ref_chain_id != CHAIN_ID_UNKNOWN &&
-          network->chain_id != ref_chain_id) {
-        // chain_id mismatch - error and reset definition
-        fsm_sendFailure(FailureType_Failure_DataError,
-                        _("Network definition mismatch"));
-        return false;
-      } else if (ref_slip44 != SLIP44_UNKNOWN &&
-                 network->slip44 != ref_slip44) {
-        // slip44 mismatch - reset network definition
-        _set_EthereumNetworkInfo_to_builtin(CHAIN_ID_UNKNOWN, SLIP44_UNKNOWN,
-                                            network);
-      } else {
-        // chain_id does match the reference one (if provided) so prepend one
-        // space character to symbol, terminate it (encoded definitions does not
-        // have space prefix) and return the decoded data
-        memmove(network->shortcut + 1, network->shortcut,
-                sizeof(network->shortcut) - 2);
-        network->shortcut[0] = ' ';
-        network->shortcut[sizeof(network->shortcut) - 1] = 0;
-      }
-    } else {
-      // decoding failed - reset network definition
-      _set_EthereumNetworkInfo_to_builtin(CHAIN_ID_UNKNOWN, SLIP44_UNKNOWN,
-                                          network);
-    }
+  // if we found one, or if there's no data to decode, we are done
+  if (!is_unknown_network(network) || encoded_network == NULL) {
+    return network;
   }
 
-  return true;
-}
-
-bool _get_EthereumTokenInfo(const EncodedToken *encoded_token,
-                            const uint64_t ref_chain_id,
-                            const char *ref_address, EthereumTokenInfo *token) {
-  EthereumTokenInfo_address_t ref_address_bytes;
-  const EthereumTokenInfo *builtin = UnknownToken;
-
-  // convert ref_address string to bytes
-  bool address_parsed =
-      ref_address && ethereum_parse(ref_address, ref_address_bytes.bytes);
-
-  // try to get built-in definition
-  if (address_parsed) {
-    builtin = tokenByChainAddress(ref_chain_id, ref_address_bytes.bytes);
-  }
-
-  // if we do not have any token definition try to decode the received one
-  if (builtin == UnknownToken && encoded_token != NULL) {
-    if (_decode_definition(encoded_token->size, encoded_token->bytes,
-                           EthereumDefinitionType_TOKEN, token)) {
-      if ((ref_chain_id == CHAIN_ID_UNKNOWN ||
-           token->chain_id == ref_chain_id) &&
-          (!address_parsed ||
-           !memcmp(token->address.bytes, ref_address_bytes.bytes,
-                   sizeof(token->address.bytes)))) {
-        // chain_id and/or address does match the reference ones (if provided)
-        // so prepend one space character to symbol, terminate it (encoded
-        // definitions does not have space prefix) and return the decoded data
-        memmove(token->symbol + 1, token->symbol, sizeof(token->symbol) - 2);
-        token->symbol[0] = ' ';
-        token->symbol[sizeof(token->symbol) - 1] = 0;
-        return true;
-      } else {
-        fsm_sendFailure(FailureType_Failure_DataError,
-                        _("Token definition mismatch"));
-      }
-    }
-
-    // decoding failed or token definition has different
-    // chain_id and/or address
-    return false;
-  }
-
-  // copy result
-  *token = *builtin;
-  return true;
-}
-
-const EthereumDefinitionsDecoded *get_EthereumDefinitionsDecoded(
-    const EncodedNetwork *encoded_network, const EncodedToken *encoded_token,
-    const uint64_t ref_chain_id, const uint32_t ref_slip44,
-    const char *ref_address) {
-  static EthereumDefinitionsDecoded defs;
-  memzero(&defs, sizeof(defs));
-
-  if (!_get_EthereumNetworkInfo(encoded_network, ref_chain_id, ref_slip44,
-                                &defs.network)) {
-    // error while decoding - chain IDs mismatch
+  // if we still do not have any network definition try to decode received data
+  memzero(&decoded_network, sizeof(decoded_network));
+  if (!decode_definition(encoded_network->size, encoded_network->bytes,
+                         EthereumDefinitionType_NETWORK, &decoded_network)) {
+    // error already sent by decode_definition
     return NULL;
   }
 
-  if (defs.network.slip44 != SLIP44_UNKNOWN &&
-      defs.network.chain_id != CHAIN_ID_UNKNOWN) {
-    // we have found network definition, we can try to load token definition
-    if (!_get_EthereumTokenInfo(encoded_token, defs.network.chain_id,
-                                ref_address, &defs.token)) {
+  if (chain_id != CHAIN_ID_UNKNOWN && network->chain_id != chain_id) {
+    fsm_sendFailure(FailureType_Failure_DataError,
+                    _("Network definition mismatch"));
+    return NULL;
+  }
+  if (slip44 != SLIP44_UNKNOWN && network->slip44 != slip44) {
+    fsm_sendFailure(FailureType_Failure_DataError,
+                    _("Network definition mismatch"));
+    return NULL;
+  }
+
+  return &decoded_network;
+}
+
+static const EthereumTokenInfo *get_token(const EncodedToken *encoded_token,
+                                          const uint64_t chain_id,
+                                          const char *address) {
+  static EthereumTokenInfo decoded_token;
+
+  // if we do not know the chain_id, we cannot get the token
+  if (chain_id == CHAIN_ID_UNKNOWN) {
+    return &UNKNOWN_TOKEN;
+  }
+
+  // convert address string to bytes
+  EthereumTokenInfo_address_t address_bytes;
+  bool address_parsed = address && ethereum_parse(address, address_bytes.bytes);
+  if (!address_parsed) {
+    // without a valid address, we cannot get the token
+    return &UNKNOWN_TOKEN;
+  }
+
+  // try to get built-in definition
+  const EthereumTokenInfo *token =
+      ethereum_token_by_address(chain_id, address_bytes.bytes);
+  if (!is_unknown_token(token) || encoded_token == NULL) {
+    // if we found one, or if there's no data to decode, we are done
+    return token;
+  }
+
+  // try to decode received definition
+  memzero(&decoded_token, sizeof(decoded_token));
+  if (!decode_definition(encoded_token->size, encoded_token->bytes,
+                         EthereumDefinitionType_TOKEN, &decoded_token)) {
+    // error already sent by decode_definition
+    return NULL;
+  }
+
+  if (token->chain_id != chain_id ||
+      memcmp(token->address.bytes, address_bytes.bytes,
+             sizeof(token->address.bytes))) {
+    // receiving a mismatched token is not an error (we expect being able to get
+    // multiple token definitions in the future, for multiple networks)
+    // but we must not accept the mismatched definition
+    memzero(&decoded_token, sizeof(decoded_token));
+    return &UNKNOWN_TOKEN;
+  }
+
+  return &decoded_token;
+}
+
+const EthereumDefinitionsDecoded *ethereum_get_definitions(
+    const EncodedNetwork *encoded_network, const EncodedToken *encoded_token,
+    const uint64_t chain_id, const uint32_t slip44, const char *token_address) {
+  static EthereumDefinitionsDecoded defs;
+  memzero(&defs, sizeof(defs));
+
+  const EthereumNetworkInfo *network =
+      get_network(encoded_network, chain_id, slip44);
+  if (network == NULL) {
+    // error while decoding, failure was sent by get_network
+    return NULL;
+  }
+  defs.network = network;
+
+  if (!is_unknown_network(network) && token_address != NULL) {
+    const EthereumTokenInfo *token =
+        get_token(encoded_token, network->chain_id, token_address);
+    if (token == NULL) {
+      // error while decoding, failure was sent by get_token
       return NULL;
     }
+    defs.token = token;
   } else {
-    // if we did not find any network definition, set token definition to
-    // unknown token
-    defs.token = *UnknownToken;
+    defs.token = &UNKNOWN_TOKEN;
   }
+
   return &defs;
 }
