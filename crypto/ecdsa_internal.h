@@ -25,7 +25,6 @@
 
 #include <stdint.h>
 #include "ecdsa.h"
-#include "options.h"
 
 // trezor-crypto native implementations
 int tc_ecdsa_get_public_key33(const ecdsa_curve *curve, const uint8_t *priv_key,
