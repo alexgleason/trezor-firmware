@@ -190,7 +190,7 @@ int zkp_ecdsa_sign_digest(
     }
   }
 
-  for (int i = 0; i < 10000; i++) {
+  for (uint16_t i = 0; i < 10000; i++) {
     if (result == 0) {
       if (secp256k1_context_writable_randomize(context_writable) != 0) {
         result = 1;
@@ -203,7 +203,8 @@ int zkp_ecdsa_sign_digest(
       void *rfc6979_nonce = NULL;
       if (i != 0) {
         // If this is a retry attempt, then randomize rfc6979 with the counter.
-        memcpy(rfc6979_nonce_data, &i, sizeof(i));
+        rfc6979_nonce_data[0] = i & 0xff;
+        rfc6979_nonce_data[0] = (i >> 8) & 0xff;
         rfc6979_nonce = rfc6979_nonce_data;
       }
 
