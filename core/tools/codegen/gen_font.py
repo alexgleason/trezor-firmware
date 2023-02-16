@@ -4,6 +4,9 @@
 
 
 import freetype
+from pathlib import Path
+
+HERE = Path(__file__).parent
 
 MIN_GLYPH = ord(" ")
 MAX_GLYPH = ord("~")
@@ -53,8 +56,9 @@ def process_bitmap_buffer(buf, bpp):
 
 
 def process_face(name, style, size, bpp=4, shave_bearingX=0, ext="ttf"):
-    print("Processing ... %s %s %s" % (name, style, size))
-    face = freetype.Face("fonts/%s-%s.%s" % (name, style, ext))
+    font_file = "fonts/%s-%s.%s" % (name, style, ext)
+    print(f"Processing ... {font_file}")
+    face = freetype.Face(str(HERE / font_file))
     face.set_pixel_sizes(0, size)
     fontname = "%s_%s_%d" % (name.lower(), style.lower(), size)
     font_ymin = 0
@@ -64,7 +68,9 @@ def process_face(name, style, size, bpp=4, shave_bearingX=0, ext="ttf"):
         f.write("#include <stdint.h>\n\n")
         f.write("// clang-format off\n\n")
         f.write("// - the first two bytes are width and height of the glyph\n")
-        f.write("// - the third, fourth and fifth bytes are advance, bearingX and bearingY of the horizontal metrics of the glyph\n")
+        f.write(
+            "// - the third, fourth and fifth bytes are advance, bearingX and bearingY of the horizontal metrics of the glyph\n"
+        )
         f.write("// - the rest is packed %d-bit glyph data\n\n" % bpp)
         for i in range(MIN_GLYPH, MAX_GLYPH + 1):
             c = chr(i)
@@ -100,7 +106,7 @@ def process_face(name, style, size, bpp=4, shave_bearingX=0, ext="ttf"):
             bearingY = metrics.horiBearingY // 64
             assert advance >= 0 and advance <= 255
             assert bearingX >= 0 and bearingX <= 255
-            if bearingY < 0: # HACK
+            if bearingY < 0:  # HACK
                 print("normalizing bearingY %d for '%s'" % (bearingY, c))
                 bearingY = 0
             assert bearingY >= 0 and bearingY <= 255
@@ -139,7 +145,6 @@ def process_face(name, style, size, bpp=4, shave_bearingX=0, ext="ttf"):
                 )
                 nonprintable += " };\n"
 
-
             yMin = bearingY - rows
             yMax = yMin + rows
             font_ymin = min(font_ymin, yMin)
@@ -162,7 +167,10 @@ def process_face(name, style, size, bpp=4, shave_bearingX=0, ext="ttf"):
         f.write("#endif\n")
 
         f.write("#define Font_%s_%s_%d_HEIGHT %d\n" % (name, style, size, size))
-        f.write("#define Font_%s_%s_%d_MAX_HEIGHT %d\n" % (name, style, size, font_ymax - font_ymin))
+        f.write(
+            "#define Font_%s_%s_%d_MAX_HEIGHT %d\n"
+            % (name, style, size, font_ymax - font_ymin)
+        )
         f.write("#define Font_%s_%s_%d_BASELINE %d\n" % (name, style, size, -font_ymin))
         f.write(
             "extern const uint8_t* const Font_%s_%s_%d[%d + 1 - %d];\n"
@@ -177,9 +185,9 @@ def process_face(name, style, size, bpp=4, shave_bearingX=0, ext="ttf"):
 process_face("Roboto", "Regular", 20)
 process_face("Roboto", "Bold", 20)
 
-process_face("TTHoves", "Regular", 18, ext="otf")
-process_face("TTHoves", "DemiBold", 18, ext="otf")
-process_face("TTHoves", "Bold", 16, ext="otf")
+process_face("TTHoves", "Regular", 21, ext="otf")
+process_face("TTHoves", "DemiBold", 21, ext="otf")
+process_face("TTHoves", "Bold", 17, ext="otf")
 process_face("RobotoMono", "Regular", 20)
 
 process_face("PixelOperator", "Regular", 8, bpp=1, shave_bearingX=1)
