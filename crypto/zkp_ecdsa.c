@@ -206,7 +206,7 @@ int zkp_ecdsa_sign_digest(
       if (retry_count != 0) {
         // If this is a retry attempt, then randomize rfc6979 with the counter.
         rfc6979_nonce_data[0] = retry_count & 0xff;
-        rfc6979_nonce_data[0] = (retry_count >> 8) & 0xff;
+        rfc6979_nonce_data[1] = (retry_count >> 8) & 0xff;
         rfc6979_nonce = rfc6979_nonce_data;
       }
 
@@ -232,13 +232,14 @@ int zkp_ecdsa_sign_digest(
     }
     memzero(&recoverable_signature, sizeof(recoverable_signature));
 
-    if (retry_count > 10000){
+    if (retry_count > 10000) {
       result = 1;
     }
     retry_count += 1;
 
     // If the signature is not acceptable then retry.
-  } while (result == 0 && is_canonical && !is_canonical(recid, signature_bytes));
+  } while (result == 0 && is_canonical &&
+           !is_canonical(recid, signature_bytes));
 
   if (context_writable) {
     zkp_context_release_writable();
