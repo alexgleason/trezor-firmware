@@ -48,7 +48,7 @@
 #define BIT_1_LEN 125      // 750ns
 
 #if defined BOARDLOADER
-#error Not implemented for boardloader!
+  #error Not implemented for boardloader!
 #endif
 
 #if defined BOOTLOADER

@@ -34,13 +34,13 @@
 #define COLOR_BL_FG COLOR_BLACK  // foreground
 
 #ifdef RGB16
-#define COLOR_BL_FAIL RGB16(0xFF, 0x00, 0x00)     // red
-#define COLOR_BL_DONE RGB16(0x00, 0xAE, 0x0B)     // green
-#define COLOR_BL_PROCESS RGB16(0x4A, 0x90, 0xE2)  // blue
+  #define COLOR_BL_FAIL RGB16(0xFF, 0x00, 0x00)     // red
+  #define COLOR_BL_DONE RGB16(0x00, 0xAE, 0x0B)     // green
+  #define COLOR_BL_PROCESS RGB16(0x4A, 0x90, 0xE2)  // blue
 #else
-#define COLOR_BL_FAIL COLOR_BL_FG
-#define COLOR_BL_DONE COLOR_BL_FG
-#define COLOR_BL_PROCESS COLOR_BL_FG
+  #define COLOR_BL_FAIL COLOR_BL_FG
+  #define COLOR_BL_DONE COLOR_BL_FG
+  #define COLOR_BL_PROCESS COLOR_BL_FG
 #endif
 
 #define COLOR_WELCOME_BG COLOR_WHITE  // welcome background

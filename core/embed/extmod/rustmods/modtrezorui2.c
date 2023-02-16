@@ -21,7 +21,7 @@
 
 #if MICROPY_PY_TREZORUI2
 
-#include "librust.h"
+  #include "librust.h"
 
 MP_REGISTER_MODULE(MP_QSTR_trezorui2, mp_module_trezorui2,
                    MICROPY_PY_TREZORUI2);

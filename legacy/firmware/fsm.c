@@ -54,14 +54,14 @@
 #include "util.h"
 
 #if !BITCOIN_ONLY
-#include "ethereum.h"
-#include "nem.h"
-#include "nem2.h"
-#include "stellar.h"
+  #include "ethereum.h"
+  #include "nem.h"
+  #include "nem2.h"
+  #include "stellar.h"
 #endif
 
 #if EMULATOR
-#include <stdio.h>
+  #include <stdio.h>
 #endif
 
 // message methods
@@ -402,8 +402,8 @@ bool fsm_layoutPathWarning(void) {
 
 #if !BITCOIN_ONLY
 
-#include "fsm_msg_ethereum.h"
-#include "fsm_msg_nem.h"
-#include "fsm_msg_stellar.h"
+  #include "fsm_msg_ethereum.h"
+  #include "fsm_msg_nem.h"
+  #include "fsm_msg_stellar.h"
 
 #endif

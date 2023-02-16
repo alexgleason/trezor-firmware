@@ -19,15 +19,15 @@
 
 #if !BITCOIN_ONLY
 
-#include "py/objstr.h"
+  #include "py/objstr.h"
 
-#include "embed/extmod/trezorobj.h"
-#include "hdnode.h"
+  #include "embed/extmod/trezorobj.h"
+  #include "hdnode.h"
 
-#include "bip39.h"
-#include "cardano.h"
-#include "curves.h"
-#include "memzero.h"
+  #include "bip39.h"
+  #include "cardano.h"
+  #include "curves.h"
+  #include "memzero.h"
 
 /// package: trezorcrypto.cardano
 /// from trezorcrypto.bip32 import HDNode

@@ -30,7 +30,7 @@
 #define TEXT_BUFFER_HEIGHT 32
 
 #if TEXT_BUFFER_HEIGHT < FONT_MAX_HEIGHT
-#error Text buffer height is too small, please adjust to match used fonts
+  #error Text buffer height is too small, please adjust to match used fonts
 #endif
 
 #define LINE_BUFFER_16BPP_SIZE (BUFFER_PIXELS * 2)
@@ -44,15 +44,15 @@
 #define JPEG_WORK_SIZE (3100 + 256 + (6 << 10))
 
 #if defined BOOTLOADER
-#define BUFFER_SECTION __attribute__((section(".buf")))
+  #define BUFFER_SECTION __attribute__((section(".buf")))
 #else
-#define BUFFER_SECTION
+  #define BUFFER_SECTION
 #endif
 
 #if defined BOOTLOADER || defined TREZOR_EMULATOR
-#define NODMA_BUFFER_SECTION
+  #define NODMA_BUFFER_SECTION
 #else
-#define NODMA_BUFFER_SECTION __attribute__((section(".no_dma_buffers")))
+  #define NODMA_BUFFER_SECTION __attribute__((section(".no_dma_buffers")))
 #endif
 
 typedef __attribute__((aligned(4))) struct {

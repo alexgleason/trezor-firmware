@@ -22,9 +22,9 @@
 
 #if EMULATOR
 
-#include "strl.h"
+  #include "strl.h"
 
-#include <stddef.h>
+  #include <stddef.h>
 
 void emulatorPoll(void);
 

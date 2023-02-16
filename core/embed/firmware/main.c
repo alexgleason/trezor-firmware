@@ -45,17 +45,17 @@
 #include "mpu.h"
 #include "random_delays.h"
 #ifdef TREZOR_MODEL_R
-#include "rgb_led.h"
+  #include "rgb_led.h"
 #endif
 #ifdef TREZOR_MODEL_T
-#include "dma2d.h"
+  #include "dma2d.h"
 #endif
 #if defined TREZOR_MODEL_R || defined TREZOR_MODEL_1
-#include "button.h"
+  #include "button.h"
 #endif
 
 #ifdef SYSTEM_VIEW
-#include "systemview.h"
+  #include "systemview.h"
 #endif
 #include "rng.h"
 #include "sdcard.h"
@@ -63,7 +63,7 @@
 #include "supervise.h"
 #include "touch.h"
 #ifdef USE_SECP256K1_ZKP
-#include "zkp_context.h"
+  #include "zkp_context.h"
 #endif
 
 // from util.s
@@ -92,9 +92,9 @@ int main(void) {
 #if !defined TREZOR_MODEL_1
   parse_boardloader_capabilities();
 
-#if PRODUCTION
+  #if PRODUCTION
   check_and_replace_bootloader();
-#endif
+  #endif
   // Enable MPU
   mpu_config_firmware();
 #endif

@@ -30,7 +30,7 @@
 #include "sdcard.h"
 
 #ifndef SDCARD_FILE
-#define SDCARD_FILE profile_sdcard_path()
+  #define SDCARD_FILE profile_sdcard_path()
 #endif
 
 #define SDCARD_SIZE (64 * 1024 * 1024)

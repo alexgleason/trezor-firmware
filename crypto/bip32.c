@@ -41,10 +41,10 @@
 #include "sha2.h"
 #include "sha3.h"
 #if USE_KECCAK
-#include "ed25519-donna/ed25519-keccak.h"
+  #include "ed25519-donna/ed25519-keccak.h"
 #endif
 #if USE_NEM
-#include "nem.h"
+  #include "nem.h"
 #endif
 #include "memzero.h"
 
@@ -482,16 +482,16 @@ int hdnode_fill_public_key(HDNode *node) {
       ed25519_publickey(node->private_key, node->public_key + 1);
     } else if (node->curve == &ed25519_sha3_info) {
       ed25519_publickey_sha3(node->private_key, node->public_key + 1);
-#if USE_KECCAK
+  #if USE_KECCAK
     } else if (node->curve == &ed25519_keccak_info) {
       ed25519_publickey_keccak(node->private_key, node->public_key + 1);
-#endif
+  #endif
     } else if (node->curve == &curve25519_info) {
       curve25519_scalarmult_basepoint(node->public_key + 1, node->private_key);
-#if USE_CARDANO
+  #if USE_CARDANO
     } else if (node->curve == &ed25519_cardano_info) {
       ed25519_publickey_ext(node->private_key, node->public_key + 1);
-#endif
+  #endif
     }
   }
 #else

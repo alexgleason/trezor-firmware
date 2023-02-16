@@ -52,17 +52,17 @@ const uint8_t *msg_out_data(void);
 
 #if DEBUG_LINK
 
-// Buffer size for outgoing debuglink USB packets with headers.
-#define MSG_DEBUG_OUT_BUFFER_SIZE (2 * 1024)
+  // Buffer size for outgoing debuglink USB packets with headers.
+  #define MSG_DEBUG_OUT_BUFFER_SIZE (2 * 1024)
 
-// Maximum size of an outgoing protobuf-encoded debug message without headers.
-// (Continuation packets have a one byte "?" header.)
-#define MSG_DEBUG_OUT_ENCODED_SIZE               \
-  (MSG_DEBUG_OUT_BUFFER_SIZE - MSG_HEADER_SIZE - \
-   ((MSG_DEBUG_OUT_BUFFER_SIZE / USB_PACKET_SIZE) - 1))
+  // Maximum size of an outgoing protobuf-encoded debug message without headers.
+  // (Continuation packets have a one byte "?" header.)
+  #define MSG_DEBUG_OUT_ENCODED_SIZE               \
+    (MSG_DEBUG_OUT_BUFFER_SIZE - MSG_HEADER_SIZE - \
+     ((MSG_DEBUG_OUT_BUFFER_SIZE / USB_PACKET_SIZE) - 1))
 
-#define msg_debug_read(buf, len) msg_read_common('d', (buf), (len))
-#define msg_debug_write(id, ptr) msg_write_common('d', (id), (ptr))
+  #define msg_debug_read(buf, len) msg_read_common('d', (buf), (len))
+  #define msg_debug_write(id, ptr) msg_write_common('d', (id), (ptr))
 const uint8_t *msg_debug_out_data(void);
 
 #endif

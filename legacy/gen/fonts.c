@@ -6,7 +6,7 @@ const uint8_t *const font_data[FONTS][128 - 32] = {
     },
 #ifndef FONT_SKIP_FIXED
     {
-#include "fontfixed.inc"
+  #include "fontfixed.inc"
     },
 #endif
 };

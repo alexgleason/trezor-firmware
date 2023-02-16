@@ -25,11 +25,11 @@
 
 #if MICROPY_PY_TREZORCONFIG
 
-#include "embed/extmod/trezorobj.h"
+  #include "embed/extmod/trezorobj.h"
 
-#include "common.h"
-#include "memzero.h"
-#include "storage.h"
+  #include "common.h"
+  #include "memzero.h"
+  #include "storage.h"
 
 static secbool wrapped_ui_wait_callback(uint32_t wait, uint32_t progress,
                                         const char *message) {

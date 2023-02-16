@@ -21,7 +21,7 @@
 
 #if MICROPY_PY_TREZORPROTO
 
-#include "librust.h"
+  #include "librust.h"
 
 /// from trezor.protobuf import MessageType
 /// T = TypeVar("T", bound=MessageType)

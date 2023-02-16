@@ -37,27 +37,27 @@
 
 #if defined TREZOR_MODEL_T
 
-#ifdef TREZOR_EMULATOR_RASPI
-#define WINDOW_WIDTH 480
-#define WINDOW_HEIGHT 320
-#define TOUCH_OFFSET_X 110
-#define TOUCH_OFFSET_Y 40
-#else
-#define WINDOW_WIDTH 400
-#define WINDOW_HEIGHT 600
-#define TOUCH_OFFSET_X 80
-#define TOUCH_OFFSET_Y 110
-#endif
+  #ifdef TREZOR_EMULATOR_RASPI
+    #define WINDOW_WIDTH 480
+    #define WINDOW_HEIGHT 320
+    #define TOUCH_OFFSET_X 110
+    #define TOUCH_OFFSET_Y 40
+  #else
+    #define WINDOW_WIDTH 400
+    #define WINDOW_HEIGHT 600
+    #define TOUCH_OFFSET_X 80
+    #define TOUCH_OFFSET_Y 110
+  #endif
 
 #elif defined TREZOR_MODEL_1 || defined TREZOR_MODEL_R
 
-#define WINDOW_WIDTH 200
-#define WINDOW_HEIGHT 340
-#define TOUCH_OFFSET_X 36
-#define TOUCH_OFFSET_Y 92
+  #define WINDOW_WIDTH 200
+  #define WINDOW_HEIGHT 340
+  #define TOUCH_OFFSET_X 36
+  #define TOUCH_OFFSET_Y 92
 
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
 
 static SDL_Window *WINDOW;
@@ -184,24 +184,24 @@ void display_init(void) {
   SDL_SetWindowSize(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT);
 #endif
 #ifdef TREZOR_EMULATOR_RASPI
-#include "background_raspi.h"
+  #include "background_raspi.h"
   BACKGROUND = IMG_LoadTexture_RW(
       RENDERER, SDL_RWFromMem(background_raspi_jpg, background_raspi_jpg_len),
       0);
 #else
-#if defined TREZOR_MODEL_T
-#include "background_T.h"
+  #if defined TREZOR_MODEL_T
+    #include "background_T.h"
   BACKGROUND = IMG_LoadTexture_RW(
       RENDERER, SDL_RWFromMem(background_T_jpg, background_T_jpg_len), 0);
-#elif defined TREZOR_MODEL_1
-#include "background_1.h"
+  #elif defined TREZOR_MODEL_1
+    #include "background_1.h"
   BACKGROUND = IMG_LoadTexture_RW(
       RENDERER, SDL_RWFromMem(background_1_jpg, background_1_jpg_len), 0);
-#elif defined TREZOR_MODEL_R
-#include "background_R.h"
+  #elif defined TREZOR_MODEL_R
+    #include "background_R.h"
   BACKGROUND = IMG_LoadTexture_RW(
       RENDERER, SDL_RWFromMem(background_R_jpg, background_R_jpg_len), 0);
-#endif
+  #endif
 #endif
   if (BACKGROUND) {
     SDL_SetTextureBlendMode(BACKGROUND, SDL_BLENDMODE_NONE);
@@ -269,7 +269,7 @@ int display_orientation(int degrees) {
 #elif defined TREZOR_MODEL_1 || defined TREZOR_MODEL_R
     if (degrees == 0 || degrees == 180) {
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
       DISPLAY_ORIENTATION = degrees;
       display_refresh();

@@ -25,33 +25,33 @@
 
 #if MICROPY_PY_TREZORIO
 
-#include <unistd.h>
+  #include <unistd.h>
 
-#include "button.h"
-#include "touch.h"
-#include "usb.h"
+  #include "button.h"
+  #include "touch.h"
+  #include "usb.h"
 
 // Whether USB data pins were connected on last check (USB configured)
 bool usb_connected_previously = true;
 
-#define CHECK_PARAM_RANGE(value, minimum, maximum)  \
-  if (value < minimum || value > maximum) {         \
-    mp_raise_ValueError(#value " is out of range"); \
-  }
+  #define CHECK_PARAM_RANGE(value, minimum, maximum)  \
+    if (value < minimum || value > maximum) {         \
+      mp_raise_ValueError(#value " is out of range"); \
+    }
 
-// clang-format off
+  // clang-format off
 #include "modtrezorio-flash.h"
 #include "modtrezorio-hid.h"
 #include "modtrezorio-poll.h"
 #include "modtrezorio-vcp.h"
 #include "modtrezorio-webusb.h"
 #include "modtrezorio-usb.h"
-// clang-format on
-#if defined TREZOR_MODEL_T
-#include "modtrezorio-fatfs.h"
-#include "modtrezorio-sbu.h"
-#include "modtrezorio-sdcard.h"
-#endif
+  // clang-format on
+  #if defined TREZOR_MODEL_T
+    #include "modtrezorio-fatfs.h"
+    #include "modtrezorio-sbu.h"
+    #include "modtrezorio-sdcard.h"
+  #endif
 
 /// package: trezorio.__init__
 /// from . import fatfs, sdcard
@@ -77,7 +77,7 @@ bool usb_connected_previously = true;
 STATIC const mp_rom_map_elem_t mp_module_trezorio_globals_table[] = {
     {MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_trezorio)},
 
-#if defined TREZOR_MODEL_T
+  #if defined TREZOR_MODEL_T
     {MP_ROM_QSTR(MP_QSTR_fatfs), MP_ROM_PTR(&mod_trezorio_fatfs_module)},
     {MP_ROM_QSTR(MP_QSTR_SBU), MP_ROM_PTR(&mod_trezorio_SBU_type)},
     {MP_ROM_QSTR(MP_QSTR_sdcard), MP_ROM_PTR(&mod_trezorio_sdcard_module)},
@@ -86,7 +86,7 @@ STATIC const mp_rom_map_elem_t mp_module_trezorio_globals_table[] = {
     {MP_ROM_QSTR(MP_QSTR_TOUCH_START), MP_ROM_INT((TOUCH_START >> 24) & 0xFFU)},
     {MP_ROM_QSTR(MP_QSTR_TOUCH_MOVE), MP_ROM_INT((TOUCH_MOVE >> 24) & 0xFFU)},
     {MP_ROM_QSTR(MP_QSTR_TOUCH_END), MP_ROM_INT((TOUCH_END >> 24) & 0xFFU)},
-#elif defined TREZOR_MODEL_1 || defined TREZOR_MODEL_R
+  #elif defined TREZOR_MODEL_1 || defined TREZOR_MODEL_R
     {MP_ROM_QSTR(MP_QSTR_BUTTON), MP_ROM_INT(BUTTON_IFACE)},
     {MP_ROM_QSTR(MP_QSTR_BUTTON_PRESSED),
      MP_ROM_INT((BTN_EVT_DOWN >> 24) & 0x3U)},
@@ -94,7 +94,7 @@ STATIC const mp_rom_map_elem_t mp_module_trezorio_globals_table[] = {
      MP_ROM_INT((BTN_EVT_UP >> 24) & 0x3U)},
     {MP_ROM_QSTR(MP_QSTR_BUTTON_LEFT), MP_ROM_INT(BTN_LEFT)},
     {MP_ROM_QSTR(MP_QSTR_BUTTON_RIGHT), MP_ROM_INT(BTN_RIGHT)},
-#endif
+  #endif
 
     {MP_ROM_QSTR(MP_QSTR_FlashOTP), MP_ROM_PTR(&mod_trezorio_FlashOTP_type)},
 

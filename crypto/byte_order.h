@@ -31,12 +31,12 @@
  */
 
 #ifndef LITTLE_ENDIAN
-#define LITTLE_ENDIAN 1234
-#define BIG_ENDIAN 4321
+  #define LITTLE_ENDIAN 1234
+  #define BIG_ENDIAN 4321
 #endif
 
 #ifndef BYTE_ORDER
-#define BYTE_ORDER LITTLE_ENDIAN
+  #define BYTE_ORDER LITTLE_ENDIAN
 #endif
 
 #define REVERSE32(w, x)                                              \

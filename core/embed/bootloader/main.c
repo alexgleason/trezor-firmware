@@ -31,12 +31,12 @@
 #include "secbool.h"
 #include "stm32.h"
 #ifdef TREZOR_MODEL_T
-#include "dma2d.h"
-#include "touch.h"
+  #include "dma2d.h"
+  #include "touch.h"
 #endif
 #if defined TREZOR_MODEL_R
-#include "button.h"
-#include "rgb_led.h"
+  #include "button.h"
+  #include "rgb_led.h"
 #endif
 #include "usb.h"
 #include "version.h"
@@ -441,7 +441,7 @@ int main(void) {
         }
       }
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
     }
 

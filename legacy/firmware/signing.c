@@ -32,7 +32,7 @@
 #include "transaction.h"
 #include "zkp_bip340.h"
 #ifdef USE_SECP256K1_ZKP_ECDSA
-#include "zkp_ecdsa.h"
+  #include "zkp_ecdsa.h"
 #endif
 
 static uint32_t change_count;

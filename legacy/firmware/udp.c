@@ -31,9 +31,9 @@ static volatile char tiny = 0;
 void usbInit(void) { emulatorSocketInit(); }
 
 #if DEBUG_LINK
-#define _ISDBG (((iface == 1) ? 'd' : 'n'))
+  #define _ISDBG (((iface == 1) ? 'd' : 'n'))
 #else
-#define _ISDBG ('n')
+  #define _ISDBG ('n')
 #endif
 
 void waitAndProcessUSBRequests(uint32_t millis) {

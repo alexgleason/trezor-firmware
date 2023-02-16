@@ -27,11 +27,11 @@
 #define VERSTR(X) STR(X)
 
 #ifndef DEBUG_LINK
-#define DEBUG_LINK 0
+  #define DEBUG_LINK 0
 #endif
 
 #ifndef DEBUG_LOG
-#define DEBUG_LOG 0
+  #define DEBUG_LOG 0
 #endif
 
 /* Screen timeout */

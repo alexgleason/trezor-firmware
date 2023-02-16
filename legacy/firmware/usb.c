@@ -28,7 +28,7 @@
 #include "timer.h"
 #include "trezor.h"
 #if U2F_ENABLED
-#include "u2f.h"
+  #include "u2f.h"
 #endif
 #include "usb.h"
 #include "util.h"
@@ -39,31 +39,31 @@
 
 #define USB_INTERFACE_INDEX_MAIN 0
 #if DEBUG_LINK
-#define USB_INTERFACE_INDEX_DEBUG 1
-#if U2F_ENABLED
-#define USB_INTERFACE_INDEX_U2F 2
-#define USB_INTERFACE_COUNT 3
+  #define USB_INTERFACE_INDEX_DEBUG 1
+  #if U2F_ENABLED
+    #define USB_INTERFACE_INDEX_U2F 2
+    #define USB_INTERFACE_COUNT 3
+  #else
+    #define USB_INTERFACE_COUNT 2
+  #endif
 #else
-#define USB_INTERFACE_COUNT 2
-#endif
-#else
-#if U2F_ENABLED
-#define USB_INTERFACE_INDEX_U2F 1
-#define USB_INTERFACE_COUNT 2
-#else
-#define USB_INTERFACE_COUNT 1
-#endif
+  #if U2F_ENABLED
+    #define USB_INTERFACE_INDEX_U2F 1
+    #define USB_INTERFACE_COUNT 2
+  #else
+    #define USB_INTERFACE_COUNT 1
+  #endif
 #endif
 
 #define ENDPOINT_ADDRESS_MAIN_IN (0x81)
 #define ENDPOINT_ADDRESS_MAIN_OUT (0x01)
 #if DEBUG_LINK
-#define ENDPOINT_ADDRESS_DEBUG_IN (0x82)
-#define ENDPOINT_ADDRESS_DEBUG_OUT (0x02)
+  #define ENDPOINT_ADDRESS_DEBUG_IN (0x82)
+  #define ENDPOINT_ADDRESS_DEBUG_OUT (0x02)
 #endif
 #if U2F_ENABLED
-#define ENDPOINT_ADDRESS_U2F_IN (0x83)
-#define ENDPOINT_ADDRESS_U2F_OUT (0x03)
+  #define ENDPOINT_ADDRESS_U2F_IN (0x83)
+  #define ENDPOINT_ADDRESS_U2F_OUT (0x03)
 #endif
 
 #define USB_STRINGS                                 \

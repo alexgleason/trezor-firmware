@@ -20,25 +20,25 @@
 #include "py/objstr.h"
 #include "py/runtime.h"
 #ifndef TREZOR_EMULATOR
-#include "supervise.h"
+  #include "supervise.h"
 #endif
 
 #include "version.h"
 
 #if MICROPY_PY_TREZORUTILS
 
-#include "embed/extmod/modtrezorutils/modtrezorutils-meminfo.h"
-#include "embed/extmod/trezorobj.h"
+  #include "embed/extmod/modtrezorutils/modtrezorutils-meminfo.h"
+  #include "embed/extmod/trezorobj.h"
 
-#include <string.h>
-#include "blake2s.h"
-#include "common.h"
-#include "flash.h"
-#include "usb.h"
+  #include <string.h>
+  #include "blake2s.h"
+  #include "common.h"
+  #include "flash.h"
+  #include "usb.h"
 
-#ifndef TREZOR_EMULATOR
-#include "image.h"
-#endif
+  #ifndef TREZOR_EMULATOR
+    #include "image.h"
+  #endif
 
 static void ui_progress(mp_obj_t ui_wait_callback, uint32_t current,
                         uint32_t total) {
@@ -193,9 +193,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mod_trezorutils_firmware_hash_obj, 0,
 ///     Returns the firmware vendor string from the vendor header.
 ///     """
 STATIC mp_obj_t mod_trezorutils_firmware_vendor(void) {
-#ifdef TREZOR_EMULATOR
+  #ifdef TREZOR_EMULATOR
   return mp_obj_new_str_copy(&mp_type_str, (const uint8_t *)"EMULATOR", 8);
-#else
+  #else
   vendor_header vhdr = {0};
   uint32_t size = flash_sector_size(FLASH_SECTOR_FIRMWARE_START);
   const void *data = flash_get_address(FLASH_SECTOR_FIRMWARE_START, 0, size);
@@ -204,7 +204,7 @@ STATIC mp_obj_t mod_trezorutils_firmware_vendor(void) {
   }
   return mp_obj_new_str_copy(&mp_type_str, (const uint8_t *)vhdr.vstr,
                              vhdr.vstr_len);
-#endif
+  #endif
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(mod_trezorutils_firmware_vendor_obj,
                                  mod_trezorutils_firmware_vendor);
@@ -214,9 +214,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(mod_trezorutils_firmware_vendor_obj,
 ///     Reboots to bootloader.
 ///     """
 STATIC mp_obj_t mod_trezorutils_reboot_to_bootloader() {
-#ifndef TREZOR_EMULATOR
+  #ifndef TREZOR_EMULATOR
   svc_reboot_to_bootloader();
-#endif
+  #endif
   return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(mod_trezorutils_reboot_to_bootloader_obj,
@@ -263,26 +263,26 @@ STATIC const mp_rom_map_elem_t mp_module_trezorutils_globals_table[] = {
     {MP_ROM_QSTR(MP_QSTR_VERSION_MAJOR), MP_ROM_INT(VERSION_MAJOR)},
     {MP_ROM_QSTR(MP_QSTR_VERSION_MINOR), MP_ROM_INT(VERSION_MINOR)},
     {MP_ROM_QSTR(MP_QSTR_VERSION_PATCH), MP_ROM_INT(VERSION_PATCH)},
-#if defined TREZOR_MODEL_1
+  #if defined TREZOR_MODEL_1
     {MP_ROM_QSTR(MP_QSTR_MODEL), MP_ROM_QSTR(MP_QSTR_1)},
-#elif defined TREZOR_MODEL_T
+  #elif defined TREZOR_MODEL_T
     {MP_ROM_QSTR(MP_QSTR_MODEL), MP_ROM_QSTR(MP_QSTR_T)},
-#elif defined TREZOR_MODEL_R
+  #elif defined TREZOR_MODEL_R
     {MP_ROM_QSTR(MP_QSTR_MODEL), MP_ROM_QSTR(MP_QSTR_R)},
-#else
-#error Unknown Trezor model
-#endif
-#ifdef TREZOR_EMULATOR
+  #else
+    #error Unknown Trezor model
+  #endif
+  #ifdef TREZOR_EMULATOR
     {MP_ROM_QSTR(MP_QSTR_EMULATOR), mp_const_true},
     MEMINFO_DICT_ENTRIES
-#else
+  #else
     {MP_ROM_QSTR(MP_QSTR_EMULATOR), mp_const_false},
-#endif
-#if BITCOIN_ONLY
+  #endif
+  #if BITCOIN_ONLY
     {MP_ROM_QSTR(MP_QSTR_BITCOIN_ONLY), mp_const_true},
-#else
+  #else
     {MP_ROM_QSTR(MP_QSTR_BITCOIN_ONLY), mp_const_false},
-#endif
+  #endif
 };
 
 STATIC MP_DEFINE_CONST_DICT(mp_module_trezorutils_globals,

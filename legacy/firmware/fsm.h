@@ -37,8 +37,8 @@ void fsm_sendSuccess(const char *text);
 void fsm_sendFailureDebug(FailureType code, const char *text,
                           const char *source);
 
-#define fsm_sendFailure(code, text) \
-  fsm_sendFailureDebug((code), (text), __FILE__ ":" VERSTR(__LINE__) ":")
+  #define fsm_sendFailure(code, text) \
+    fsm_sendFailureDebug((code), (text), __FILE__ ":" VERSTR(__LINE__) ":")
 #else
 void fsm_sendFailure(FailureType code, const char *text);
 #endif

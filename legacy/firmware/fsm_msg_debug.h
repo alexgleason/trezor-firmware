@@ -88,9 +88,9 @@ void fsm_msgDebugLinkMemoryWrite(const DebugLinkMemoryWrite *msg) {
     uint32_t dummy = svc_flash_lock();
     (void)dummy;
   } else {
-#if !EMULATOR
+  #if !EMULATOR
     memcpy((void *)msg->address, msg->memory.bytes, length);
-#endif
+  #endif
   }
 }
 
@@ -102,11 +102,11 @@ void fsm_msgDebugLinkFlashErase(const DebugLinkFlashErase *msg) {
 }
 
 void fsm_msgDebugLinkReseedRandom(const DebugLinkReseedRandom *msg) {
-#if EMULATOR
+  #if EMULATOR
   RESP_INIT(Success);
   random_reseed(msg->value);
   msg_debug_write(MessageType_MessageType_Success, resp);
-#else
+  #else
   (void)msg;
   RESP_INIT(Failure);
   resp->code = FailureType_Failure_UnexpectedMessage;
@@ -114,6 +114,6 @@ void fsm_msgDebugLinkReseedRandom(const DebugLinkReseedRandom *msg) {
   strlcpy(resp->message, "ReseedRandom not supported on hardware",
           sizeof(resp->message));
   msg_debug_write(MessageType_MessageType_Failure, resp);
-#endif
+  #endif
 }
 #endif

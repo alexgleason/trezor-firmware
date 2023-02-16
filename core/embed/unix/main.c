@@ -160,7 +160,7 @@ STATIC int execute_from_lexer(int source_kind, const void *source,
 }
 
 #if MICROPY_USE_READLINE == 1
-#include "shared/readline/readline.h"
+  #include "shared/readline/readline.h"
 #else
 STATIC char *strjoin(const char *s1, int sep_char, const char *s2) {
   int l1 = strlen(s1);
@@ -416,9 +416,9 @@ void main_clean_exit(int status) {
 }
 
 #ifdef _WIN32
-#define PATHLIST_SEP_CHAR ';'
+  #define PATHLIST_SEP_CHAR ';'
 #else
-#define PATHLIST_SEP_CHAR ':'
+  #define PATHLIST_SEP_CHAR ':'
 #endif
 
 static int do_import_module(const char *modname) {
@@ -681,9 +681,9 @@ MP_NOINLINE int main_(int argc, char **argv) {
 
 #if !MICROPY_VFS
 
-#ifdef TREZOR_EMULATOR_FROZEN
+  #ifdef TREZOR_EMULATOR_FROZEN
 uint mp_import_stat(const char *path) { return MP_IMPORT_STAT_NO_EXIST; }
-#else
+  #else
 uint mp_import_stat(const char *path) {
   struct stat st;
   if (stat(path, &st) == 0) {
@@ -695,9 +695,9 @@ uint mp_import_stat(const char *path) {
   }
   return MP_IMPORT_STAT_NO_EXIST;
 }
-#endif
+  #endif
 
-#if MICROPY_PY_IO
+  #if MICROPY_PY_IO
 // Factory function for I/O stream classes, only needed if generic VFS subsystem
 // isn't used. Note: buffering and encoding are currently ignored.
 mp_obj_t mp_builtin_open(size_t n_args, const mp_obj_t *pos_args,
@@ -716,7 +716,7 @@ mp_obj_t mp_builtin_open(size_t n_args, const mp_obj_t *pos_args,
                                 args[ARG_mode].u_obj);
 }
 MP_DEFINE_CONST_FUN_OBJ_KW(mp_builtin_open_obj, 1, mp_builtin_open);
-#endif
+  #endif
 
 #endif
 

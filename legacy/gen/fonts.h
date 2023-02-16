@@ -7,10 +7,10 @@
 #define FONT_STANDARD 0
 
 #ifndef FONT_SKIP_FIXED
-#define FONT_FIXED 1
-#define FONTS 2
+  #define FONT_FIXED 1
+  #define FONTS 2
 #else
-#define FONTS 1
+  #define FONTS 1
 #endif
 
 #define FONT_DOUBLE 0x80

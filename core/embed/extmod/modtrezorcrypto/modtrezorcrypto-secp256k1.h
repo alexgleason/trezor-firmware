@@ -23,7 +23,7 @@
 #include "vendor/trezor-crypto/secp256k1.h"
 
 #ifdef USE_SECP256K1_ZKP_ECDSA
-#include "zkp_ecdsa.h"
+  #include "zkp_ecdsa.h"
 #endif
 
 /// package: trezorcrypto.secp256k1

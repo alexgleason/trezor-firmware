@@ -82,7 +82,7 @@ void mpu_config_bootloader(void) {
 #elif STM32F405xx
   // no CCMRAM
 #else
-#error Unsupported MCU
+  #error Unsupported MCU
 #endif
 
   // Enable MPU
@@ -163,7 +163,7 @@ void mpu_config_firmware(void) {
 #elif STM32F405xx
   // no CCMRAM
 #else
-#error Unsupported MCU
+  #error Unsupported MCU
 #endif
 
   // Enable MPU

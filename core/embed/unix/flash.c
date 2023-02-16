@@ -31,7 +31,7 @@
 #include "profile.h"
 
 #ifndef FLASH_FILE
-#define FLASH_FILE profile_flash_path()
+  #define FLASH_FILE profile_flash_path()
 #endif
 
 static const uint32_t FLASH_SECTOR_TABLE[FLASH_SECTOR_COUNT + 1] = {
@@ -64,7 +64,7 @@ static const uint32_t FLASH_SECTOR_TABLE[FLASH_SECTOR_COUNT + 1] = {
 #elif defined TREZOR_MODEL_1
     [12] = 0x08100000,  // last element - not a valid sector
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
 };
 

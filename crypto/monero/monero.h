@@ -6,11 +6,11 @@
 #define TREZOR_CRYPTO_MONERO_H
 
 #if !USE_MONERO
-#error "Compile with -DUSE_MONERO=1"
+  #error "Compile with -DUSE_MONERO=1"
 #endif
 
 #if !USE_KECCAK
-#error "Compile with -DUSE_KECCAK=1"
+  #error "Compile with -DUSE_KECCAK=1"
 #endif
 
 #include "base58.h"

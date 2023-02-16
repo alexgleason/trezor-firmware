@@ -56,7 +56,7 @@ static const uint32_t FLASH_SECTOR_TABLE[FLASH_SECTOR_COUNT + 1] = {
 #elif defined TREZOR_MODEL_1
     [12] = 0x08100000,  // last element - not a valid sector
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
 };
 

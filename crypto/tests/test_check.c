@@ -33,8 +33,8 @@
 #include "check_mem.h"
 
 #ifdef VALGRIND
-#include <valgrind/memcheck.h>
-#include <valgrind/valgrind.h>
+  #include <valgrind/memcheck.h>
+  #include <valgrind/valgrind.h>
 #endif
 
 #include "options.h"
@@ -77,19 +77,19 @@
 #include "zkp_ecdsa.h"
 
 #ifdef VALGRIND
-/*
- * This is a clever trick to make Valgrind's Memcheck verify code
- * is constant-time with respect to secret data.
- */
+  /*
+   * This is a clever trick to make Valgrind's Memcheck verify code
+   * is constant-time with respect to secret data.
+   */
 
-/* Call after secret data is written, before first use */
-#define MARK_SECRET_DATA(addr, len) VALGRIND_MAKE_MEM_UNDEFINED(addr, len)
-/* Call before secret data is freed or to mark non-secret data (public keys or
- * signatures) */
-#define UNMARK_SECRET_DATA(addr, len) VALGRIND_MAKE_MEM_DEFINED(addr, len)
+  /* Call after secret data is written, before first use */
+  #define MARK_SECRET_DATA(addr, len) VALGRIND_MAKE_MEM_UNDEFINED(addr, len)
+  /* Call before secret data is freed or to mark non-secret data (public keys or
+   * signatures) */
+  #define UNMARK_SECRET_DATA(addr, len) VALGRIND_MAKE_MEM_DEFINED(addr, len)
 #else
-#define MARK_SECRET_DATA(addr, len)
-#define UNMARK_SECRET_DATA(addr, len)
+  #define MARK_SECRET_DATA(addr, len)
+  #define UNMARK_SECRET_DATA(addr, len)
 #endif
 
 #define FROMHEX_MAXLEN 512
@@ -9441,11 +9441,11 @@ static int my_strncasecmp(const char *s1, const char *s2, size_t n) {
 #include "test_check_segwit.h"
 
 #if USE_CARDANO
-#include "test_check_cardano.h"
+  #include "test_check_cardano.h"
 #endif
 
 #if USE_MONERO
-#include "test_check_monero.h"
+  #include "test_check_monero.h"
 #endif
 
 // define test suite and cases

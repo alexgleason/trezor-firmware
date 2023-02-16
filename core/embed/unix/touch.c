@@ -26,7 +26,7 @@ extern const char *display_save(const char *prefix);
 
 #if defined TREZOR_MODEL_T
 
-#include "touch.h"
+  #include "touch.h"
 
 extern int sdl_display_res_x, sdl_display_res_y;
 extern int sdl_touch_offset_x, sdl_touch_offset_y;
@@ -79,7 +79,7 @@ uint32_t touch_read(void) {
 
 #elif defined TREZOR_MODEL_1 || defined TREZOR_MODEL_R
 
-#include "button.h"
+  #include "button.h"
 
 uint32_t button_read(void) {
   SDL_Event event;
@@ -114,5 +114,5 @@ uint32_t button_read(void) {
 }
 
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif

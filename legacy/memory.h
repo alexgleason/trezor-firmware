@@ -62,9 +62,9 @@
 
 #if EMULATOR
 extern uint8_t *emulator_flash_base;
-#define FLASH_PTR(x) (emulator_flash_base + (x - FLASH_ORIGIN))
+  #define FLASH_PTR(x) (emulator_flash_base + (x - FLASH_ORIGIN))
 #else
-#define FLASH_PTR(x) (const uint8_t *)(x)
+  #define FLASH_PTR(x) (const uint8_t *)(x)
 #endif
 
 #define FLASH_TOTAL_SIZE (1024 * 1024)

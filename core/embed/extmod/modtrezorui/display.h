@@ -32,11 +32,11 @@
 
 #define AVATAR_IMAGE_SIZE 144
 #if defined TREZOR_MODEL_T || defined TREZOR_MODEL_1
-#define LOADER_ICON_SIZE 64
+  #define LOADER_ICON_SIZE 64
 #elif defined TREZOR_MODEL_R
-#define LOADER_ICON_SIZE 24
+  #define LOADER_ICON_SIZE 24
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
 
 typedef enum {

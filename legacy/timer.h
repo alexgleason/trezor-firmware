@@ -28,7 +28,7 @@ void timer_init(void);
 #if EMULATOR
 uint32_t timer_ms(void);
 #else
-#define timer_ms svc_timer_ms
+  #define timer_ms svc_timer_ms
 #endif
 
 #endif

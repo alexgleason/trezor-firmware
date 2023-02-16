@@ -2,7 +2,7 @@
 #include "py/runtime.h"
 #include "py/stackctrl.h"
 #ifdef USE_SECP256K1_ZKP
-#include "zkp_context.h"
+  #include "zkp_context.h"
 #endif
 
 #include "common.h"

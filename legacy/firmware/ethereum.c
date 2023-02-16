@@ -37,7 +37,7 @@
 #include "transaction.h"
 #include "util.h"
 #ifdef USE_SECP256K1_ZKP_ECDSA
-#include "zkp_ecdsa.h"
+  #include "zkp_ecdsa.h"
 #endif
 
 /* Maximum chain_id which returns the full signature_v (which must fit into an

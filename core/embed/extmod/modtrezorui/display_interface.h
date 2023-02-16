@@ -25,13 +25,13 @@
 #include TREZOR_BOARD
 
 #ifndef PIXELDATA
-#define PIXELDATA(c) display_pixeldata(c)
+  #define PIXELDATA(c) display_pixeldata(c)
 #endif
 
 void display_pixeldata(uint16_t c);
 
 #ifndef PIXELDATA_DIRTY
-#define PIXELDATA_DIRTY()
+  #define PIXELDATA_DIRTY()
 #endif
 
 void display_reset_state();

@@ -25,9 +25,9 @@
 #include <stdint.h>
 
 #if !EMULATOR
-#include <libopencm3/cm3/scb.h>
-#include <libopencm3/cm3/vector.h>
-#include "timer.h"
+  #include <libopencm3/cm3/scb.h>
+  #include <libopencm3/cm3/vector.h>
+  #include "timer.h"
 #endif
 
 // Statement expressions make these macros side-effect safe
@@ -68,8 +68,8 @@ extern uint8_t _ram_start[], _ram_end[];
 // defined in startup.s
 extern void memset_reg(void *start, void *stop, uint32_t val);
 
-#define FW_SIGNED 0x5A3CA5C3
-#define FW_UNTRUSTED 0x00000000
+  #define FW_SIGNED 0x5A3CA5C3
+  #define FW_UNTRUSTED 0x00000000
 
 static inline void __attribute__((noreturn))
 jump_to_firmware(const vector_table_t *ivt, int trust) {

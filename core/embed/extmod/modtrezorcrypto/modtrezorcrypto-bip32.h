@@ -27,7 +27,7 @@
 #include "curves.h"
 #include "memzero.h"
 #if !BITCOIN_ONLY
-#include "nem.h"
+  #include "nem.h"
 #endif
 
 /// package: trezorcrypto.bip32

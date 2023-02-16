@@ -27,7 +27,7 @@
 #include "image.h"
 #include "rng.h"
 #ifdef TREZOR_MODEL_T
-#include "sdcard.h"
+  #include "sdcard.h"
 #endif
 
 #include "lowlevel.h"

@@ -35,11 +35,11 @@
 #include "usb.h"
 #include "util.h"
 #if !EMULATOR
-#include <libopencm3/stm32/desig.h>
-#include "otp.h"
+  #include <libopencm3/stm32/desig.h>
+  #include "otp.h"
 #endif
 #ifdef USE_SECP256K1_ZKP
-#include "zkp_context.h"
+  #include "zkp_context.h"
 #endif
 
 #ifdef USE_SECP256K1_ZKP
@@ -165,9 +165,9 @@ int main(void) {
 #endif
 
 #if DEBUG_LINK
-#if !EMULATOR
+  #if !EMULATOR
   config_wipe();
-#endif
+  #endif
 #endif
 
   oledDrawBitmap(40, 0, &bmp_logo64_half);

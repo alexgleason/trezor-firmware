@@ -54,7 +54,7 @@ const ecdsa_curve nist256p1 = {
     ,
     /* cp */
     {
-#include "nist256p1.table"
+  #include "nist256p1.table"
     }
 #endif
 };

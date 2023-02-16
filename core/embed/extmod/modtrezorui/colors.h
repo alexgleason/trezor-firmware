@@ -23,7 +23,8 @@
 #include "common.h"
 
 #ifdef TREZOR_MODEL_T
-#define RGB16(R, G, B) ((R & 0xF8) << 8) | ((G & 0xFC) << 3) | ((B & 0xF8) >> 3)
+  #define RGB16(R, G, B) \
+    ((R & 0xF8) << 8) | ((G & 0xFC) << 3) | ((B & 0xF8) >> 3)
 #endif
 
 #define COLOR_WHITE 0xFFFF

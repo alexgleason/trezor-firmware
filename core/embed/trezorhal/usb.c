@@ -29,11 +29,11 @@
 #define USB_MAX_STR_DESC_SIZE (USB_MAX_STR_SIZE * 2 + 2)
 
 #if defined(USE_USB_FS)
-#define USB_PHY_ID USB_PHY_FS_ID
+  #define USB_PHY_ID USB_PHY_FS_ID
 #elif defined(USE_USB_HS) && defined(USE_USB_HS_IN_FS)
-#define USB_PHY_ID USB_PHY_HS_ID
+  #define USB_PHY_ID USB_PHY_HS_ID
 #else
-#error Unable to determine proper USB_PHY_ID to use
+  #error Unable to determine proper USB_PHY_ID to use
 #endif
 
 #define USB_WINUSB_VENDOR_CODE \

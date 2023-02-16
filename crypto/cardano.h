@@ -30,8 +30,8 @@
 
 #if USE_CARDANO
 
-#define CARDANO_SECRET_LENGTH 96
-#define CARDANO_ICARUS_PBKDF2_ROUNDS 4096
+  #define CARDANO_SECRET_LENGTH 96
+  #define CARDANO_ICARUS_PBKDF2_ROUNDS 4096
 
 extern const curve_info ed25519_cardano_info;
 

@@ -67,9 +67,9 @@
 #include "zkp_ecdsa.h"
 
 #if defined(__has_feature)
-#if __has_feature(memory_sanitizer)
-#include <sanitizer/msan_interface.h>
-#endif
+  #if __has_feature(memory_sanitizer)
+    #include <sanitizer/msan_interface.h>
+  #endif
 #endif
 
 /* code design notes
@@ -130,14 +130,14 @@ void crash(void) {
 // crash if problems are detected
 void check_msan(void *pointer, size_t length) {
 #if defined(__has_feature)
-#if __has_feature(memory_sanitizer)
+  #if __has_feature(memory_sanitizer)
   // check `address` for memory info leakage
   __msan_check_mem_is_initialized(pointer, length);
-#else
+  #else
   // ignore if MSan is not enabled
   (void)pointer;
   (void)length;
-#endif
+  #endif
 #else
   // ignore if the compiler does not know __has_feature()
   (void)pointer;

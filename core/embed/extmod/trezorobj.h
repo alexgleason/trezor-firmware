@@ -21,11 +21,11 @@
 #include "py/runtime.h"
 
 #ifndef __TREZOROBJ_H__
-#define __TREZOROBJ_H__
+  #define __TREZOROBJ_H__
 
-#if MICROPY_LONGINT_IMPL != MICROPY_LONGINT_IMPL_MPZ
-#error Use MPZ for MicroPython long int implementation.
-#endif
+  #if MICROPY_LONGINT_IMPL != MICROPY_LONGINT_IMPL_MPZ
+    #error Use MPZ for MicroPython long int implementation.
+  #endif
 
 // Casts int object into mp_int_t, without any conversions. Raises if object is
 // not int or if it does not fit into mp_int_t representation.

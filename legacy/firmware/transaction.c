@@ -35,7 +35,7 @@
 #include "zkp_bip340.h"
 
 #if !BITCOIN_ONLY
-#include "cash_addr.h"
+  #include "cash_addr.h"
 #endif
 
 #define SEGWIT_VERSION_0 0

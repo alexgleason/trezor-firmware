@@ -52,7 +52,7 @@ const ecdsa_curve secp256k1 = {
     ,
     /* cp */
     {
-#include "secp256k1.table"
+  #include "secp256k1.table"
     }
 #endif
 };

@@ -144,7 +144,7 @@ STATIC mp_obj_t mod_trezorio_poll(mp_obj_t ifaces, mp_obj_t list_ref,
         }
       }
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
       else if (mode == POLL_READ) {
         if (sectrue == usb_hid_can_read(iface)) {

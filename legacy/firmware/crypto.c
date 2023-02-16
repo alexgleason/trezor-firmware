@@ -33,7 +33,7 @@
 #include "sha2.h"
 
 #if !BITCOIN_ONLY
-#include "cash_addr.h"
+  #include "cash_addr.h"
 #endif
 
 uint32_t ser_length(uint32_t len, uint8_t *out) {

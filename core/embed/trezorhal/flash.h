@@ -27,11 +27,11 @@
 // see docs/memory.md for more information
 
 #if defined TREZOR_MODEL_T || defined TREZOR_MODEL_R
-#define FLASH_SECTOR_COUNT 24
+  #define FLASH_SECTOR_COUNT 24
 #elif defined TREZOR_MODEL_1
-#define FLASH_SECTOR_COUNT 12
+  #define FLASH_SECTOR_COUNT 12
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
 
 #define FLASH_SECTOR_BOARDLOADER_START 0
@@ -41,13 +41,13 @@
 //                                           3
 
 #if defined TREZOR_MODEL_T || defined TREZOR_MODEL_R
-#define FLASH_SECTOR_STORAGE_1 4
-#define FLASH_SECTOR_STORAGE_2 16
+  #define FLASH_SECTOR_STORAGE_1 4
+  #define FLASH_SECTOR_STORAGE_2 16
 #elif defined TREZOR_MODEL_1
-#define FLASH_SECTOR_STORAGE_1 2
-#define FLASH_SECTOR_STORAGE_2 3
+  #define FLASH_SECTOR_STORAGE_1 2
+  #define FLASH_SECTOR_STORAGE_2 3
 #else
-#error Unknown Trezor model
+  #error Unknown Trezor model
 #endif
 
 #define FLASH_SECTOR_BOOTLOADER 5
@@ -82,7 +82,7 @@ extern const uint8_t FIRMWARE_SECTORS[FIRMWARE_SECTORS_COUNT];
 // note: FLASH_SR_RDERR is STM32F42xxx and STM32F43xxx specific (STM32F427)
 // (reference RM0090 section 3.7.5)
 #ifndef STM32F427xx
-#define FLASH_SR_RDERR 0
+  #define FLASH_SR_RDERR 0
 #endif
 
 #define FLASH_STATUS_ALL_FLAGS                                            \

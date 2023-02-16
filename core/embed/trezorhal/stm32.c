@@ -35,27 +35,27 @@ typedef struct {
 } clock_conf_t;
 
 #ifdef STM32F427xx
-#ifdef TREZOR_MODEL_T
-#define DEFAULT_FREQ 168U
-#define DEFAULT_PLLQ 7U
-#define DEFAULT_PLLP 0U  // P = 2 (two bits, 00 means PLLP = 2)
-#define DEFAULT_PLLM 4U
-#define DEFAULT_PLLN 168U
-#else
-#define DEFAULT_FREQ 180U
-#define DEFAULT_PLLQ 15U
-#define DEFAULT_PLLP 1U  // P = 4 (two bits, 01 means PLLP = 4)
-#define DEFAULT_PLLM 4U
-#define DEFAULT_PLLN 360U
-#endif
+  #ifdef TREZOR_MODEL_T
+    #define DEFAULT_FREQ 168U
+    #define DEFAULT_PLLQ 7U
+    #define DEFAULT_PLLP 0U  // P = 2 (two bits, 00 means PLLP = 2)
+    #define DEFAULT_PLLM 4U
+    #define DEFAULT_PLLN 168U
+  #else
+    #define DEFAULT_FREQ 180U
+    #define DEFAULT_PLLQ 15U
+    #define DEFAULT_PLLP 1U  // P = 4 (two bits, 01 means PLLP = 4)
+    #define DEFAULT_PLLM 4U
+    #define DEFAULT_PLLN 360U
+  #endif
 #elif STM32F405xx
-#define DEFAULT_FREQ 120U
-#define DEFAULT_PLLQ 5U
-#define DEFAULT_PLLP 0U  // P = 2 (two bits, 00 means PLLP = 2)
-#define DEFAULT_PLLM 8U
-#define DEFAULT_PLLN 240U
+  #define DEFAULT_FREQ 120U
+  #define DEFAULT_PLLQ 5U
+  #define DEFAULT_PLLP 0U  // P = 2 (two bits, 00 means PLLP = 2)
+  #define DEFAULT_PLLM 8U
+  #define DEFAULT_PLLN 240U
 #else
-#error Unsupported MCU
+  #error Unsupported MCU
 #endif
 
 uint32_t SystemCoreClock = DEFAULT_FREQ * 1000000U;

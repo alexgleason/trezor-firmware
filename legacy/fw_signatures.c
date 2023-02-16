@@ -44,10 +44,10 @@ const uint32_t FIRMWARE_MAGIC_NEW = 0x465a5254;  // TRZF
 
 #if DEBUG_T1_SIGNATURES
 
-// Make build explode if combining debug sigs with production
-#if PRODUCTION
-#error "Can't have production device with debug keys! Build aborted"
-#endif
+  // Make build explode if combining debug sigs with production
+  #if PRODUCTION
+    #error "Can't have production device with debug keys! Build aborted"
+  #endif
 
 // These are **only** for debugging signatures with SignMessage
 // Use this mnemonic for testing signing:

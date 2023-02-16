@@ -19,10 +19,10 @@
 
 #if USE_SECP256K1_ZKP
 
-#include "py/objstr.h"
+  #include "py/objstr.h"
 
-#include "rand.h"
-#include "zkp_bip340.h"
+  #include "rand.h"
+  #include "zkp_bip340.h"
 
 /// package: trezorcrypto.bip340
 

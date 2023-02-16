@@ -37,7 +37,7 @@
 
 #if USE_CARDANO
 
-#define CARDANO_MAX_NODE_DEPTH 1048576
+  #define CARDANO_MAX_NODE_DEPTH 1048576
 
 const curve_info ed25519_cardano_info = {
     .bip32_name = ED25519_CARDANO_NAME,
@@ -244,12 +244,12 @@ int secret_from_seed_cardano_ledger(const uint8_t *seed, int seed_len,
   return 1;
 }
 
-#define CARDANO_ICARUS_STEPS 32
+  #define CARDANO_ICARUS_STEPS 32
 _Static_assert(
     CARDANO_ICARUS_PBKDF2_ROUNDS % CARDANO_ICARUS_STEPS == 0,
     "CARDANO_ICARUS_STEPS does not divide CARDANO_ICARUS_PBKDF2_ROUNDS");
-#define CARDANO_ICARUS_ROUNDS_PER_STEP \
-  (CARDANO_ICARUS_PBKDF2_ROUNDS / CARDANO_ICARUS_STEPS)
+  #define CARDANO_ICARUS_ROUNDS_PER_STEP \
+    (CARDANO_ICARUS_PBKDF2_ROUNDS / CARDANO_ICARUS_STEPS)
 
 // Derives the root Cardano HDNode from a passphrase and the entropy encoded in
 // a BIP-0039 mnemonic using the Icarus derivation scheme, aka V2 derivation

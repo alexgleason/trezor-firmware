@@ -28,11 +28,11 @@
 #include "display.h"
 
 #ifdef USE_DMA2D
-#include "dma2d.h"
+  #include "dma2d.h"
 #endif
 
 #ifdef USE_RUST_LOADER
-#include "rust_ui.h"
+  #include "rust_ui.h"
 #endif
 
 #include "fonts/fonts.h"
@@ -236,10 +236,10 @@ void display_text_render_buffer(const char *text, int textlen, int font,
 #elif TREZOR_FONT_BPP == 4
           const uint8_t c = (g[5 + a / 2] >> (4 - (a % 2) * 4)) & 0x0F;
 #elif TREZOR_FONT_BPP == 8
-#error Rendering into buffer not supported when using TREZOR_FONT_BPP = 8
+  #error Rendering into buffer not supported when using TREZOR_FONT_BPP = 8
           // const uint8_t c = g[5 + a / 1] >> 4;
 #else
-#error Unsupported TREZOR_FONT_BPP value
+  #error Unsupported TREZOR_FONT_BPP value
 #endif
 
           int x_pos = text_offset + i + x + bearX;
@@ -271,7 +271,7 @@ void display_text_render_buffer(const char *text, int textlen, int font,
 #ifndef USE_DMA2D
 void display_image(int x, int y, int w, int h, const void *data,
                    uint32_t datalen) {
-#if defined TREZOR_MODEL_T
+  #if defined TREZOR_MODEL_T
   x += DISPLAY_OFFSET.x;
   y += DISPLAY_OFFSET.y;
   int x0 = 0, y0 = 0, x1 = 0, y1 = 0;
@@ -300,7 +300,7 @@ void display_image(int x, int y, int w, int h, const void *data,
     }
     decomp.dest = (uint8_t *)&decomp_out;
   }
-#endif
+  #endif
 }
 #else
 void display_image(int x, int y, int w, int h, const void *data,
@@ -382,7 +382,7 @@ void display_avatar(int x, int y, const void *data, uint32_t datalen,
         PIXELDATA(bgcolor);
       } else {
         // border area
-#if AVATAR_ANTIALIAS
+  #if AVATAR_ANTIALIAS
         d = 31 * (d - AVATAR_BORDER_LOW) /
             (AVATAR_BORDER_HIGH - AVATAR_BORDER_LOW);
         uint16_t c = 0;
@@ -393,9 +393,9 @@ void display_avatar(int x, int y, const void *data, uint32_t datalen,
                                 d);
         }
         PIXELDATA(c);
-#else
+  #else
         PIXELDATA(fgcolor);
-#endif
+  #endif
       }
     }
     decomp.dest = (uint8_t *)&decomp_out;
@@ -526,16 +526,16 @@ bool display_toif_info(const uint8_t *data, uint32_t len, uint16_t *out_w,
 }
 
 #ifndef USE_RUST_LOADER
-#if defined TREZOR_MODEL_T
-#include "loader_T.h"
-#elif defined TREZOR_MODEL_R
-#include "loader_R.h"
-#endif
+  #if defined TREZOR_MODEL_T
+    #include "loader_T.h"
+  #elif defined TREZOR_MODEL_R
+    #include "loader_R.h"
+  #endif
 
 void display_loader(uint16_t progress, bool indeterminate, int yoffset,
                     uint16_t fgcolor, uint16_t bgcolor, const uint8_t *icon,
                     uint32_t iconlen, uint16_t iconfgcolor) {
-#if defined TREZOR_MODEL_T || defined TREZOR_MODEL_R
+  #if defined TREZOR_MODEL_T || defined TREZOR_MODEL_R
   uint16_t colortable[16] = {0}, iconcolortable[16] = {0};
   set_color_table(colortable, fgcolor, bgcolor);
   if (icon) {
@@ -580,9 +580,9 @@ void display_loader(uint16_t progress, bool indeterminate, int yoffset,
       } else {
         a = 999 - (img_loader[my][mx] >> 8);
       }
-// inside of circle - draw glyph
-#define LOADER_ICON_CORNER_CUT 2
-#define LOADER_INDETERMINATE_WIDTH 100
+    // inside of circle - draw glyph
+    #define LOADER_ICON_CORNER_CUT 2
+    #define LOADER_INDETERMINATE_WIDTH 100
       if (icon &&
           mx + my > (((LOADER_ICON_SIZE / 2) + LOADER_ICON_CORNER_CUT) * 2) &&
           mx >= img_loader_size - (LOADER_ICON_SIZE / 2) &&
@@ -620,24 +620,24 @@ void display_loader(uint16_t progress, bool indeterminate, int yoffset,
     }
   }
   PIXELDATA_DIRTY();
-#endif
+  #endif
 }
 #else
 
 void display_loader(uint16_t progress, bool indeterminate, int yoffset,
                     uint16_t fgcolor, uint16_t bgcolor, const uint8_t *icon,
                     uint32_t iconlen, uint16_t iconfgcolor) {
-#if defined TREZOR_MODEL_T || defined TREZOR_MODEL_R
+  #if defined TREZOR_MODEL_T || defined TREZOR_MODEL_R
   loader_uncompress_r(yoffset, fgcolor, bgcolor, iconfgcolor, progress,
                       indeterminate, icon, iconlen);
-#endif
+  #endif
 }
 #endif
 
 #ifndef TREZOR_PRINT_DISABLE
 
-#define DISPLAY_PRINT_COLS (DISPLAY_RESX / 6)
-#define DISPLAY_PRINT_ROWS (DISPLAY_RESY / 8)
+  #define DISPLAY_PRINT_COLS (DISPLAY_RESX / 6)
+  #define DISPLAY_PRINT_ROWS (DISPLAY_RESY / 8)
 static char display_print_buf[DISPLAY_PRINT_ROWS][DISPLAY_PRINT_COLS];
 static uint16_t display_print_fgcolor = COLOR_WHITE,
                 display_print_bgcolor = COLOR_BLACK;
@@ -717,12 +717,12 @@ void display_print(const char *text, int textlen) {
   display_refresh();
 }
 
-#ifdef TREZOR_EMULATOR
-#define mini_vsnprintf vsnprintf
-#include <stdio.h>
-#else
-#include "mini_printf.h"
-#endif
+  #ifdef TREZOR_EMULATOR
+    #define mini_vsnprintf vsnprintf
+    #include <stdio.h>
+  #else
+    #include "mini_printf.h"
+  #endif
 
 // variadic display_print
 void display_printf(const char *fmt, ...) {
@@ -779,7 +779,7 @@ static void display_text_render(int x, int y, const char *text, int textlen,
 #elif TREZOR_FONT_BPP == 8
           const uint8_t c = g[5 + a / 1] >> 4;
 #else
-#error Unsupported TREZOR_FONT_BPP value
+  #error Unsupported TREZOR_FONT_BPP value
 #endif
           PIXELDATA(colortable[c]);
         }

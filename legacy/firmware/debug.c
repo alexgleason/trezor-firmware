@@ -45,11 +45,11 @@ void oledDebug(const char *line) {
 void debugLog(int level, const char *bucket, const char *text) {
   (void)level;
   (void)bucket;
-#if EMULATOR
+  #if EMULATOR
   puts(text);
-#else
+  #else
   oledDebug(text);
-#endif
+  #endif
 }
 
 char *debugInt(const uint32_t i) {

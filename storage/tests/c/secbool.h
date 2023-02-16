@@ -27,7 +27,7 @@ typedef uint32_t secbool;
 #define secfalse 0x00000000U
 
 #ifndef __wur
-#define __wur __attribute__((warn_unused_result))
+  #define __wur __attribute__((warn_unused_result))
 #endif
 
 #endif

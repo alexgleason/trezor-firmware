@@ -18,29 +18,29 @@
  */
 
 #if !TREZOR_EMULATOR || PYOPT
-#define MEMINFO_DICT_ENTRIES /* empty */
+  #define MEMINFO_DICT_ENTRIES /* empty */
 
 #else
 
-#include "py/bc.h"
-#include "py/gc.h"
-#include "py/nlr.h"
-#include "py/objarray.h"
-#include "py/objfun.h"
-#include "py/objgenerator.h"
-#include "py/objlist.h"
-#include "py/objstr.h"
-#include "py/objtype.h"
+  #include "py/bc.h"
+  #include "py/gc.h"
+  #include "py/nlr.h"
+  #include "py/objarray.h"
+  #include "py/objfun.h"
+  #include "py/objgenerator.h"
+  #include "py/objlist.h"
+  #include "py/objstr.h"
+  #include "py/objtype.h"
 
-#include "embed/extmod/trezorobj.h"
-#include "embed/rust/librust.h"
-#include "embed/trezorhal/usb.h"
+  #include "embed/extmod/trezorobj.h"
+  #include "embed/rust/librust.h"
+  #include "embed/trezorhal/usb.h"
 
-#include <stdio.h>
-#include <string.h>
+  #include <stdio.h>
+  #include <string.h>
 
-#define WORDS_PER_BLOCK ((MICROPY_BYTES_PER_GC_BLOCK) / MP_BYTES_PER_OBJ_WORD)
-#define BYTES_PER_BLOCK (MICROPY_BYTES_PER_GC_BLOCK)
+  #define WORDS_PER_BLOCK ((MICROPY_BYTES_PER_GC_BLOCK) / MP_BYTES_PER_OBJ_WORD)
+  #define BYTES_PER_BLOCK (MICROPY_BYTES_PER_GC_BLOCK)
 
 // ATB = allocation table byte
 // 0b00 = FREE -- free block
@@ -48,70 +48,71 @@
 // 0b10 = TAIL -- in the tail of a chain of blocks
 // 0b11 = MARK -- marked head block
 
-#define AT_FREE (0)
-#define AT_HEAD (1)
-#define AT_TAIL (2)
-#define AT_MARK (3)
+  #define AT_FREE (0)
+  #define AT_HEAD (1)
+  #define AT_TAIL (2)
+  #define AT_MARK (3)
 
-#define BLOCKS_PER_ATB (4)
-#define ATB_MASK_0 (0x03)
-#define ATB_MASK_1 (0x0c)
-#define ATB_MASK_2 (0x30)
-#define ATB_MASK_3 (0xc0)
+  #define BLOCKS_PER_ATB (4)
+  #define ATB_MASK_0 (0x03)
+  #define ATB_MASK_1 (0x0c)
+  #define ATB_MASK_2 (0x30)
+  #define ATB_MASK_3 (0xc0)
 
-#define ATB_0_IS_FREE(a) (((a)&ATB_MASK_0) == 0)
-#define ATB_1_IS_FREE(a) (((a)&ATB_MASK_1) == 0)
-#define ATB_2_IS_FREE(a) (((a)&ATB_MASK_2) == 0)
-#define ATB_3_IS_FREE(a) (((a)&ATB_MASK_3) == 0)
+  #define ATB_0_IS_FREE(a) (((a)&ATB_MASK_0) == 0)
+  #define ATB_1_IS_FREE(a) (((a)&ATB_MASK_1) == 0)
+  #define ATB_2_IS_FREE(a) (((a)&ATB_MASK_2) == 0)
+  #define ATB_3_IS_FREE(a) (((a)&ATB_MASK_3) == 0)
 
-#define BLOCK_SHIFT(block) (2 * ((block) & (BLOCKS_PER_ATB - 1)))
-#define ATB_GET_KIND(block)                                         \
-  ((MP_STATE_MEM(gc_alloc_table_start)[(block) / BLOCKS_PER_ATB] >> \
-    BLOCK_SHIFT(block)) &                                           \
-   3)
-#define ATB_ANY_TO_FREE(block)                                        \
-  do {                                                                \
-    MP_STATE_MEM(gc_alloc_table_start)                                \
-    [(block) / BLOCKS_PER_ATB] &= (~(AT_MARK << BLOCK_SHIFT(block))); \
-  } while (0)
-#define ATB_FREE_TO_HEAD(block)                                    \
-  do {                                                             \
-    MP_STATE_MEM(gc_alloc_table_start)                             \
-    [(block) / BLOCKS_PER_ATB] |= (AT_HEAD << BLOCK_SHIFT(block)); \
-  } while (0)
-#define ATB_FREE_TO_TAIL(block)                                    \
-  do {                                                             \
-    MP_STATE_MEM(gc_alloc_table_start)                             \
-    [(block) / BLOCKS_PER_ATB] |= (AT_TAIL << BLOCK_SHIFT(block)); \
-  } while (0)
-#define ATB_HEAD_TO_MARK(block)                                    \
-  do {                                                             \
-    MP_STATE_MEM(gc_alloc_table_start)                             \
-    [(block) / BLOCKS_PER_ATB] |= (AT_MARK << BLOCK_SHIFT(block)); \
-  } while (0)
-#define ATB_MARK_TO_HEAD(block)                                       \
-  do {                                                                \
-    MP_STATE_MEM(gc_alloc_table_start)                                \
-    [(block) / BLOCKS_PER_ATB] &= (~(AT_TAIL << BLOCK_SHIFT(block))); \
-  } while (0)
+  #define BLOCK_SHIFT(block) (2 * ((block) & (BLOCKS_PER_ATB - 1)))
+  #define ATB_GET_KIND(block)                                         \
+    ((MP_STATE_MEM(gc_alloc_table_start)[(block) / BLOCKS_PER_ATB] >> \
+      BLOCK_SHIFT(block)) &                                           \
+     3)
+  #define ATB_ANY_TO_FREE(block)                                        \
+    do {                                                                \
+      MP_STATE_MEM(gc_alloc_table_start)                                \
+      [(block) / BLOCKS_PER_ATB] &= (~(AT_MARK << BLOCK_SHIFT(block))); \
+    } while (0)
+  #define ATB_FREE_TO_HEAD(block)                                    \
+    do {                                                             \
+      MP_STATE_MEM(gc_alloc_table_start)                             \
+      [(block) / BLOCKS_PER_ATB] |= (AT_HEAD << BLOCK_SHIFT(block)); \
+    } while (0)
+  #define ATB_FREE_TO_TAIL(block)                                    \
+    do {                                                             \
+      MP_STATE_MEM(gc_alloc_table_start)                             \
+      [(block) / BLOCKS_PER_ATB] |= (AT_TAIL << BLOCK_SHIFT(block)); \
+    } while (0)
+  #define ATB_HEAD_TO_MARK(block)                                    \
+    do {                                                             \
+      MP_STATE_MEM(gc_alloc_table_start)                             \
+      [(block) / BLOCKS_PER_ATB] |= (AT_MARK << BLOCK_SHIFT(block)); \
+    } while (0)
+  #define ATB_MARK_TO_HEAD(block)                                       \
+    do {                                                                \
+      MP_STATE_MEM(gc_alloc_table_start)                                \
+      [(block) / BLOCKS_PER_ATB] &= (~(AT_TAIL << BLOCK_SHIFT(block))); \
+    } while (0)
 
-#define BLOCK_FROM_PTR(ptr) \
-  (((byte *)(ptr)-MP_STATE_MEM(gc_pool_start)) / BYTES_PER_BLOCK)
-#define PTR_FROM_BLOCK(block) \
-  (((block)*BYTES_PER_BLOCK + (uintptr_t)MP_STATE_MEM(gc_pool_start)))
-#define ATB_FROM_BLOCK(bl) ((bl) / BLOCKS_PER_ATB)
+  #define BLOCK_FROM_PTR(ptr) \
+    (((byte *)(ptr)-MP_STATE_MEM(gc_pool_start)) / BYTES_PER_BLOCK)
+  #define PTR_FROM_BLOCK(block) \
+    (((block)*BYTES_PER_BLOCK + (uintptr_t)MP_STATE_MEM(gc_pool_start)))
+  #define ATB_FROM_BLOCK(bl) ((bl) / BLOCKS_PER_ATB)
 
-// ptr should be of type void*
-#define VERIFY_PTR(ptr)                                                       \
-  (((uintptr_t)(ptr) & (BYTES_PER_BLOCK - 1)) ==                              \
-       0 /* must be aligned on a block */                                     \
-   && ptr >= (void *)MP_STATE_MEM(                                            \
-                 gc_pool_start) /* must be above start of pool */             \
-   && ptr < (void *)MP_STATE_MEM(gc_pool_end) /* must be below end of pool */ \
-  )
+  // ptr should be of type void*
+  #define VERIFY_PTR(ptr)                                                    \
+    (((uintptr_t)(ptr) & (BYTES_PER_BLOCK - 1)) ==                           \
+         0 /* must be aligned on a block */                                  \
+     && ptr >= (void *)MP_STATE_MEM(                                         \
+                   gc_pool_start) /* must be above start of pool */          \
+     &&                                                                      \
+     ptr < (void *)MP_STATE_MEM(gc_pool_end) /* must be below end of pool */ \
+    )
 
-#define Q_GET_DATA(q) \
-  ((q) + MICROPY_QSTR_BYTES_IN_HASH + MICROPY_QSTR_BYTES_IN_LEN)
+  #define Q_GET_DATA(q) \
+    ((q) + MICROPY_QSTR_BYTES_IN_HASH + MICROPY_QSTR_BYTES_IN_LEN)
 extern const qstr_pool_t mp_qstr_const_pool;
 
 size_t find_allocated_size(void const *const ptr) {
@@ -654,11 +655,11 @@ void dump_value_opt(FILE *out, mp_const_obj_t value, bool eval_short) {
     dump_protodef(out, value);
   }
 
-#ifdef TREZOR_UI2
+  #ifdef TREZOR_UI2
   else if (mp_obj_is_type(value, ui_debug_layout_type())) {
     dump_uilayout(out, value);
   }
-#endif
+  #endif
 
   else {
     print_type(out, "unknown", NULL, value, true);
@@ -779,7 +780,7 @@ STATIC mp_obj_t mod_trezorutils_meminfo(mp_obj_t filename) {
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(mod_trezorutils_meminfo_obj,
                                  mod_trezorutils_meminfo);
 
-#define MEMINFO_DICT_ENTRIES \
-  {MP_ROM_QSTR(MP_QSTR_meminfo), MP_ROM_PTR(&mod_trezorutils_meminfo_obj)},
+  #define MEMINFO_DICT_ENTRIES \
+    {MP_ROM_QSTR(MP_QSTR_meminfo), MP_ROM_PTR(&mod_trezorutils_meminfo_obj)},
 
 #endif
