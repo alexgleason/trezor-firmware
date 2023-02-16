@@ -190,7 +190,9 @@ int zkp_ecdsa_sign_digest(
     }
   }
 
-  for (uint16_t i = 0; i < 10000; i++) {
+  uint16_t retry_count = 0;
+  int recid = 0;
+  do {
     if (result == 0) {
       if (secp256k1_context_writable_randomize(context_writable) != 0) {
         result = 1;
@@ -201,10 +203,10 @@ int zkp_ecdsa_sign_digest(
     if (result == 0) {
       uint8_t rfc6979_nonce_data[32] = {0};
       void *rfc6979_nonce = NULL;
-      if (i != 0) {
+      if (retry_count != 0) {
         // If this is a retry attempt, then randomize rfc6979 with the counter.
-        rfc6979_nonce_data[0] = i & 0xff;
-        rfc6979_nonce_data[0] = (i >> 8) & 0xff;
+        rfc6979_nonce_data[0] = retry_count & 0xff;
+        rfc6979_nonce_data[0] = (retry_count >> 8) & 0xff;
         rfc6979_nonce = rfc6979_nonce_data;
       }
 
@@ -216,7 +218,6 @@ int zkp_ecdsa_sign_digest(
       }
     }
 
-    int recid = 0;
     if (result == 0) {
       const secp256k1_context *context_read_only = zkp_context_get_read_only();
       if (secp256k1_ecdsa_recoverable_signature_serialize_compact(
@@ -231,13 +232,13 @@ int zkp_ecdsa_sign_digest(
     }
     memzero(&recoverable_signature, sizeof(recoverable_signature));
 
-    // If the signature is not acceptable then retry.
-    if (result == 0 && is_canonical && !is_canonical(recid, signature_bytes)) {
-      continue;
+    if (retry_count > 10000){
+      result = 1;
     }
+    retry_count += 1;
 
-    break;
-  }
+    // If the signature is not acceptable then retry.
+  } while (result == 0 && is_canonical && !is_canonical(recid, signature_bytes));
 
   if (context_writable) {
     zkp_context_release_writable();
