@@ -442,7 +442,7 @@ legacy device test:
   variables:
     EMULATOR: "1"
   script:
-    - $NIX_SHELL --run "poetry run make -C legacy test_emu_ui | ts -s"
+    - nix-shell --run "poetry run make -C legacy test_emu_ui | ts -s"
   after_script:
     - mv tests/ui_tests/reports/test/ test_ui_report
     - $NIX_SHELL --run "poetry run python ci/prepare_ui_artifacts.py | ts -s"
