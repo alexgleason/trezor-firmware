@@ -1,7 +1,7 @@
 {
 "T1": {
 "device_tests": {
-"T1_bitcoin-test_bcash.py::test_attack_change_input": "6111e313995d38c3970c92e48047fe4088c83666c64c6c859f69a232ad62829b",
+"T1_bitcoin-test_bcash.py::test_attack_change_input": "6101e313995d38c3970c92e48047fe4088c83666c64c6c859f69a232ad62829b",
 "T1_bitcoin-test_bcash.py::test_send_bch_change": "6111e313995d38c3970c92e48047fe4088c83666c64c6c859f69a232ad62829b",
 "T1_bitcoin-test_bcash.py::test_send_bch_multisig_change": "0962a2e630e06b6d20282cc241be40f41bc1648d0a26247c7c008f32a197d0cb",
 "T1_bitcoin-test_bcash.py::test_send_bch_multisig_wrongchange": "74f59c00237ae5d30f0c86095b4f919cfd9fa7bb3f529a0cc66b44623b34aeaf",
