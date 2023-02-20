@@ -98,7 +98,7 @@
 /* y */ static const uint8_t Font_TTHoves_Regular_10_glyph_121[] = { 5, 7, 5, 0, 5, 177, 2, 165, 112, 116, 12, 11, 0, 149, 144, 3, 243, 0, 13, 0, 59, 96, 0 };
 /* z */ static const uint8_t Font_TTHoves_Regular_10_glyph_122[] = { 5, 5, 4, 0, 5, 123, 190, 0, 9, 80, 5, 144, 2, 176, 0, 188, 170, 0 };
 /* { */ static const uint8_t Font_TTHoves_Regular_10_glyph_123[] = { 3, 9, 3, 0, 7, 7, 144, 192, 11, 0, 176, 103, 0, 176, 11, 0, 192, 8, 144 };
-/* | */ static const uint8_t Font_TTHoves_Regular_10_glyph_124[] = { 1, 9, 2, 0, 7, 187, 187, 187, 187, 176 };
+/* | */ static const uint8_t Font_TTHoves_Regular_10_glyph_124[] = { 1, 9, 3, 1, 7, 187, 187, 187, 187, 176 };
 /* } */ static const uint8_t Font_TTHoves_Regular_10_glyph_125[] = { 3, 9, 3, 0, 7, 121, 0, 192, 11, 0, 176, 5, 128, 176, 11, 0, 192, 121, 0 };
 /* ~ */ static const uint8_t Font_TTHoves_Regular_10_glyph_126[] = { 6, 3, 6, 0, 4, 9, 80, 97, 103, 131, 192, 82, 9, 96 };
 

@@ -98,7 +98,7 @@
 /* y */ static const uint8_t Font_TTHoves_Regular_12_glyph_121[] = { 6, 9, 6, 0, 6, 179, 0, 90, 89, 0, 149, 14, 0, 208, 10, 67, 160, 4, 168, 80, 0, 237, 0, 0, 154, 0, 0, 149, 0, 61, 192, 0 };
 /* z */ static const uint8_t Font_TTHoves_Regular_12_glyph_122[] = { 5, 6, 5, 0, 6, 141, 222, 192, 0, 196, 0, 151, 0, 107, 0, 45, 16, 10, 237, 219 };
 /* { */ static const uint8_t Font_TTHoves_Regular_12_glyph_123[] = { 4, 12, 4, 0, 9, 1, 164, 8, 96, 8, 80, 8, 80, 9, 80, 44, 32, 59, 16, 9, 80, 8, 80, 8, 80, 8, 80, 3, 196 };
-/* | */ static const uint8_t Font_TTHoves_Regular_12_glyph_124[] = { 2, 12, 3, 0, 9, 133, 133, 133, 133, 133, 133, 133, 133, 133, 133, 133, 133 };
+/* | */ static const uint8_t Font_TTHoves_Regular_12_glyph_124[] = { 2, 12, 4, 1, 9, 133, 133, 133, 133, 133, 133, 133, 133, 133, 133, 133, 133 };
 /* } */ static const uint8_t Font_TTHoves_Regular_12_glyph_125[] = { 4, 12, 4, 0, 9, 121, 0, 10, 64, 8, 80, 8, 80, 8, 80, 5, 176, 3, 193, 8, 80, 8, 80, 8, 80, 9, 64, 124, 0 };
 /* ~ */ static const uint8_t Font_TTHoves_Regular_12_glyph_126[] = { 7, 3, 7, 0, 5, 9, 177, 9, 36, 195, 194, 225, 86, 4, 198, 0 };
 
