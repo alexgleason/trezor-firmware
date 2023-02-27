@@ -392,7 +392,7 @@ def address_n_to_name(
             require_taproot=False,
         ),
         AccountType(
-            "Account",
+            "",
             PATTERN_BIP44,
             InputScriptType.SPENDADDRESS,
             require_segwit=False,

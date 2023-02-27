@@ -114,11 +114,12 @@ async def get_address(
             )
         else:
             account_name = address_n_to_name(coin, address_n, script_type)
-            account = (
-                f"{coin.coin_shortcut} {account_name}"
-                if account_name
-                else "Unknown path"
-            )
+            if account_name is None:
+                account = "Unknown path"
+            elif account_name == "":
+                account = coin.coin_shortcut
+            else:
+                account = f"{coin.coin_shortcut} {account_name}"
             await show_address(
                 ctx,
                 address_short,
