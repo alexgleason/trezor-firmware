@@ -20,7 +20,8 @@ variables:
 core fw regular build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   script:
     - $NIX_SHELL --run "poetry run make -C core build_boardloader"
     - $NIX_SHELL --run "poetry run make -C core build_bootloader"
@@ -41,7 +42,8 @@ core fw regular build:
 core fw regular debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   script:
     - $NIX_SHELL --run "PYOPT=0 poetry run make -C core build_firmware"
     - cp core/build/firmware/firmware.bin firmware-T2T1-debug-$CORE_VERSION-$CI_COMMIT_SHORT_SHA.bin
@@ -54,7 +56,8 @@ core fw regular debug build:
 core fw regular production build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - schedules  # nightly build
   variables:
@@ -77,7 +80,8 @@ core fw regular production build:
 core fw btconly build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     BITCOIN_ONLY: "1"
   script:
@@ -94,7 +98,8 @@ core fw btconly build:
 core fw btconly debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     BITCOIN_ONLY: "1"
     PYOPT: "0"
@@ -117,7 +122,8 @@ core fw btconly debug build:
 core fw btconly production build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - schedules  # nightly build
   variables:
@@ -138,7 +144,8 @@ core fw btconly production build:
 core unix regular build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   script:
     - $NIX_SHELL --run "poetry run make -C core build_unix"
   artifacts:
@@ -150,7 +157,8 @@ core unix regular build:
 core unix regular asan build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - schedules  # nightly build
   variables:
@@ -169,7 +177,8 @@ core unix regular asan build:
 core unix frozen regular build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   script:
     - $NIX_SHELL --run "poetry run make -C core build_unix_frozen"
   artifacts:
@@ -186,7 +195,7 @@ core unix frozen regular build:
 core unix frozen btconly debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs: []  # DEVICE TESTS - PRIORITY
   variables:
     PYOPT: "0"
     BITCOIN_ONLY: "1"
@@ -202,7 +211,8 @@ core unix frozen btconly debug build:
 core unix frozen btconly debug asan build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - schedules  # nightly build
   variables:
@@ -225,7 +235,7 @@ core unix frozen btconly debug asan build:
 core unix frozen debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs: []  # DEVICE TESTS - PRIORITY
   variables:
     PYOPT: "0"
   script:
@@ -238,7 +248,8 @@ core unix frozen debug build:
 core unix frozen debug asan build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - schedules  # nightly build
   variables:
@@ -255,7 +266,8 @@ core unix frozen debug build arm:
   image: nixos/nix
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - master
     - tags
@@ -276,7 +288,8 @@ core unix frozen debug build arm:
 core macos frozen regular build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   when: manual
   tags:
     - darwin_arm
@@ -301,7 +314,8 @@ core macos frozen regular build:
 crypto build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     ADDRESS_SANITIZER: "1"
   only:
@@ -330,7 +344,8 @@ crypto build:
 legacy fw regular build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   script:
     - $NIX_SHELL --run "export PRODUCTION=1 && poetry run legacy/script/cibuild"
     - $NIX_SHELL --run "poetry run legacy/script/setup"
@@ -346,7 +361,8 @@ legacy fw regular build:
 legacy fw regular debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     DEBUG_LINK: "1"
   script:
@@ -363,7 +379,8 @@ legacy fw regular debug build:
 legacy fw btconly build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     BITCOIN_ONLY: "1"
   script:
@@ -382,7 +399,8 @@ legacy fw btconly build:
 legacy fw btconly debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     BITCOIN_ONLY: "1"
     DEBUG_LINK: "1"
@@ -403,7 +421,8 @@ legacy fw btconly debug build:
 legacy emu regular debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     DEBUG_LINK: "1"
     EMULATOR: "1"
@@ -418,7 +437,8 @@ legacy emu regular debug build:
 legacy emu regular debug asan build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - schedules  # nightly build
   variables:
@@ -437,7 +457,8 @@ legacy emu regular debug build arm:
   image: nixos/nix
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - master
     - tags
@@ -462,7 +483,8 @@ legacy emu regular debug build arm:
 legacy emu btconly debug build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   variables:
     BITCOIN_ONLY: "1"
     DEBUG_LINK: "1"
@@ -479,7 +501,8 @@ legacy emu btconly debug build:
 legacy emu btconly debug asan build:
   stage: build
   <<: *gitlab_caching
-  needs: []
+  needs:
+    - core unix frozen debug build  # device tests have priority
   only:
     - schedules  # nightly build
   variables:
