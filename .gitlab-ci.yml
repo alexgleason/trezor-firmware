@@ -25,6 +25,7 @@ variables:
 stages:
   - environment
   - prebuild
+  - device_test_build
   - build
   - test
   - posttest
@@ -39,6 +40,7 @@ before_script:
 include:
   - ci/environment.yml
   - ci/prebuild.yml
+  - ci/device_test_build.yml
   - ci/build.yml
   - ci/test.yml
   - ci/test-hw.yml
