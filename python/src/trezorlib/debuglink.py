@@ -918,13 +918,15 @@ def load_device(
     skip_checksum: bool = False,
     needs_backup: bool = False,
     no_backup: bool = False,
+    wipe_before_loading: bool = False,
+    skip_ui: bool = False,
 ) -> protobuf.MessageType:
     if isinstance(mnemonic, str):
         mnemonic = [mnemonic]
 
     mnemonics = [Mnemonic.normalize_string(m) for m in mnemonic]
 
-    if client.features.initialized:
+    if client.features.initialized and not wipe_before_loading:
         raise RuntimeError(
             "Device is initialized already. Call device.wipe() and try again."
         )
@@ -939,6 +941,8 @@ def load_device(
             skip_checksum=skip_checksum,
             needs_backup=needs_backup,
             no_backup=no_backup,
+            wipe_before_loading=wipe_before_loading,
+            skip_ui=skip_ui,
         )
     )
     client.init_device()

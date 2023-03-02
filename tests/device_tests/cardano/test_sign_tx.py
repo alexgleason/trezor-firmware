@@ -52,12 +52,14 @@ def test_cardano_sign_tx(client: Client, parameters, result):
     assert response == _transform_expected_result(result)
 
 
+@pytest.mark.danger_no_wipe_device(__file__ + "::test_cardano_sign_tx_show_details")
 @parametrize_using_common_fixtures("cardano/sign_tx.show_details.json")
 def test_cardano_sign_tx_show_details(client: Client, parameters, result):
     response = call_sign_tx(client, parameters, show_details_input_flow)
     assert response == _transform_expected_result(result)
 
 
+@pytest.mark.danger_no_wipe_device(__file__ + "::test_cardano_sign_tx_failed")
 @parametrize_using_common_fixtures(
     "cardano/sign_tx_stake_pool_registration.failed.json",
     "cardano/sign_tx.failed.json",

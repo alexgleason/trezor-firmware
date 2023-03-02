@@ -2349,6 +2349,14 @@ if TYPE_CHECKING:
             return isinstance(msg, cls)
 
     class WipeDevice(protobuf.MessageType):
+        skip_ui: "bool | None"
+
+        def __init__(
+            self,
+            *,
+            skip_ui: "bool | None" = None,
+        ) -> None:
+            pass
 
         @classmethod
         def is_type_of(cls, msg: Any) -> TypeGuard["WipeDevice"]:
@@ -2364,6 +2372,8 @@ if TYPE_CHECKING:
         u2f_counter: "int | None"
         needs_backup: "bool | None"
         no_backup: "bool | None"
+        wipe_before_loading: "bool | None"
+        skip_ui: "bool | None"
 
         def __init__(
             self,
@@ -2377,6 +2387,8 @@ if TYPE_CHECKING:
             u2f_counter: "int | None" = None,
             needs_backup: "bool | None" = None,
             no_backup: "bool | None" = None,
+            wipe_before_loading: "bool | None" = None,
+            skip_ui: "bool | None" = None,
         ) -> None:
             pass
 

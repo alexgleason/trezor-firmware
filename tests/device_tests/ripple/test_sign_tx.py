@@ -25,6 +25,7 @@ pytestmark = [
     pytest.mark.altcoin,
     pytest.mark.ripple,
     pytest.mark.skip_t1,  # T1 support is not planned
+    pytest.mark.danger_no_wipe_device(__file__),  # reuse the same client for all tests
 ]
 
 

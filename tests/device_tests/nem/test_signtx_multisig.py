@@ -26,6 +26,7 @@ pytestmark = [
     pytest.mark.altcoin,
     pytest.mark.nem,
     pytest.mark.setup_client(mnemonic=MNEMONIC12),
+    pytest.mark.danger_no_wipe_device(__file__),  # reuse the same client for all tests
 ]
 
 

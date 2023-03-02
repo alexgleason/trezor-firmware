@@ -82,6 +82,7 @@ def parameters_to_proto(parameters):
 
 @pytest.mark.altcoin
 @pytest.mark.stellar
+@pytest.mark.danger_no_wipe_device(__file__ + "::test_sign_tx")
 @parametrize_using_common_fixtures("stellar/sign_tx.json")
 def test_sign_tx(client: Client, parameters, result):
     tx, operations = parameters_to_proto(parameters)
@@ -112,6 +113,7 @@ def test_xdr(parameters, result):
 
 @pytest.mark.altcoin
 @pytest.mark.stellar
+@pytest.mark.danger_no_wipe_device(__file__ + "::test_get_address")
 @parametrize_using_common_fixtures("stellar/get_address.json")
 def test_get_address(client: Client, parameters, result):
     address_n = parse_path(parameters["path"])

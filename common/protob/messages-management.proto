@@ -281,6 +281,7 @@ message FirmwareHash {
  * @next Failure
  */
 message WipeDevice {
+    optional bool skip_ui = 1;  // do not show any UI dialogue - use for tests to speed up the preparation process
 }
 
 /**
@@ -299,6 +300,8 @@ message LoadDevice {
     optional uint32 u2f_counter = 8;                        // U2F counter
     optional bool needs_backup = 9;                         // set "needs backup" flag
     optional bool no_backup = 10;                           // indicate that no backup is going to be made
+    optional bool wipe_before_loading = 11;                 // wipe device before loading - use for tests to speed up the preparation process
+    optional bool skip_ui = 12;                             // do not show any UI dialogue - use for tests to speed up the preparation process
 }
 
 /**

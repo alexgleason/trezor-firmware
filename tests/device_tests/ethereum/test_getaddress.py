@@ -22,7 +22,11 @@ from trezorlib.tools import parse_path
 
 from ...common import parametrize_using_common_fixtures
 
-pytestmark = [pytest.mark.altcoin, pytest.mark.ethereum]
+pytestmark = [
+    pytest.mark.altcoin,
+    pytest.mark.ethereum,
+    pytest.mark.danger_no_wipe_device(__file__),  # reuse the same client for all tests
+]
 
 
 @parametrize_using_common_fixtures("ethereum/getaddress.json")

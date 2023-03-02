@@ -37,6 +37,11 @@ if TYPE_CHECKING:
     from _pytest.config.argparsing import Parser
     from _pytest.terminal import TerminalReporter
 
+
+# Allows for reusing the same client without wiping it
+_cached_client_group: str | None = None
+
+
 # So that we see details of failed asserts from this module
 pytest.register_assert_rewrite("tests.common")
 
@@ -186,8 +191,6 @@ def client(
         should_format = sd_marker.kwargs.get("formatted", True)
         _raw_client.debug.erase_sd_card(format=should_format)
 
-    wipe_device(_raw_client)
-
     setup_params = dict(
         uninitialized=False,
         mnemonic=" ".join(["all"] * 12),
@@ -205,25 +208,46 @@ def client(
         setup_params["passphrase"], str
     )
 
-    if not setup_params["uninitialized"]:
-        debuglink.load_device(
-            _raw_client,
-            mnemonic=setup_params["mnemonic"],  # type: ignore
-            pin=setup_params["pin"],  # type: ignore
-            passphrase_protection=use_passphrase,
-            label="test",
-            language="en-US",
-            needs_backup=setup_params["needs_backup"],  # type: ignore
-            no_backup=setup_params["no_backup"],  # type: ignore
-        )
+    # Seeing whether we have to really wipe the device
+    global _cached_client_group
+    not_wipe_marker = request.node.get_closest_marker("danger_no_wipe_device")
+    client_group = not_wipe_marker.args[0] if not_wipe_marker else None
+    can_run_without_wipe = client_group and client_group == _cached_client_group
 
-        if request.node.get_closest_marker("experimental"):
-            apply_settings(_raw_client, experimental_features=True)
+    if not can_run_without_wipe:
+        # Either only wiping or wiping and loading the device (in one step)
+        # NOTE: `skip_ui=True` in `wipe_device` and `load_device`
+        # breaks UI tests, it would need some more work to fix it
+        if setup_params["uninitialized"]:
+            wipe_device(_raw_client)
+        else:
+            # When PIN was setup, need to wipe it separately
+            # (as loading requires to input PIN)
+            should_wipe = True
+            if _raw_client.features.pin_protection:
+                wipe_device(_raw_client)
+                should_wipe = False
+            debuglink.load_device(
+                _raw_client,
+                mnemonic=setup_params["mnemonic"],  # type: ignore
+                pin=setup_params["pin"],  # type: ignore
+                passphrase_protection=use_passphrase,
+                label="test",
+                language="en-US",
+                needs_backup=setup_params["needs_backup"],  # type: ignore
+                no_backup=setup_params["no_backup"],  # type: ignore
+                wipe_before_loading=should_wipe,  # to speed up the process
+            )
 
-        if use_passphrase and isinstance(setup_params["passphrase"], str):
-            _raw_client.use_passphrase(setup_params["passphrase"])
+            if request.node.get_closest_marker("experimental"):
+                apply_settings(_raw_client, experimental_features=True)
 
-        _raw_client.clear_session()
+            if use_passphrase and isinstance(setup_params["passphrase"], str):
+                _raw_client.use_passphrase(setup_params["passphrase"])
+
+    # Need to clear session in any case
+    _cached_client_group = client_group
+    _raw_client.clear_session()
 
     with ui_tests.screen_recording(_raw_client, request):
         yield _raw_client
@@ -320,6 +344,10 @@ def pytest_configure(config: "Config") -> None:
     config.addinivalue_line("markers", "skip_t2: skip the test on Trezor T")
     config.addinivalue_line(
         "markers", "experimental: enable experimental features on Trezor"
+    )
+    config.addinivalue_line(
+        "markers",
+        "danger_no_wipe_device: reuse one client for multiple tests with the same marker",
     )
     config.addinivalue_line(
         "markers",

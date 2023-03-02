@@ -13,7 +13,13 @@ async def load_device(ctx: Context, msg: LoadDevice) -> Success:
     from trezor.messages import Success
     from apps.management import backup_types
     from trezor.wire import UnexpectedMessage, ProcessError
-    from trezor.ui.layouts import confirm_action
+
+    if msg.wipe_before_loading:
+        import storage
+        from apps.base import reload_settings_from_storage
+
+        storage.wipe()
+        reload_settings_from_storage()
 
     mnemonics = msg.mnemonics  # local_cache_attribute
 
@@ -37,13 +43,20 @@ async def load_device(ctx: Context, msg: LoadDevice) -> Success:
         raise ProcessError("Mnemonic is not valid")
 
     # _warn
-    await confirm_action(
-        ctx,
-        "warn_loading_seed",
-        "Loading seed",
-        "Loading private seed is not recommended.",
-        "Continue only if you know what you are doing!",
-    )
+    # Skip UI option is only available in debug builds (to speed up tests)
+    if msg.skip_ui:
+        if not __debug__:
+            raise ProcessError("skip_ui option is only for debug builds")
+    else:
+        from trezor.ui.layouts import confirm_action
+
+        await confirm_action(
+            ctx,
+            "warn_loading_seed",
+            "Loading seed",
+            "Loading private seed is not recommended.",
+            "Continue only if you know what you are doing!",
+        )
     # END _warn
 
     if not is_slip39:  # BIP-39

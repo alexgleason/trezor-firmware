@@ -3435,6 +3435,16 @@ class FirmwareHash(protobuf.MessageType):
 
 class WipeDevice(protobuf.MessageType):
     MESSAGE_WIRE_TYPE = 5
+    FIELDS = {
+        1: protobuf.Field("skip_ui", "bool", repeated=False, required=False, default=None),
+    }
+
+    def __init__(
+        self,
+        *,
+        skip_ui: Optional["bool"] = None,
+    ) -> None:
+        self.skip_ui = skip_ui
 
 
 class LoadDevice(protobuf.MessageType):
@@ -3449,6 +3459,8 @@ class LoadDevice(protobuf.MessageType):
         8: protobuf.Field("u2f_counter", "uint32", repeated=False, required=False, default=None),
         9: protobuf.Field("needs_backup", "bool", repeated=False, required=False, default=None),
         10: protobuf.Field("no_backup", "bool", repeated=False, required=False, default=None),
+        11: protobuf.Field("wipe_before_loading", "bool", repeated=False, required=False, default=None),
+        12: protobuf.Field("skip_ui", "bool", repeated=False, required=False, default=None),
     }
 
     def __init__(
@@ -3463,6 +3475,8 @@ class LoadDevice(protobuf.MessageType):
         u2f_counter: Optional["int"] = None,
         needs_backup: Optional["bool"] = None,
         no_backup: Optional["bool"] = None,
+        wipe_before_loading: Optional["bool"] = None,
+        skip_ui: Optional["bool"] = None,
     ) -> None:
         self.mnemonics: Sequence["str"] = mnemonics if mnemonics is not None else []
         self.pin = pin
@@ -3473,6 +3487,8 @@ class LoadDevice(protobuf.MessageType):
         self.u2f_counter = u2f_counter
         self.needs_backup = needs_backup
         self.no_backup = no_backup
+        self.wipe_before_loading = wipe_before_loading
+        self.skip_ui = skip_ui
 
 
 class ResetDevice(protobuf.MessageType):

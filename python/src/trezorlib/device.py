@@ -99,8 +99,8 @@ def sd_protect(
 
 @expect(messages.Success, field="message", ret_type=str)
 @session
-def wipe(client: "TrezorClient") -> "MessageType":
-    ret = client.call(messages.WipeDevice())
+def wipe(client: "TrezorClient", skip_ui: bool = False) -> "MessageType":
+    ret = client.call(messages.WipeDevice(skip_ui=skip_ui))
     client.init_device()
     return ret
 

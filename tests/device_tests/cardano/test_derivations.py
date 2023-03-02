@@ -51,6 +51,7 @@ def test_ledger_available_always(client: Client):
     get_public_key(client, ADDRESS_N, derivation_type=D.LEDGER)
 
 
+@pytest.mark.danger_no_wipe_device(__file__ + "::test_derivation_irrelevant_on_slip39")
 @pytest.mark.setup_client(mnemonic=MNEMONIC_SLIP39_BASIC_20_3of6)
 @pytest.mark.parametrize("derivation_type", D)  # try ALL derivation types
 def test_derivation_irrelevant_on_slip39(client: Client, derivation_type):

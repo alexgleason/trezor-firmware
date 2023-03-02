@@ -26,6 +26,7 @@ pytestmark = [
     pytest.mark.altcoin,
     pytest.mark.nem,
     pytest.mark.setup_client(mnemonic=MNEMONIC12),
+    pytest.mark.danger_no_wipe_device(__file__),  # reuse the same client for all tests
 ]
 
 
@@ -79,7 +80,6 @@ def test_nem_signtx_simple(client: Client):
         )
 
 
-@pytest.mark.setup_client(mnemonic=MNEMONIC12)
 def test_nem_signtx_encrypted_payload(client: Client):
     with client:
         tt = client.features.model == "T"
@@ -132,7 +132,6 @@ def test_nem_signtx_encrypted_payload(client: Client):
         assert len(tx.signature) == 64
 
 
-@pytest.mark.setup_client(mnemonic=MNEMONIC12)
 def test_nem_signtx_xem_as_mosaic(client: Client):
     tx = nem.sign_tx(
         client,
@@ -166,7 +165,6 @@ def test_nem_signtx_xem_as_mosaic(client: Client):
     )
 
 
-@pytest.mark.setup_client(mnemonic=MNEMONIC12)
 def test_nem_signtx_unknown_mosaic(client: Client):
     tx = nem.sign_tx(
         client,
@@ -200,7 +198,6 @@ def test_nem_signtx_unknown_mosaic(client: Client):
     )
 
 
-@pytest.mark.setup_client(mnemonic=MNEMONIC12)
 def test_nem_signtx_known_mosaic(client: Client):
     tx = nem.sign_tx(
         client,
@@ -234,7 +231,6 @@ def test_nem_signtx_known_mosaic(client: Client):
     )
 
 
-@pytest.mark.setup_client(mnemonic=MNEMONIC12)
 def test_nem_signtx_known_mosaic_with_levy(client: Client):
     tx = nem.sign_tx(
         client,
@@ -268,7 +264,6 @@ def test_nem_signtx_known_mosaic_with_levy(client: Client):
     )
 
 
-@pytest.mark.setup_client(mnemonic=MNEMONIC12)
 def test_nem_signtx_multiple_mosaics(client: Client):
     tx = nem.sign_tx(
         client,
