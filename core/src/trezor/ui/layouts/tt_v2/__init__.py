@@ -400,12 +400,15 @@ async def show_address(
             "show_address",
             ButtonRequestType.Address,
         )
+
+        # User pressed right button.
         if result is CONFIRMED:
             break
 
-        if result is INFO:
+        # User pressed corner button or swiped left, go to address details.
+        elif result is INFO:
 
-            def title_fn(i: int):
+            def xpub_title(i: int):
                 result = f"MULTISIG XPUB #{i + 1}\n"
                 result += " (YOURS)" if i == multisig_index else " (COSIGNER)"
                 return result
@@ -415,15 +418,16 @@ async def show_address(
                 RustLayout(
                     trezorui2.show_address_details(
                         address=address if address_qr is None else address_qr,
-                        case_sensitive=True,
+                        case_sensitive=case_sensitive,
                         account=account,
                         path=path,
-                        xpubs=[(title_fn(i), xpub) for i, xpub in enumerate(xpubs)],
+                        xpubs=[(xpub_title(i), xpub) for i, xpub in enumerate(xpubs)],
                     )
                 ),
                 "show_address_details",
                 ButtonRequestType.Address,
             )
+            # Can only go back from the address details but corner button returns INFO.
             assert result in (INFO, CANCELLED)
 
         else:
@@ -433,11 +437,10 @@ async def show_address(
                 "warning_address_mismatch",
                 ButtonRequestType.Warning,
             )
+            assert result in (CONFIRMED, CANCELLED)
+            # Right button aborts action, left goes back to showing address.
             if result is CONFIRMED:
                 raise ActionCancelled
-            else:
-                assert result is CANCELLED
-                continue
 
 
 def show_pubkey(

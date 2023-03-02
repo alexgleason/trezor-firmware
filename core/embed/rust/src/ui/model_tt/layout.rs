@@ -510,7 +510,7 @@ extern "C" fn new_confirm_address(n_args: usize, args: *const Obj, kwargs: *mut 
                 .styled(theme::button_confirm()),
             1,
         );
-        let obj = LayoutObj::new(FloatingButton::corner(
+        let obj = LayoutObj::new(FloatingButton::top_right_corner(
             Icon::new(theme::ICON_INFO_CIRCLE),
             Frame::left_aligned(
                 theme::label_title(),
@@ -671,7 +671,7 @@ extern "C" fn new_show_address_details(n_args: usize, args: *const Obj, kwargs: 
 
         let obj = LayoutObj::new(
             HorizontalPage::new(
-                FloatingButton::corner(Icon::new(theme::ICON_CANCEL_LARGER), ad),
+                FloatingButton::top_right_corner(Icon::new(theme::ICON_CANCEL_LARGER), ad),
                 theme::BG,
             )
             .with_swipe_right_to_go_back(),
@@ -945,20 +945,14 @@ extern "C" fn new_show_info(n_args: usize, args: *const Obj, kwargs: *mut Map) -
     unsafe { util::try_with_args_and_kwargs(n_args, args, kwargs, block) }
 }
 
-extern "C" fn new_show_mismatch(n_args: usize, args: *const Obj, kwargs: *mut Map) -> Obj {
-    let block = move |_args: &[Obj], _kwargs: &Map| {
+extern "C" fn new_show_mismatch() -> Obj {
+    let block = move || {
         let title: StrBuffer = "Address mismatch?".into();
         let description: StrBuffer = "Please contact Trezor support at".into();
         let url: StrBuffer = "trezor.io/support".into();
         let button = "QUIT";
 
-        let icon = BlendedImage::new(
-            Icon::new(theme::ICON_OCTA),
-            Icon::new(theme::ICON_OCTA),
-            theme::WARN_COLOR,
-            theme::WARN_COLOR,
-            theme::BG,
-        );
+        let icon = BlendedImage::single(Icon::new(theme::ICON_OCTA), theme::WARN_COLOR, theme::BG);
 
         let obj = LayoutObj::new(
             IconDialog::new(
@@ -975,7 +969,7 @@ extern "C" fn new_show_mismatch(n_args: usize, args: *const Obj, kwargs: *mut Ma
 
         Ok(obj.into())
     };
-    unsafe { util::try_with_args_and_kwargs(n_args, args, kwargs, block) }
+    unsafe { util::try_or_raise(block) }
 }
 
 extern "C" fn new_show_simple(n_args: usize, args: *const Obj, kwargs: *mut Map) -> Obj {
@@ -1696,7 +1690,7 @@ pub static mp_module_trezorui2: Module = obj_module! {
 
     /// def show_mismatch() -> object:
     ///     """Warning modal, receiving address mismatch."""
-    Qstr::MP_QSTR_show_mismatch => obj_fn_kw!(0, new_show_mismatch).as_obj(),
+    Qstr::MP_QSTR_show_mismatch => obj_fn_0!(new_show_mismatch).as_obj(),
 
     /// def show_simple(
     ///     *,

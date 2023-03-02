@@ -1,3 +1,4 @@
+mod address_details;
 mod button;
 mod dialog;
 mod fido;
@@ -16,6 +17,7 @@ mod scroll;
 mod swipe;
 mod welcome_screen;
 
+pub use address_details::AddressDetails;
 pub use button::{
     Button, ButtonContent, ButtonMsg, ButtonStyle, ButtonStyleSheet, CancelConfirmMsg,
     CancelInfoConfirmMsg, FloatingButton, FloatingButtonMsg, SelectWordMsg,
@@ -25,7 +27,7 @@ pub use fido::{FidoConfirm, FidoMsg};
 pub use frame::{Frame, NotificationFrame};
 pub use hold_to_confirm::{HoldToConfirm, HoldToConfirmMsg};
 pub use homescreen::{Homescreen, HomescreenMsg, Lockscreen};
-pub use horizontal_page::{AddressDetails, HorizontalPage};
+pub use horizontal_page::HorizontalPage;
 pub use keyboard::{
     bip39::Bip39Input,
     mnemonic::{MnemonicInput, MnemonicKeyboard, MnemonicKeyboardMsg},

@@ -924,7 +924,7 @@ async def show_cardano_address(
         network_name = protocol_magics.to_ui_string(protocol_magic)
 
     path = None
-    account = f"{ADDRESS_TYPE_NAMES[address_parameters.address_type]}"
+    account = ADDRESS_TYPE_NAMES[address_parameters.address_type]
     if address_parameters.address_type in (
         CAT.BYRON,
         CAT.BASE,

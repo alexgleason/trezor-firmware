@@ -571,7 +571,7 @@ impl<T> FloatingButton<T>
 where
     T: Component,
 {
-    pub const fn corner(icon: Icon, inner: T) -> Self {
+    pub const fn top_right_corner(icon: Icon, inner: T) -> Self {
         Self {
             inner,
             button: Floating::top_right(
