@@ -60,6 +60,7 @@ core device test:
     - ls -hartl core || true
     - ls -hartl core/src || true
     - ls -hartl tests/ui_tests/reports/test || true
+    - mkdir -p core/build/unix
     - cp core/trezor-emu-core core/build/unix/trezor-emu-core
     - $NIX_SHELL --run "poetry run make -C core test_emu_ui_multicore TESTOPTS='-k eos' | ts -s"
   after_script:
