@@ -67,8 +67,8 @@ core device test:
     - ls -hartl core || true
     - ls -hartl core/src || true
     - ls -hartl tests/ui_tests/reports/test || true
-    - mv core/src/.coverage core/.coverage.test_emu
-    - mv tests/ui_tests/reports/test/ test_ui_report
+    - mv core/src/.coverage core/.coverage.test_emu || true
+    - mv tests/ui_tests/reports/test/ test_ui_report || true
     - $NIX_SHELL --run "poetry run python ci/prepare_ui_artifacts.py | ts -s"
     - diff -u tests/ui_tests/fixtures.json tests/ui_tests/fixtures.suggestion.json
   artifacts:
