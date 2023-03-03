@@ -54,13 +54,18 @@ image: registry.gitlab.com/satoshilabs/trezor/trezor-firmware/trezor-firmware-en
 core device test:
   stage: test
   <<: *gitlab_caching
-  needs:
-    - core unix frozen debug build
   variables:
     TREZOR_PROFILING: 1
   script:
-    - $NIX_SHELL --run "poetry run make -C core test_emu_ui_multicore | ts -s"
+    - ls -hartl core || true
+    - ls -hartl core/src || true
+    - ls -hartl tests/ui_tests/reports/test || true
+    - cp core/trezor-emu-core core/build/unix/trezor-emu-core
+    - $NIX_SHELL --run "poetry run make -C core test_emu_ui_multicore TESTOPTS='-k eos' | ts -s"
   after_script:
+    - ls -hartl core || true
+    - ls -hartl core/src || true
+    - ls -hartl tests/ui_tests/reports/test || true
     - mv core/src/.coverage core/.coverage.test_emu
     - mv tests/ui_tests/reports/test/ test_ui_report
     - $NIX_SHELL --run "poetry run python ci/prepare_ui_artifacts.py | ts -s"
