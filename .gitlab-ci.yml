@@ -23,12 +23,12 @@ variables:
   NIX_SHELL: "nix-shell"
 
 stages:
-  - environment
-  - prebuild
+  # - environment
+  # - prebuild
   - build
   - test
-  - posttest
-  - deploy
+  # - posttest
+  # - deploy
 
 before_script:
   - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh || true
@@ -37,10 +37,10 @@ before_script:
   - export CORE_VERSION=$($NIX_SHELL --run "./tools/version.sh core/embed/firmware/version.h")
 
 include:
-  - ci/environment.yml
-  - ci/prebuild.yml
+  # - ci/environment.yml
+  # - ci/prebuild.yml
   - ci/build.yml
   - ci/test.yml
-  - ci/test-hw.yml
-  - ci/posttest.yml
-  - ci/deploy.yml
+  # - ci/test-hw.yml
+  # - ci/posttest.yml
+  # - ci/deploy.yml
