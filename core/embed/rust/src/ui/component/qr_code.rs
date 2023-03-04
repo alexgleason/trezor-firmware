@@ -11,9 +11,14 @@ use crate::{
     },
 };
 
-const QR_MAX_VERSION: Version = Version::new(9);
+const NVERSIONS: usize = 10; // range of versions (=capacities) that we support
+const THRESHOLDS_BINARY: [usize; NVERSIONS] = [14, 26, 42, 62, 84, 106, 122, 152, 180, 213];
+const THRESHOLDS_ALPHANUM: [usize; NVERSIONS] = [20, 38, 61, 90, 122, 154, 178, 221, 262, 311];
+const ALPHANUMERIC_CHARSET: &str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
+const MAX_DATA: usize = THRESHOLDS_ALPHANUM[THRESHOLDS_ALPHANUM.len() - 1];
+
+const QR_MAX_VERSION: Version = Version::new(NVERSIONS as u8 - 1);
 const CORNER_RADIUS: u8 = 4;
-const MAX_DATA: usize = 311; // Version 9 alphanumeric encoding
 
 const DARK: Color = Color::rgb(0, 0, 0);
 const LIGHT: Color = Color::rgb(0xff, 0xff, 0xff);
@@ -29,15 +34,21 @@ impl Qr {
     where
         T: AsRef<str>,
     {
+        let indata = text.as_ref();
         let mut s = String::new();
-        if case_sensitive {
-            s.push_str(text.as_ref()).map_err(|_| Error::OutOfRange)?;
-        } else {
-            for c in text.as_ref().chars() {
+
+        if !case_sensitive
+            && Self::is_smaller_for_alphanumeric(indata.len())
+            && Self::is_alphanumeric_after_conversion(indata)
+        {
+            for c in indata.chars() {
                 s.push(c.to_ascii_uppercase())
                     .map_err(|_| Error::OutOfRange)?;
             }
+        } else {
+            s.push_str(indata).map_err(|_| Error::OutOfRange)?;
         }
+
         Ok(Self {
             text: s,
             border: 0,
@@ -48,6 +59,20 @@ impl Qr {
     pub fn with_border(mut self, border: i16) -> Self {
         self.border = border;
         self
+    }
+
+    fn is_alphanumeric_after_conversion(data: &str) -> bool {
+        data.chars()
+            .all(|c| ALPHANUMERIC_CHARSET.contains(c.to_ascii_uppercase()))
+    }
+
+    fn is_smaller_for_alphanumeric(len: usize) -> bool {
+        for version in 0..NVERSIONS {
+            if len <= THRESHOLDS_ALPHANUM[version] {
+                return len > THRESHOLDS_BINARY[version];
+            }
+        }
+        false
     }
 
     fn draw(qr: &QrCode, area: Rect, border: i16, scale: i16) {
