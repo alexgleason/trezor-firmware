@@ -384,7 +384,6 @@ async def show_address(
     network: str | None = None,
     multisig_index: int | None = None,
     xpubs: Sequence[str] = (),
-    title_qr: str | None = None,
 ) -> None:
     while True:
         result = await interact(
