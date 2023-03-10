@@ -1299,7 +1299,7 @@ extern "C" fn new_confirm_recovery(n_args: usize, args: *const Obj, kwargs: *mut
         let info_button: bool = kwargs.get_or(Qstr::MP_QSTR_info_button, false).unwrap();
 
         let paragraphs = Paragraphs::new([
-            Paragraph::new(&theme::TEXT_BOLD, title).centered(),
+            Paragraph::new(&theme::TEXT_DEMIBOLD, title).centered(),
             Paragraph::new(&theme::TEXT_NORMAL_OFF_WHITE, description).centered(),
         ])
         .with_spacing(theme::RECOVERY_SPACING);
@@ -1312,7 +1312,6 @@ extern "C" fn new_confirm_recovery(n_args: usize, args: *const Obj, kwargs: *mut
 
         let obj = if info_button {
             LayoutObj::new(NotificationFrame::new(
-                Icon::new(theme::ICON_WARN),
                 notification,
                 Dialog::new(
                     paragraphs,
@@ -1321,7 +1320,6 @@ extern "C" fn new_confirm_recovery(n_args: usize, args: *const Obj, kwargs: *mut
             ))?
         } else {
             LayoutObj::new(NotificationFrame::new(
-                Icon::new(theme::ICON_WARN),
                 notification,
                 Dialog::new(paragraphs, Button::cancel_confirm_text(None, Some(button))),
             ))?
@@ -1341,11 +1339,15 @@ extern "C" fn new_select_word_count(n_args: usize, args: *const Obj, kwargs: *mu
         let title = if dry_run {
             "SEED CHECK"
         } else {
-            "RECOVERY MODE"
+            "WALLET RECOVERY"
         };
 
         let paragraphs = Paragraphs::new(
-            Paragraph::new(&theme::TEXT_BOLD, StrBuffer::from("Number of words?")).centered(),
+            Paragraph::new(
+                &theme::TEXT_DEMIBOLD,
+                StrBuffer::from("Select number of words in your recovery seed."),
+            )
+            .centered(),
         );
 
         let obj = LayoutObj::new(
