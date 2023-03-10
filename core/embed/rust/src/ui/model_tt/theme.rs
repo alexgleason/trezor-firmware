@@ -540,8 +540,8 @@ pub const FORMATTED: FormattedFonts = FormattedFonts {
     mono: Font::MONO,
 };
 
-pub const CONTENT_BORDER: i16 = 5;
-pub const KEYBOARD_SPACING: i16 = 8;
+pub const CONTENT_BORDER: i16 = 0; //XXX drop
+pub const KEYBOARD_SPACING: i16 = 6; //XXX drop
 pub const BUTTON_HEIGHT: i16 = 50;
 pub const BUTTON_WIDTH: i16 = 56;
 pub const BUTTON_SPACING: i16 = 6;
