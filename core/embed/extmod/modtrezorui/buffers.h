@@ -27,7 +27,7 @@
 
 #define BUFFER_PIXELS DISPLAY_RESX
 
-#define TEXT_BUFFER_HEIGHT 32
+#define TEXT_BUFFER_HEIGHT 36
 
 #if TEXT_BUFFER_HEIGHT < FONT_MAX_HEIGHT
 #error Text buffer height is too small, please adjust to match used fonts
@@ -76,7 +76,7 @@ typedef __attribute__((aligned(4))) struct {
 } buffer_jpeg_work_t;
 
 typedef __attribute__((aligned(4))) struct {
-  uint16_t buffer[10][3][BUFFER_PIXELS];
+  uint16_t buffer[17][3][BUFFER_PIXELS];
 } buffer_blurring_t;
 
 extern const int32_t text_buffer_height;
