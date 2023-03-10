@@ -32,9 +32,6 @@ use crate::{
     ui::lerp::Lerp,
 };
 
-#[cfg(feature = "dma2d")]
-use crate::ui::component::image::Image;
-
 // Reexports
 pub use crate::ui::display::toif::Icon;
 pub use color::Color;
@@ -848,6 +845,11 @@ pub fn dotted_line(start: Point, width: i16, color: Color) {
 }
 
 /// Paints a pixel with a specific color on a given point.
+pub fn paint_point(point: &Point, color: Color) {
+    display::bar(point.x, point.y, 1, 1, color.into());
+}
+
+/// Paints a pixel with a specific color on a given point.
 
 /// Draws longer multiline texts inside an area.
 /// Does not add any characters on the line boundaries.
@@ -902,7 +904,7 @@ pub fn text_multiline(
     Some(area.split_top(taken_from_top).1)
 }
 
-/// Display text left-alligned to a certain Point
+/// Display text left-aligned to a certain Point
 pub fn text_left(baseline: Point, text: &str, font: Font, fg_color: Color, bg_color: Color) {
     display::text(
         baseline.x,
@@ -912,6 +914,7 @@ pub fn text_left(baseline: Point, text: &str, font: Font, fg_color: Color, bg_co
         fg_color.into(),
         bg_color.into(),
     );
+}
 
 /// Display text centered around a certain Point
 pub fn text_center(baseline: Point, text: &str, font: Font, fg_color: Color, bg_color: Color) {

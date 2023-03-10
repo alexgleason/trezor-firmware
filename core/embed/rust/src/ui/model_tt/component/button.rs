@@ -622,7 +622,7 @@ impl IconText {
         }
 
         if use_text {
-            display::text(
+            display::text_left(
                 text_pos,
                 self.text,
                 style.font,

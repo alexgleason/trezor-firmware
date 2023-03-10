@@ -32,8 +32,8 @@ pub struct Confirm {
     bg_color: Color,
     icon: Option<Icon>,
     message: Child<Paragraphs<ParagraphVecShort<&'static str>>>,
-    left: Child<Button<&'static str>>,
-    right: Child<Button<&'static str>>,
+    left: Child<Button>,
+    right: Child<Button>,
     confirm_left: bool,
 }
 
@@ -42,8 +42,8 @@ impl Confirm {
         bg_color: Color,
         icon: Option<Icon>,
         message: Paragraphs<ParagraphVecShort<&'static str>>,
-        left: Button<&'static str>,
-        right: Button<&'static str>,
+        left: Button,
+        right: Button,
         confirm_left: bool,
     ) -> Self {
         let mut instance = Self {

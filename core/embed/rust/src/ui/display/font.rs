@@ -130,6 +130,17 @@ impl Font {
         display::text_width(text, self.into())
     }
 
+    /// Width of the text that is visible, not including the space
+    /// after the last character.
+    pub fn visible_text_width(self, text: &str) -> i16 {
+        let text_minus_one = &text[..text.len() - 1];
+
+        let last_char = unwrap!(text.chars().last());
+        let last_char_glyph = unwrap!(self.get_glyph(last_char as u8));
+
+        self.text_width(text_minus_one) + last_char_glyph.width
+    }
+
     pub fn char_width(self, ch: char) -> i16 {
         display::char_width(ch, self.into())
     }

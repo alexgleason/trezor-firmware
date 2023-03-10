@@ -41,6 +41,7 @@ static void _librust_qstrs(void) {
   MP_QSTR_confirm_recovery;
   MP_QSTR_show_success;
   MP_QSTR_show_warning;
+  MP_QSTR_show_error;
   MP_QSTR_show_info;
   MP_QSTR_show_mismatch;
   MP_QSTR_show_simple;
@@ -136,4 +137,5 @@ static void _librust_qstrs(void) {
   MP_QSTR_derivation_path;
   MP_QSTR_address_qr;
   MP_QSTR_recovery;
+  MP_QSTR_tutorial;
 }

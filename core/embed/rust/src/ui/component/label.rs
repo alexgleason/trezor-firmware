@@ -66,7 +66,7 @@ where
         let height = self
             .layout
             .with_bounds(bounds)
-            .fit_text(self.text.as_ref(), false)
+            .fit_text(self.text.as_ref())
             .height();
         self.layout = self.layout.with_bounds(bounds.with_height(height));
         self.layout.bounds
@@ -77,7 +77,7 @@ where
     }
 
     fn paint(&mut self) {
-        self.layout.render_text(self.text.as_ref(), false);
+        self.layout.render_text(self.text.as_ref());
     }
 
     fn bounds(&self, sink: &mut dyn FnMut(Rect)) {

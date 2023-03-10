@@ -1,23 +1,31 @@
 use crate::ui::{
     component::{text::TextStyle, LineBreaking},
-    display::{Color, Font},
+    display::{Color, Font, toif::Icon},
     geometry::Offset,
 };
 
 use num_traits::FromPrimitive;
 
 // Color palette.
-pub const FG: Color = Color::white(); // Default foreground (text & icon) color.
-pub const BG: Color = Color::black(); // Default background color.
+pub const WHITE: Color = Color::white();
+pub const BLACK: Color = Color::black();
+pub const FG: Color = WHITE; // Default foreground (text & icon) color.
+pub const BG: Color = BLACK; // Default background color.
+
+// Font constants.
+pub const FONT_BUTTON: Font = Font::MONO;
+pub const FONT_HEADER: Font = Font::BOLD;
+pub const FONT_CHOICE_ITEMS: Font = Font::NORMAL;
 
 // Text constants.
 pub const TEXT_NORMAL: TextStyle = TextStyle::new(Font::NORMAL, FG, BG, FG, FG);
-pub const TEXT_DEMIBOLD: TextStyle = TextStyle::new(Font::DEMIBOLD, FG, BG, FG, FG)
-    .with_ellipsis_icon(ICON_NEXT_PAGE, ELLIPSIS_ICON_MARGIN)
-    .with_prev_page_icon(ICON_PREV_PAGE, PREV_PAGE_ICON_MARGIN);
+pub const TEXT_DEMIBOLD: TextStyle = TextStyle::new(Font::DEMIBOLD, FG, BG, FG, FG);
+pub const TEXT_BOLD: TextStyle = TextStyle::new(Font::BOLD, FG, BG, FG, FG)
+    .with_ellipsis_icon(Icon::new(ICON_NEXT_PAGE), ELLIPSIS_ICON_MARGIN)
+    .with_prev_page_icon(Icon::new(ICON_PREV_PAGE), PREV_PAGE_ICON_MARGIN);
 pub const TEXT_MONO: TextStyle = TextStyle::new(Font::MONO, FG, BG, FG, FG)
-    .with_ellipsis_icon(ICON_NEXT_PAGE, ELLIPSIS_ICON_MARGIN)
-    .with_prev_page_icon(ICON_PREV_PAGE, PREV_PAGE_ICON_MARGIN);
+    .with_ellipsis_icon(Icon::new(ICON_NEXT_PAGE), ELLIPSIS_ICON_MARGIN)
+    .with_prev_page_icon(Icon::new(ICON_PREV_PAGE), PREV_PAGE_ICON_MARGIN);
 /// Mono data text does not have hyphens
 pub const TEXT_MONO_DATA: TextStyle =
     TEXT_MONO.with_line_breaking(LineBreaking::BreakWordsNoHyphen);

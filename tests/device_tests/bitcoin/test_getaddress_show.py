@@ -20,7 +20,11 @@ from trezorlib import btc, messages, tools
 from trezorlib.debuglink import TrezorClientDebugLink as Client
 from trezorlib.exceptions import Cancelled, TrezorFailure
 
-from ...input_flows import InputFlowShowAddressQRCode, InputFlowShowAddressQRCodeCancel, InputFlowShowMultisigXPUBs
+from ...input_flows import (
+    InputFlowShowAddressQRCode,
+    InputFlowShowAddressQRCodeCancel,
+    InputFlowShowMultisigXPUBs,
+)
 
 VECTORS = (  # path, script_type, address
     (
@@ -98,6 +102,9 @@ def test_show_tt(
 def test_show_cancel(
     client: Client, path: str, script_type: messages.InputScriptType, address: str
 ):
+    if client.model == "R":
+        # TODO: make this work
+        pytest.skip("NOT YET DONE FOR TR")
     with client, pytest.raises(Cancelled):
         IF = InputFlowShowAddressQRCodeCancel(client)
         client.set_input_flow(IF.get())

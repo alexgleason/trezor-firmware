@@ -93,16 +93,8 @@ pub struct TextStyle {
     pub ellipsis_icon: Option<Icon>,
     /// Optional icon to signal content continues from previous page.
     pub prev_page_ellipsis_icon: Option<Icon>,
-
-    // NOTE: storing `&'static [u8]` instead of `Icon` so that these
-    // can be used in `const` contexts.
-    // `Icon` is always created dynamically on demand when displayed.
-    /// Optional icon shown as ellipsis.
-    pub ellipsis_icon: Option<&'static [u8]>,
     /// How many pixels to leave between the text and ellipsis icon.
     pub ellipsis_icon_margin: i16,
-    /// Optional icon to signal content continues from previous page.
-    pub prev_page_ellipsis_icon: Option<&'static [u8]>,
     /// How many pixels to leave between the prev_page icon and the text.
     pub prev_page_icon_margin: i16,
 
@@ -127,13 +119,11 @@ impl TextStyle {
             hyphen_color,
             ellipsis_color,
             ellipsis_icon: None,
-            prev_page_ellipsis_icon: None,
-            line_breaking: LineBreaking::BreakAtWhitespace,
-            page_breaking: PageBreaking::CutAndInsertEllipsis,
-            ellipsis_icon: None,
             ellipsis_icon_margin: 0,
             prev_page_ellipsis_icon: None,
             prev_page_icon_margin: 0,
+            line_breaking: LineBreaking::BreakAtWhitespace,
+            page_breaking: PageBreaking::CutAndInsertEllipsis,
         }
     }
 
@@ -243,7 +233,7 @@ impl TextLayout {
                 Op::Font(font) => {
                     self.style.text_font = font;
                 }
-                Op::Text(text) => match self.layout_text(text, cursor, sink, false) {
+                Op::Text(text) => match self.layout_text(text, cursor, sink) {
                     LayoutFit::Fitting {
                         processed_chars, ..
                     } => {
@@ -397,10 +387,6 @@ impl TextLayout {
             + (end_cursor.y - init_cursor.y)
             + self.padding_bottom
     }
-
-    fn bottom_y(&self) -> i16 {
-        (self.bounds.y1 - self.padding_bottom).max(self.bounds.y0)
-    }
 }
 
 impl Dimensions for TextLayout {
@@ -496,7 +482,11 @@ impl LayoutSink for TextRenderer {
             display::text_left(
                 cursor,
                 ELLIPSIS,
+                layout.style.text_font,
+                layout.style.ellipsis_color,
+                layout.style.background_color,
             );
+        }
     }
 
     fn prev_page_ellipsis(&mut self, cursor: Point, layout: &TextLayout) {
@@ -524,7 +514,7 @@ impl LayoutSink for TextRenderer {
         // Get rid of this and use the same flow as TT
         // OR
         // Use it for TT as well
-        display::text_left(qr_code.center, qr_code.data.as_ref(), layout.style.text_font, layout.style.text_color, layout.style.background_color)
+        // display::text_left(qr_code.center, qr_code.data.as_ref(), layout.style.text_font, layout.style.text_color, layout.style.background_color)
         // display::qrcode(
         //     qr_code.center,
         //     qr_code.data.as_ref(),
@@ -564,10 +554,6 @@ pub mod trace {
 
         fn prev_page_ellipsis(&mut self, _cursor: Point, _layout: &TextLayout) {
             self.0.string(ELLIPSIS);
-        }
-
-        fn prev_page_ellipsis(&mut self, _cursor: Point, _layout: &TextLayout) {
-            self.0.string("...");
         }
 
         fn line_break(&mut self, _cursor: Point) {

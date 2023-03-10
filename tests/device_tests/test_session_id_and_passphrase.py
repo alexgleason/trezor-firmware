@@ -434,7 +434,7 @@ def test_hide_passphrase_from_host(client: Client):
         def input_flow():
             yield
             layout = client.debug.wait_layout()
-            assert "Next screen will show the passphrase!" in layout.text_content()
+            assert "Next screen will show the passphrase" in layout.text_content()
             client.debug.press_yes()
 
             yield

@@ -160,13 +160,7 @@ impl TextLayout {
                         let text_len = to_display.length_from_end;
                         let start = text.len() - text_len;
                         let to_really_display = &text[start..];
-                        let continues_from_prev_page = start > 0;
-                        let fit = self.layout_text(
-                            to_really_display,
-                            cursor,
-                            sink,
-                            continues_from_prev_page,
-                        );
+                        let fit = self.layout_text(to_really_display, cursor, sink);
 
                         match fit {
                             LayoutFit::Fitting {

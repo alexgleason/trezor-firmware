@@ -880,11 +880,15 @@ async def confirm_total(
     total_amount: str,
     fee_amount: str,
     fee_rate_amount: str | None = None,
+    title: str = "SENDING",
     total_label: str = "Total amount",
-    fee_label: str = "Including fee",
+    fee_label: str = "Fee:",
+    account_label: str | None = None,
     br_type: str = "confirm_total",
     br_code: ButtonRequestType = ButtonRequestType.SignTx,
 ) -> None:
+    # TODO: incorporate account_label
+    # f"From {account_label}\r\n{total_label}" if account_label else total_label,
     await raise_if_not_confirmed(
         interact(
             ctx,

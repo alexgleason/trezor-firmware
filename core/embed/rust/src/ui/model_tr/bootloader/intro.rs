@@ -35,8 +35,8 @@ impl ReturnToC for IntroMsg {
 pub struct Intro {
     bg: Pad,
     title: Child<Title>,
-    host: Child<Button<&'static str>>,
-    menu: Child<Button<&'static str>>,
+    host: Child<Button>,
+    menu: Child<Button>,
     text: Child<Paragraphs<ParagraphVecShort<&'static str>>>,
 }
 
@@ -55,12 +55,12 @@ impl Intro {
             title: Child::new(Title::new(bld_version)),
             host: Child::new(Button::with_text(
                 ButtonPos::Left,
-                "INSTALL FIRMWARE",
+                "INSTALL FIRMWARE".into(),
                 bld_button_default(),
             )),
             menu: Child::new(Button::with_text(
                 ButtonPos::Right,
-                "MENU",
+                "MENU".into(),
                 bld_button_default(),
             )),
             text: Child::new(p1),

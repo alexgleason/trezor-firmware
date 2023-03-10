@@ -78,6 +78,14 @@ impl Color {
     pub fn negate(self) -> Self {
         Self(!self.0)
     }
+
+    pub const fn white() -> Self {
+        Self::rgb(255, 255, 255)
+    }
+
+    pub const fn black() -> Self {
+        Self::rgb(0, 0, 0)
+    }
 }
 
 impl Lerp for Color {

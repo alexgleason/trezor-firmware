@@ -322,7 +322,7 @@ def test_signmessage_pagination(client: Client, message: str):
         expected_message = (
             ("Confirm message: " + message).replace("\n", "").replace(" ", "")
         )
-        message_read = message_read.replace(" ", "").replace("...", "")
+        message_read = IF.message_read.replace(" ", "").replace("...", "")
         assert expected_message == message_read
 
 

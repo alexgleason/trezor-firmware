@@ -153,7 +153,7 @@ where
         source: &'a dyn ParagraphSource<StrType = S>,
         visible: &'a [TextLayout],
         offset: PageOffset,
-        func: &'b mut dyn FnMut(&TextLayout, &str, bool),
+        func: &'b mut dyn FnMut(&TextLayout, &str),
     ) {
         let mut vis_iter = visible.iter();
         let mut chr = offset.chr;
@@ -165,8 +165,7 @@ where
                 continue;
             }
             if let Some(layout) = vis_iter.next() {
-                let continues_from_prev_page = chr > 0;
-                func(layout, s.as_ref(), continues_from_prev_page);
+                func(layout, s.as_ref());
             } else {
                 break;
             }
@@ -196,8 +195,8 @@ where
             &self.source,
             &self.visible,
             self.offset,
-            &mut |layout, content, continues| {
-                layout.render_text(content, continues);
+            &mut |layout, content| {
+                layout.render_text(content);
             },
         )
     }
@@ -244,12 +243,11 @@ pub mod trace {
                 &self.source,
                 &self.visible,
                 self.offset,
-                &mut |layout, content, continues| {
+                &mut |layout, content| {
                     layout.layout_text(
                         content,
                         &mut layout.initial_cursor(),
                         &mut TraceSink(t),
-                        continues,
                     );
                     t.string("\n");
                 },
@@ -448,11 +446,11 @@ impl PageOffset {
         let full_area = area.with_height(full_height);
         let key_height = this_paragraph
             .layout(full_area)
-            .fit_text(this_paragraph.content.as_ref(), false)
+            .fit_text(this_paragraph.content.as_ref())
             .height();
         let val_height = next_paragraph
             .layout(full_area)
-            .fit_text(next_paragraph.content.as_ref(), false)
+            .fit_text(next_paragraph.content.as_ref())
             .height();
         let screen_full_threshold = this_paragraph.style.text_font.line_height()
             + next_paragraph.style.text_font.line_height();
