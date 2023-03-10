@@ -79,7 +79,6 @@ def encode_network(
     slip44: int = 0,
     symbol: str = "FAKE",
     name: str = "Fake network",
-    timestamp: int = 0xFFFF_FFFF,
 ) -> bytes:
     if network is None:
         network = make_network(chain_id, slip44, symbol, name)
@@ -95,7 +94,6 @@ def encode_token(
     address: bytes = b"",
     chain_id: int = 0,
     name: str = "Fake token",
-    timestamp: int = 0xFFFF_FFFF,
 ) -> bytes:
     if token is None:
         token = make_token(symbol, decimals, address, chain_id, name)

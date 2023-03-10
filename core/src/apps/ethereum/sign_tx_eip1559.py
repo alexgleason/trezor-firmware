@@ -12,10 +12,9 @@ if TYPE_CHECKING:
         EthereumAccessList,
         EthereumTxRequest,
     )
-
-    from . import definitions
-    from apps.common.keychain import Keychain
     from trezor.wire import Context
+    from apps.common.keychain import Keychain
+    from .definitions import Definitions
 
 
 _TX_TYPE = const(2)
@@ -34,7 +33,7 @@ async def sign_tx_eip1559(
     ctx: Context,
     msg: EthereumSignTxEIP1559,
     keychain: Keychain,
-    defs: definitions.Definitions,
+    defs: Definitions,
 ) -> EthereumTxRequest:
     from trezor.crypto.hashlib import sha3_256
     from trezor.utils import HashWriter

@@ -120,6 +120,11 @@ class TestDecodeDefinition(unittest.TestCase):
         proof, signature = sign_payload(payload, [])
         self.assertFailed(payload + proof + signature)
 
+    def test_trailing_garbage(self):
+        payload = make_payload()
+        proof, signature = sign_payload(payload, [])
+        self.assertFailed(payload + proof + signature + b"\x00")
+
 
 @unittest.skipUnless(not utils.BITCOIN_ONLY, "altcoin")
 class TestEthereumDefinitions(unittest.TestCase):
@@ -141,11 +146,6 @@ class TestEthereumDefinitions(unittest.TestCase):
             self.fail("Expected known token, got UNKNOWN_TOKEN")
 
     def test_empty(self) -> None:
-        defs = Definitions()
-        self.assertUnknown(defs.network)
-        self.assertFalse(defs._tokens)
-        self.assertUnknown(defs.get_token(TETHER_ADDRESS))
-
         defs = Definitions.from_encoded(None, None)
         self.assertUnknown(defs.network)
         self.assertFalse(defs._tokens)

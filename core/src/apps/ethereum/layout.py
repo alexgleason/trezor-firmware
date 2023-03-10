@@ -16,10 +16,13 @@ from .helpers import decode_typed_data
 if TYPE_CHECKING:
     from typing import Awaitable, Iterable
 
-    from trezor.messages import EthereumFieldType, EthereumStructMember
+    from trezor.messages import (
+        EthereumFieldType,
+        EthereumNetworkInfo,
+        EthereumStructMember,
+        EthereumTokenInfo,
+    )
     from trezor.wire import Context
-
-    from trezor.messages import EthereumNetworkInfo, EthereumTokenInfo
 
 
 def require_confirm_tx(

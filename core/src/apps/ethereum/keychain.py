@@ -68,7 +68,7 @@ PATTERNS_ADDRESS = (
 
 
 def _slip44_from_address_n(address_n: paths.Bip32Path) -> int:
-    HARDENED = paths.HARDENED
+    HARDENED = paths.HARDENED  # local_cache_attribute
     if address_n[0] == 45 | HARDENED and not address_n[1] & HARDENED:
         return address_n[1]
     elif len(address_n) >= 2:
@@ -80,23 +80,17 @@ def _slip44_from_address_n(address_n: paths.Bip32Path) -> int:
 def _defs_from_message(
     msg: Any, chain_id: int | None = None, slip44: int | None = None
 ) -> definitions.Definitions:
-    encoded_network: bytes | None = None
-    encoded_token: bytes | None = None
+    encoded_network = None
+    encoded_token = None
 
-    # first try to get both definitions
-    try:
+    # try to get both from msg.definitions
+    if hasattr(msg, "definitions"):
         if msg.definitions is not None:
             encoded_network = msg.definitions.encoded_network
             encoded_token = msg.definitions.encoded_token
-    except AttributeError:
-        pass
 
-    # check if we have network definition, if not give it a last try
-    if encoded_network is None:
-        try:
-            encoded_network = msg.encoded_network
-        except AttributeError:
-            pass
+    elif hasattr(msg, "encoded_network"):
+        encoded_network = msg.encoded_network
 
     return definitions.Definitions.from_encoded(
         encoded_network, encoded_token, chain_id, slip44

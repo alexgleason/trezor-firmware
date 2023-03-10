@@ -46,7 +46,7 @@ def decode_definition(definition: bytes, expected_type: type[DefType]) -> DefTyp
 
         # at the end compute Merkle tree root hash using
         # provided leaf data (payload with prefix) and proof
-        hash = sha256(b"\x00" + memoryview(definition)[:r.offset]).digest()
+        hash = sha256(b"\x00" + memoryview(definition)[: r.offset]).digest()
         proof_length = r.get()
         for _ in range(proof_length):
             proof_entry = r.read_memoryview(32)
@@ -55,6 +55,9 @@ def decode_definition(definition: bytes, expected_type: type[DefType]) -> DefTyp
             hash = sha256(b"\x01" + hash_a + hash_b).digest()
 
         signed_tree_root = r.read_memoryview(64)
+
+        if r.remaining_count():
+            raise DataError("Invalid Ethereum definition")
 
     except EOFError:
         raise DataError("Invalid Ethereum definition")
@@ -86,12 +89,10 @@ class Definitions:
     """
 
     def __init__(
-        self,
-        network: EthereumNetworkInfo = UNKNOWN_NETWORK,
-        tokens: dict[bytes, EthereumTokenInfo] | None = None,
+        self, network: EthereumNetworkInfo, tokens: dict[bytes, EthereumTokenInfo]
     ) -> None:
-        self.network = network or UNKNOWN_NETWORK
-        self._tokens = tokens or {}
+        self.network = network
+        self._tokens = tokens
 
     @classmethod
     def from_encoded(
@@ -115,7 +116,7 @@ class Definitions:
 
         if network is UNKNOWN_NETWORK:
             # ignore tokens if we don't have a network
-            return cls()
+            return cls(UNKNOWN_NETWORK, {})
 
         if chain_id is not None and network.chain_id != chain_id:
             raise DataError("Network definition mismatch")
@@ -125,6 +126,9 @@ class Definitions:
         # get token definition
         if encoded_token is not None:
             token = decode_definition(encoded_token, EthereumTokenInfo)
+            # Ignore token if it doesn't match the network instead of raising an error.
+            # This might help us in the future if we allow multiple networks/tokens
+            # in the same message.
             if token.chain_id == network.chain_id:
                 tokens[token.address] = token
 
